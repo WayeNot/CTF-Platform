@@ -67,9 +67,3 @@ Votre mission : identifier leurs secrets et récupérer les **flags** cachés 
 * [LinkedIn Timéo](https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/)
 * [LinkedIn Romain](https://www.linkedin.com/in/romain-guibert-2851a52bb/)
 * [LinkedIn Aymeric](https://www.linkedin.com/in/aymeric-beaune-9b81b0364/)
-
----
-
-Si tu veux, je peux aussi te créer **une version “markdown + badges et mise en page professionnelle” prête à mettre sur GitHub**, avec des sections colorées et des emojis stylés pour rendre le README plus immersif et attractif pour les participants.
-
-Veux‑tu que je fasse ça ?
