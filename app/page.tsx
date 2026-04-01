@@ -18,10 +18,9 @@ interface Flag {
 }
 
 export default function Home() {
-    // Déplace notifStyles à l'intérieur du composant
     const notifStyles = {
         success: { bg: "bg-green-500/20", text: "text-green-400", icon: "✔" },
-        error:   { bg: "bg-red-500/20", text: "text-red-400", icon: "✖" },
+        error: { bg: "bg-red-500/20", text: "text-red-400", icon: "✖" },
         warning: { bg: "bg-yellow-500/20", text: "text-yellow-400", icon: "⚠" },
     };
 
@@ -33,8 +32,13 @@ export default function Home() {
 
     const current = notifStyles[notif.type];
 
-    const flags: Flag[] = JSON.parse(process.env.NEXT_PUBLIC_FLAGS || "[]");
-    const [isFind, setIsFind] = useState<Record<number, boolean>>({ 1: false, 2: false, 3: false });
+    const flags: Flag[] = [
+        { nbr: 1, name: "Nom de l'image", flag: "image.png", flag_format: "x", description: "Description du flag 1" },
+        { nbr: 2, name: "Nom du compte", flag: "criquet_sauvage4", flag_format: "x", description: "Description du flag 2" },
+        { nbr: 3, name: "Nom prénom de la prochaine victime", flag: "Edvard_Doris", flag_format: "x_x", description: "Description du flag 3" },
+        { nbr: 4, name: "Ville de la victime", flag: "le-puy-en-velay", flag_format: "x", description: "Description du flag 4" },
+    ]; const [isFind, setIsFind] = useState<Record<number, boolean>>({ 1: false, 2: false, 3: false });
+    
     const [selectedFlag, setSelectedFlag] = useState<Flag | null>(null);
     const [currentFlag, setCurrentFlag] = useState("");
 
@@ -65,6 +69,8 @@ export default function Home() {
             }
         }
     };
+
+    console.log(flags);
 
     return (
         <div className="w-screen bg-[#212529] h-screen">
