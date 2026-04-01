@@ -33,7 +33,7 @@ export default function Home() {
     const current = notifStyles[notif.type];
 
     const flags: Flag[] = [
-        { nbr: 1, name: "Nom de l'image test", flag: "image.png", flag_format: "x", description: "" },
+        { nbr: 1, name: "Nom de l'image", flag: "image.png", flag_format: "x", description: "" },
         { nbr: 2, name: "Nom du compte", flag: "criquet_sauvage4", flag_format: "x", description: "" },
         { nbr: 3, name: "Nom prénom de la prochaine victime", flag: "Edvard_Doris", flag_format: "x_x", description: "" },
         { nbr: 4, name: "Ville de la victime", flag: "le-puy-en-velay", flag_format: "x", description: "" },
