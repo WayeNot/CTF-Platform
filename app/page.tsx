@@ -75,15 +75,12 @@ export default function Home() {
     return (
         <div className="w-screen bg-[#212529] h-screen">
             <div className="py-15 bg-gray-800 flex flex-col items-center justify-center gap-5">
-                <h1 className="text-center text-[30px] font-bold">CTF projet Ydays - CyberLab</h1>
+                <h1 className="text-center text-[30px] font-bold">CTF Phishout - CyberLab</h1>
                 <p className="text-center w-1/2 m-auto text-white/40">
                    Vous faites partie du groupe spécial d’investigation de la gendarmerie. Depuis plusieurs jours, un réseau de hackers spécialisé dans la vente de kits clés en main automatisés pour créer et déployer des sites de phishing revendique de nombreuses attaques sur le sol français. Grâce au travail des équipes, vous avez réussi à identifier les têtes du réseau : Gérard, 34 ans, ancien développeur full stack reconverti dans le développement d’API le jour et chef du réseau la nuit.
-
 À ses côtés, Marin, 19 ans, passionné d’informatique depuis tout petit, et Rémy, 20 ans, également passionné d’informatique. À eux trois, ils forment un groupe très dangereux.
-
 D’après des fichiers récupérés sur l’un de leurs serveurs, ils préparent une attaque contre le responsable informatique d’une entreprise d’hébergement française.
-
-Votre mission : récupérer les fichiers compromis et identifier quelle sera leur prochaine cible.
+<br>Votre mission : récupérer les fichiers compromis et identifier quelle sera leur prochaine cible.
                 </p>
                 <a target="_blank" className="border-2 p-2 rounded-[8px] hover:bg-white hover:text-black hover:border-white transition duration-500" href="informations.rar">Ressource de départ</a>
             </div>
