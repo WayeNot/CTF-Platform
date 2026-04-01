@@ -72,8 +72,6 @@ export default function Home() {
         }
     };
 
-    console.log(flags);
-
     return (
         <div className="w-screen bg-[#212529] h-screen">
             <div className="py-15 bg-gray-800 flex flex-col items-center justify-center gap-5">
