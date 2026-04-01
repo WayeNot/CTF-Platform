@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
 
 type NotifType = "success" | "error" | "warning";
 
@@ -19,9 +20,9 @@ interface Flag {
 
 export default function Home() {
     const notifStyles = {
-        success: { bg: "bg-green-500/20", text: "text-green-400", icon: "✔" },
-        error: { bg: "bg-red-500/20", text: "text-red-400", icon: "✖" },
-        warning: { bg: "bg-yellow-500/20", text: "text-yellow-400", icon: "⚠" },
+        success: { bg: "bg-green-500/20", text: "text-green-400", icon: <FaCheckCircle size={28} /> },
+        error: { bg: "bg-red-500/20", text: "text-red-400", icon: <FaTimesCircle size={28} /> },
+        warning: { bg: "bg-yellow-500/20", text: "text-yellow-400", icon: <FaExclamationTriangle size={28} /> },
     };
 
     const [notif, setNotif] = useState<Notif>({
@@ -35,10 +36,10 @@ export default function Home() {
     const flags: Flag[] = [
         { nbr: 1, name: "Nom de l'image", flag: "free-criquet.png", flag_format: "x", description: "Une image intéressante est cachée dans le container. Quel est son nom exact (avec l'extension) ?" },
         { nbr: 2, name: "Nom du compte", flag: "criquet_sauvage4", flag_format: "x", description: "Un nom de compte est dissimulé dans une image. Parviendrez-vous à le retrouver ?" },
-        { nbr: 3, name: "Identité de la prochaine victime", flag: "Edvard_Doris", flag_format: "x_x", description: "Arriverez-vous à retrouver l'identité de la prochaine victime avant qu'il ne soit trop tard ? \nFormat du flag : Nom_Prénom" },
+        { nbr: 3, name: "Identité de la prochaine victime", flag: "Edvard_Doris", flag_format: "Nom_Prénom", description: "Arriverez-vous à retrouver l'identité de la prochaine victime avant qu'il ne soit trop tard ?" },
         { nbr: 4, name: "Où habite-t-elle ?", flag: "le-puy-en-velay", flag_format: "x", description: "Arriverez-vous à retrouver la ville où habite cette victime ?" },
     ];
-    
+
     const [isFind, setIsFind] = useState<Record<number, boolean>>({ 1: false, 2: false, 3: false, 4: false });
 
     const [selectedFlag, setSelectedFlag] = useState<Flag | null>(null);
@@ -75,9 +76,9 @@ export default function Home() {
     return (
         <div className="w-screen bg-[#212529] h-screen">
             <div className="py-15 bg-gray-800 flex flex-col items-center justify-center gap-5">
-                <h1 className="text-center text-[30px] font-bold">CTF Phishout - CyberLab</h1>
-                <p className="text-center w-1/2 m-auto text-white/40">Vous faites partie du groupe spécial d’investigation de la gendarmerie. Depuis plusieurs jours, un réseau de hackers spécialisé dans la vente de kits clés en main automatisés pour créer et déployer des sites de phishing revendique de nombreuses attaques sur le sol français. Grâce au travail des équipes, vous avez réussi à identifier les têtes du réseau : Gérard, 34 ans, ancien développeur full stack reconverti dans le développement d’API le jour et chef du réseau la nuit. À ses côtés, Marin, 19 ans, passionné d’informatique depuis tout petit, et Rémy, 20 ans, également passionné d’informatique. À eux trois, ils forment un groupe très dangereux. D’après des fichiers récupérés sur l’un de leurs serveurs, ils préparent une attaque contre le responsable informatique d’une entreprise d’hébergement française.<br/>Votre mission : récupérer les fichiers compromis et identifier quelle sera leur prochaine cible.</p>
-                <a target="_blank" className="border-2 p-2 rounded-[8px] hover:bg-white hover:text-black hover:border-white transition duration-500" href="DATA.zip">Ressource de départ</a>
+                <h1 className="text-center text-[30px] text-white/60 font-bold">CTF Phishout - CyberLab</h1>
+                <p className="text-center w-1/2 m-auto text-white/40">Vous faites partie du groupe spécial d’investigation de la gendarmerie. Depuis plusieurs jours, un réseau de hackers spécialisé dans la vente de kits clés en main automatisés pour créer et déployer des sites de phishing revendique de nombreuses attaques sur le sol français. Grâce au travail des équipes, vous avez réussi à identifier les têtes du réseau : Gérard, 34 ans, ancien développeur full stack reconverti dans le développement d’API le jour et chef du réseau la nuit. À ses côtés, Marin, 19 ans, passionné d’informatique depuis tout petit, et Rémy, 20 ans, également passionné d’informatique. À eux trois, ils forment un groupe très dangereux. D’après des fichiers récupérés sur l’un de leurs serveurs, ils préparent une attaque contre le responsable informatique d’une entreprise d’hébergement française.<br />Votre mission : récupérer les fichiers compromis et identifier quelle sera leur prochaine cible.</p>
+                <a target="_blank" className="border-2 p-2 rounded-[8px] text-white/60 hover:bg-white hover:text-black hover:border-white transition duration-500" href="DATA.zip">Ressource de départ</a>
             </div>
 
             <div className="py-15 flex items-center justify-center gap-5">
@@ -89,17 +90,28 @@ export default function Home() {
             </div>
 
             {notif.display && (
-                <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 animate-slideIn">
-                    <div className="w-full max-w-sm bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-5 flex items-center justify-center gap-4 backdrop-blur-md">
-                        <div className={`w-10 h-10 flex items-center justify-center rounded-xl ${current.bg}`}>
-                            <span className={`${current.text} text-xl`}>
-                                {current.icon}
-                            </span>
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-500 animate-slideFadeIn">
+                    <div className={`flex items-center gap-4 p-5 rounded-3xl border border-gray-600 bg-gradient-to-r from-[#1e1e2f]/90 to-[#2a2a3d]/80 shadow-2xl backdrop-blur-xl transition-all duration-500`}>
+
+                        {/* Icône React Icons */}
+                        <div className={`w-14 h-14 flex items-center justify-center rounded-full ${current.bg} text-white shadow-lg hover:scale-110 transition-transform duration-300`}>
+                            {current.icon}
                         </div>
+
+                        {/* Texte notification */}
                         <div className="flex-1">
-                            <p className={`text-sm ${current.text} leading-relaxed`}>{notif.message}</p>
+                            <p className={`text-sm sm:text-base ${current.text} font-semibold leading-relaxed`}>
+                                {notif.message}
+                            </p>
                         </div>
-                        <button onClick={() => setNotif({ ...notif, display: false })} className="text-gray-400 hover:text-white transition cursor-pointer">✕</button>
+
+                        {/* Bouton fermer */}
+                        <button
+                            onClick={() => setNotif({ ...notif, display: false })}
+                            className="text-gray-400 hover:text-white transition-colors text-lg font-bold"
+                        >
+                            ✕
+                        </button>
                     </div>
                 </div>
             )}
@@ -111,7 +123,10 @@ export default function Home() {
                             <h2 className="text-xl font-bold text-white">{selectedFlag.name}</h2>
                             <button onClick={() => setSelectedFlag(null)} className="text-gray-400 hover:text-white transition cursor-pointer">✕</button>
                         </div>
-                        <p className="text-gray-300 text-[17px] mb-6 leading-relaxed">{selectedFlag.description}</p>
+                        <div className="my-5 flex flex-col gap-3 text-white/40">
+                            <p className="text-gray-300 text-[17px] leading-relaxed">{selectedFlag.description}</p>
+                            <p>{"Format du flag : phishout{" + selectedFlag.flag_format + "}"}</p>
+                        </div>
                         <input
                             value={currentFlag}
                             onChange={(e) => setCurrentFlag(e.target.value)}
