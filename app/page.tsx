@@ -40,6 +40,12 @@ export default function Home() {
         { nbr: 4, name: "Où habite-t-elle ?", flag: "le-puy-en-velay", flag_format: "x", description: "Arriverez-vous à retrouver la ville où habite cette victime ?" },
     ];
 
+    const owners = [
+        { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
+        { name: "Romain", linkedin: "https://www.linkedin.com/in/romain-guibert-2851a52bb/" },
+        { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
+    ];
+
     const [isFind, setIsFind] = useState<Record<number, boolean>>({ 1: false, 2: false, 3: false, 4: false });
 
     const [selectedFlag, setSelectedFlag] = useState<Flag | null>(null);
@@ -84,7 +90,7 @@ export default function Home() {
             <div className="py-15 flex items-center justify-center gap-5">
                 {flags.map((item) => (
                     <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={`px-5 py-7 w-1/5 text-center rounded-[8px] ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800"} transition duration-500 cursor-pointer font-bold`}>
-                        <p>{item.name}</p>
+                        <p className="text-white/70">{item.name}</p>
                     </div>
                 ))}
             </div>
@@ -93,25 +99,13 @@ export default function Home() {
                 <div className="fixed top-6 left-1/2 -translate-x-1/2 z-500 animate-slideFadeIn">
                     <div className={`flex items-center gap-4 p-5 rounded-3xl border border-gray-600 bg-gradient-to-r from-[#1e1e2f]/90 to-[#2a2a3d]/80 shadow-2xl backdrop-blur-xl transition-all duration-500`}>
 
-                        {/* Icône React Icons */}
-                        <div className={`w-14 h-14 flex items-center justify-center rounded-full ${current.bg} text-white shadow-lg hover:scale-110 transition-transform duration-300`}>
-                            {current.icon}
-                        </div>
+                        <div className={`w-14 h-14 flex items-center justify-center rounded-full ${current.bg} text-white shadow-lg hover:scale-110 transition-transform duration-300`}>{current.icon}</div>
 
-                        {/* Texte notification */}
                         <div className="flex-1">
-                            <p className={`text-sm sm:text-base ${current.text} font-semibold leading-relaxed`}>
-                                {notif.message}
-                            </p>
+                            <p className={`text-sm sm:text-base ${current.text} font-semibold leading-relaxed`}>{notif.message}</p>
                         </div>
 
-                        {/* Bouton fermer */}
-                        <button
-                            onClick={() => setNotif({ ...notif, display: false })}
-                            className="text-gray-400 hover:text-white transition-colors text-lg font-bold"
-                        >
-                            ✕
-                        </button>
+                        <button onClick={() => setNotif({ ...notif, display: false })} className="text-gray-400 hover:text-white transition-colors text-lg font-bold">✕</button>
                     </div>
                 </div>
             )}
@@ -142,10 +136,10 @@ export default function Home() {
                 </div>
             )}
 
-            <footer className="w-full flex items-center justify-center gap-5 fixed bottom-3">
-                <a target="_blank" href="https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/">Timéo</a>
-                <a target="_blank" href="https://www.linkedin.com/in/romain-guibert-2851a52bb/">Romain</a>
-                <a target="_blank" href="https://www.linkedin.com/in/aymeric-beaune-9b81b0364/">Aymeric</a>
+            <footer className="w-full flex items-center justify-center text-center gap-5 fixed bottom-3 text-white/40">
+                {owners.map((el) => (
+                    <a className="hover:text-white/70 transition duration-500 hover:underline" target="_blank" href={el.linkedin}>{el.name}</a>
+                ))}
             </footer>
         </div>
     );
