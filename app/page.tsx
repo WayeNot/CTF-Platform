@@ -1,65 +1,123 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    const notifStyles = {
+        success: {
+            bg: "bg-green-500/20",
+            text: "text-green-400",
+            icon: "✔",
+        },
+        error: {
+            bg: "bg-red-500/20",
+            text: "text-red-400",
+            icon: "✖",
+        },
+        warning: {
+            bg: "bg-yellow-500/20",
+            text: "text-yellow-400",
+            icon: "⚠",
+        },
+    };
+
+    const flags = JSON.parse(process.env.NEXT_PUBLIC_FLAGS || "[]");
+    const [isFind, setIsFind] = useState({ 1: false, 2: false, 3: false })
+    const [selectedFlag, setSelectedFlag] = useState(null);
+    const [currentFlag, setCurrentFlag] = useState("");
+
+    const [notif, setNotif] = useState({ display: false, state: "", message: "" });
+    const current = notifStyles[notif.type || "success"];
+
+    useEffect(() => {
+        if (notif.display) {
+            const timer = setTimeout(() => {
+                setNotif({ ...notif, display: false });
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [notif.display]);
+
+    const handleValidate = (e) => {
+        e.preventDefault;
+
+        if (currentFlag === "") setNotif({ display: true, message: "Aucun flag donné", state: "error" });
+
+        console.log("phishout{" + currentFlag + "}")
+        console.log("phishout{" + flags[selectedFlag.nbr - 1].flag + "}")
+
+            
+        if (currentFlag === "phishout{" + flags[selectedFlag.nbr - 1].flag + "}") {
+            setNotif({ display: true, message: "Vous avez réussi ce flag", state: "success" })
+            setIsFind({ ...isFind, [selectedFlag.nbr]: true })
+            setSelectedFlag(null);
+            setCurrentFlag("")
+        } else { 
+            setNotif({ display: true, message: "Mauvais flag", state: "error" });
+            setCurrentFlag("")
+        }
+    }
+
+    return (
+        <div className="w-screen bg-[#212529] h-screen">
+            <div className="py-15 bg-gray-800 flex flex-col items-center justify-center gap-5">
+                <h1 className="text-center text-[30px] font-bold">CTF projet Ydays - CyberLab</h1>
+                <p className="text-center w-1/2 m-auto text-white/40">
+                    Un réseau de hackers spécialisé dans la vente de starter packs de phishing. À sa tête, Gérard, 34 ans, ancien développeur full stack reconverti dans le développement d’API le jour, et chef du réseau la nuit. À ses côtés, Marin, 19 ans, passionné d’informatique depuis tout petit, et Rémy, 20 ans, également passionné d’informatique. À eux trois, ils forment un groupe très dangereux : ils mettent entre les mains de personnes non compétentes des kits clés en main automatisés pour créer et déployer des sites de phishing, ainsi que des listes de cibles récupérées lors de fuites de données sur le dark web.
+                </p>
+                <a target="_blank" className="border-2 p-2 rounded-[8px] hover:bg-white hover:text-black hover:border-white transition duration-500" href="informations.rar">Ressource de départ</a>
+            </div>
+            <div className="py-15 flex items-center justify-center gap-5">
+                {flags.map((item) => (
+                    <div
+                        onClick={() => setSelectedFlag(item)}
+                        className={`px-5 py-7 w-1/5 text-center rounded-[8px] ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800"} transition duration-500 cursor-pointer font-bold`}
+                    >
+                        <p key={item.flag}>{item.name}</p>
+                    </div>
+                ))}
+            </div>
+            {notif.display && (
+                <div className="fixed top-5 left-1/2 -translate-x-1/2 z-500 animate-slideIn">
+                    <div className="w-full max-w-sm bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-5 flex items-center justify-center gap-4 backdrop-blur-md">
+                        <div className={`w-10 h-10 flex items-center justify-center rounded-xl ${current.bg}`}>
+                            <span className={`${current.text} text-xl`}>
+                                {current.icon}
+                            </span>
+                        </div>
+
+                        <div className="flex-1">
+                            <p className={`text-sm ${current.text} leading-relaxed`}>
+                                {notif.message}
+                            </p>
+                        </div>
+
+                        <button onClick={() => setNotif({ ...notif, display: false })} className="text-gray-400 hover:text-white transition cursor-pointer">✕</button>
+                    </div>
+                </div>
+            )}
+            {selectedFlag && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+
+                    <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
+
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold text-white">{selectedFlag.name}</h2>
+                            <button onClick={() => setSelectedFlag(null)} className="text-gray-400 hover:text-white transition cursor-pointer">✕</button>
+                        </div>
+
+                        <p className="text-gray-300 text-[17px] mb-6 leading-relaxed">{selectedFlag.description}</p>
+
+                        <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{"+selectedFlag.flag_format+"}"} className="w-full mb-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+                        <div className="flex gap-3">
+                            <button onClick={(e) => handleValidate(e)} className="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg font-medium cursor-pointer">Valider</button>
+                            <button onClick={() => setSelectedFlag(null)} className="flex-1 bg-gray-700 hover:bg-gray-600 transition text-white py-2 rounded-lg font-medium cursor-pointer">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            <footer className="w-full flex items-center justify-center gap-5 fixed bottom-3"><a target="_blank" href="https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/">Timéo</a><a target="_blank" href="https://www.linkedin.com/in/romain-guibert-2851a52bb/">Romain</a><a target="_blank" href="https://www.linkedin.com/in/aymeric-beaune-9b81b0364/">Aymeric</a></footer>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    )
 }
