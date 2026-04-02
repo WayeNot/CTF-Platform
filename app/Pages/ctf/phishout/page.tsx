@@ -124,7 +124,8 @@ export default function Home() {
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
                 <div className="hidden sm:flex items-center gap-5 text-white/40">
-                    <p className="hover:text-white/70 cursor-pointer">Nos challenges</p>
+                    <a href="/" className="hover:text-white/70 cursor-pointer">Accueil</a>
+                    <a href="/Pages/challenges" className="hover:text-white/70 cursor-pointer">Nos challenges</a>
                     <p className="hover:text-white/70 cursor-pointer">Mon compte</p>
                     <MdExitToApp className="hover:text-white/70 cursor-pointer text-xl"/>
                 </div>
