@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaLightbulb } from "react-icons/fa";
 import { MdExitToApp } from "react-icons/md";
 
 type NotifType = "success" | "error" | "warning";
@@ -17,6 +17,8 @@ interface Flag {
     flag: string;
     flag_format: string;
     description: string;
+    hint: string;
+    isHintShow: boolean;
 }
 
 export default function Home() {
@@ -35,11 +37,14 @@ export default function Home() {
     const current = notifStyles[notif.type];
 
     const flags: Flag[] = [
-        { nbr: 1, name: "Nom de l'image", flag: "free-criquet.png", flag_format: "x", description: "Une image intéressante est cachée dans le container. Quel est son nom exact (avec l'extension) ?" },
-        { nbr: 2, name: "Nom du compte", flag: "criquet_sauvage4", flag_format: "x", description: "Un nom de compte est dissimulé dans une image. Parviendrez-vous à le retrouver ?" },
-        { nbr: 3, name: "Identité de la prochaine victime", flag: "Edvard_Doris", flag_format: "Nom_Prénom", description: "Arriverez-vous à retrouver l'identité de la prochaine victime avant qu'il ne soit trop tard ?" },
-        { nbr: 4, name: "Où habite-t-elle ?", flag: "le-puy-en-velay", flag_format: "x", description: "Arriverez-vous à retrouver la ville où habite cette victime ?" },
+        { nbr: 1, name: "Nom de l'image", flag: "free-criquet.png", flag_format: "x", description: "Un fichier intéressante est cachée dans le container. Quel est son nom exact (avec l'extension) ?", hint: "Parfois, un mot de passe faible n'est pas suffisant.", isHintShow: false },
+        { nbr: 2, name: "Nom du compte", flag: "criquet_sauvage4", flag_format: "x", description: "Un nom de compte est dissimulé dans une image. Parviendrez-vous à le retrouver ?", hint: "L'équipe qui a saisi le serveur à découvert la présence d'un logiciel de stéganographie.", isHintShow: false },
+        { nbr: 3, name: "Identité de la prochaine victime", flag: "Edvard_Doris", flag_format: "Nom_Prénom", description: "Arriverez-vous à retrouver l'identité de la prochaine victime avant qu'il ne soit trop tard ?", hint: "Concentrez vos recherches sur la plateformes Reddit", isHintShow: false },
+        { nbr: 5, name: "Nom de l'audio ?", flag: "", flag_format: "x", description: "Un audio suspect a été identifié, a vous de le retrouver.", hint: "Concentrez vos recherches sur la plateforme SoundCloud", isHintShow: false },
+        { nbr: 6, name: "Où habite-t-elle ?", flag: "le-puy-en-velay", flag_format: "x", description: "Arriverez-vous à retrouver la ville où habite cette victime ?", hint: "", isHintShow: false },
     ];
+
+    const [nbrHint, setNbrHint] = useState(-1)
 
     const owners = [
         { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
@@ -51,6 +56,8 @@ export default function Home() {
 
     const [selectedFlag, setSelectedFlag] = useState<Flag | null>(null);
     const [currentFlag, setCurrentFlag] = useState("");
+
+    const [hintsShown, setHintsShown] = useState<Record<number, boolean>>({});
 
     useEffect(() => {
         if (notif.display) {
@@ -87,7 +94,7 @@ export default function Home() {
                 <div className="flex items-center gap-5 justify-center text-white/40 my-5">
                     <p className="hover:text-white/70 transition duration-500 cursor-pointer">Nos challenges</p>
                     <p className="hover:text-white/70 transition duration-500 cursor-pointer">Mon compte</p>
-                    <MdExitToApp className="hover:text-white/70 transition duration-500 cursor-pointer"/>
+                    <MdExitToApp className="hover:text-white/70 transition duration-500 cursor-pointer" />
                 </div>
             </nav>
             <div className="py-15 bg-gray-800 flex flex-col items-center justify-center gap-5">
@@ -99,7 +106,7 @@ export default function Home() {
             <div className="flex items-center justify-between w-[65%] m-auto mt-25 gap-8">
                 {flags.map((item) => (
                     <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={` py-7 w-[25%] text-center rounded-[8px] ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800"} transition duration-500 cursor-pointer font-bold`}>
-                        <p className="text-white/70">{item.name}</p>
+                        <p className="text-white/70 text-[14px]">{item.name}</p>
                     </div>
                 ))}
             </div>
@@ -130,17 +137,21 @@ export default function Home() {
                             <p className="text-gray-300 text-[17px] leading-relaxed">{selectedFlag.description}</p>
                             <p>{"Format du flag : phishout{" + selectedFlag.flag_format + "}"}</p>
                         </div>
-                        <input
-                            value={currentFlag}
-                            onChange={(e) => setCurrentFlag(e.target.value)}
-                            type="text"
-                            placeholder={"phishout{" + selectedFlag.flag_format + "}"}
-                            className="w-full mb-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        <div className="flex items-center justify-center gap-5 h-[40px] mb-5">
+                            <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{" + selectedFlag.flag_format + "}"} className="w-7/8 h-full px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            <div onClick={() => setHintsShown({ ...hintsShown, [selectedFlag!.nbr]: !hintsShown[selectedFlag!.nbr] })} className="w-1/8 h-full px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white cursor-pointer hover:text-yellow-300 transition duration-500">
+                                <FaLightbulb />
+                            </div>
+                        </div>
                         <div className="flex gap-3">
                             <button onClick={handleValidate} className="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg font-medium cursor-pointer">Valider</button>
                             <button onClick={() => setSelectedFlag(null)} className="flex-1 bg-gray-700 hover:bg-gray-600 transition text-white py-2 rounded-lg font-medium cursor-pointer">Fermer</button>
                         </div>
+                        {hintsShown[selectedFlag.nbr] && (
+                            <div>
+                                <p className="w-full mt-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"><span className="text-yellow-300">Indice</span> : {selectedFlag.hint}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
