@@ -125,9 +125,9 @@ export default function Home() {
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
                 <div className="hidden sm:flex items-center gap-5 text-white/40">
-                    <a href="/" className="hover:text-white/70 cursor-pointer transition duration-500">Accueil</a>
+                    <a href="/Pages/home" className="hover:text-white/70 cursor-pointer transition duration-500">Accueil</a>
                     <a href="/Pages/challenges" className="hover:text-white/70 cursor-pointer transition duration-500">Nos challenges</a>
-                    <p className="hover:text-white/70 cursor-pointer transition duration-500">Mon compte</p>
+                    <a href="/Pages/accounts" className="hover:text-white/70 cursor-pointer transition duration-500">Mon compte</a>
                     <MdExitToApp className="hover:text-white/70 cursor-pointer text-xl transition duration-500" />
                     <FaNewspaper onClick={() => setShowPaper({ ...showPaper, display: true })} className="hover:text-white/70 cursor-pointer text-xl transition duration-500" />
                 </div>
