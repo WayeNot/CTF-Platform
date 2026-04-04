@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-export default function AdminPanel({ closePanel }) {
-    const [panelTab, setPanelTab] = useState(0)
+export default function AdminPanel({ closePanel }: { closePanel: () => void }) {    const [panelTab, setPanelTab] = useState(0)
     const [users, setUsers] = useState([])
     const [editUser, setEditUser] = useState(null)
     const [searchUser, setSearchUser] = useState("")
