@@ -43,3 +43,21 @@ body {
     animation: bounceOnce 0.6s ease-out;
 }
 
+/* Scrollbar moderne */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 120, 0.4);
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(130, 130, 160, 0.7);
+}

@@ -16,6 +16,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "CTF Platform",
     description: "Plateforme de CTF créer par des B1 en cybersécurité | Nantes Ynov Campus",
+    keywords: ["CTF", "cybersecurity", "hacking", "Ynov"],
+    // authors: [{ name:  }],
 };
 
 export default function RootLayout({
@@ -26,7 +28,6 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
             <body className="min-h-full flex flex-col">
-                <Navbar/>
                 {children}
             </body>
         </html>
