@@ -211,7 +211,9 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
                         <div className="w-full">
                             <div className="flex items-center justify-between mb-2">
                                 <h2 className="text-lg font-bold text-white mb-2">Features en cours de développement</h2>
-                                <FaPlusSquare onClick={() => setAddFeatures(true)} className="text-[22px] text-white/40 hover:text-white/70 transition duration-500 cursor-pointer" />
+                                {userSession.userData?.[0]?.role === "owner" && (
+                                    <FaPlusSquare onClick={() => setAddFeatures(true)} className="text-[22px] text-white/40 hover:text-white/70 transition duration-500 cursor-pointer" />
+                                )}
                             </div>
                             <div className="flex flex-col items-center gap-3 w-full">
                                 {allFeatures.map((el, i) => (
