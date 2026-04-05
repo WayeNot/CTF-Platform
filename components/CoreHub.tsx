@@ -14,7 +14,7 @@ type User = {
     created_at: string
 }
 
-export default function PatchNote({ show, setShow }: { show: boolean, setShow: (v: boolean) => void }) {
+export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v: boolean) => void }) {
     const { showNotif } = useNotif()
 
     const [paperState, setPaperState] = useState(0)

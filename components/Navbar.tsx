@@ -6,7 +6,7 @@ import { FaNewspaper } from "react-icons/fa"
 import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
-import PatchNote from "@/components/PatchNote"
+import CoreHub from "@/components/CoreHub"
 import AdminPanel from "./AdminPanel"
 import { useNotif } from "./NotifProvider"
 
@@ -90,7 +90,7 @@ export default function Navbar() {
                 </div>
             )}
             {showAdminPanel && <AdminPanel closePanel={() => setShowAdminPanel(false)} />}
-            <PatchNote show={showPaper} setShow={setShowPaper} />
+            <CoreHub show={showPaper} setShow={setShowPaper} />
         </div>
     )
 }
