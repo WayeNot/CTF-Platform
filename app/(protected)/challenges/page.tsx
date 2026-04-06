@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useNotif } from "@/components/NotifProvider";
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
-import { challenges, flag_list } from "@/lib/types"
+import { challenges, flag_list, User } from "@/lib/types"
 import { BiPlusCircle, BiPlusMedical } from "react-icons/bi";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { BsArrowRightCircle } from "react-icons/bs";
@@ -33,12 +33,28 @@ const categoryBtn = [
 export default function Home() {
     const router = useRouter();
     const { showNotif } = useNotif()
+
+    const [userSession, setUserSession] = useState<{ userData: User | null }>({ userData: null })
+    const [sessionLoaded, setSessionLoaded] = useState(false)
+
     const [addChallenge, setAddChallenge] = useState(false)
     const [allChallenges, setAllChallenges] = useState<challenges[]>([])
     const [settingsBuilder, setSettingsBuilder] = useState({ displayDifficulty: false, displayCategory: false, displayMaxAttempt: false, displayCreateFlags: false })
     const [builderValues, setBuilderValues] = useState({ name: "", desc: "", difficulty: "", category: "", flag_format: "", max_attempt: 0, complet_ennounce: "", file_to_download: "" })
     const [listFlag, setListFlag] = useState<flag_list[]>([])
     const [newFlag, setNewFlag] = useState({ title: "", description: "", flag: "", format: "", indice: "" })
+
+    useEffect(() => {
+        if (sessionLoaded) return
+        async function getSession() {
+            const res = await fetch("/api/session")
+            const data = await res.json()
+            setUserSession(data)
+            setSessionLoaded(true)
+        }
+
+        getSession()
+    }, [])
 
     const toggleDifficulty = () => {
         setSettingsBuilder(prev => ({
@@ -75,7 +91,9 @@ export default function Home() {
     return (
         <div>
             <Navbar />
-            <button onClick={() => setAddChallenge(true)} className="p-4 m-8 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center flex items-center justify-center gap-2 font-bold"><BiPlusCircle />Créer un CTF</button>
+            {userSession.userData?.role === "owner" && (
+                <button onClick={() => setAddChallenge(true)} className="p-4 m-8 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center flex items-center justify-center gap-2 font-bold"><BiPlusCircle />Créer un CTF</button>
+            )}
             {[{ title: "Phishout", link: "/phishout" }].map((el, i) => (
                 <div key={i} onClick={() => router.push(`/ctf${el.link}`)} className="p-4 m-8 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">
                     <p>{el.title}</p>
