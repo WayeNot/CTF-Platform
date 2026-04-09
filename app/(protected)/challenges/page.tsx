@@ -26,10 +26,6 @@ const categoryBtn = [
     { name: "Misc", color: "text-indigo-400" },
 ]
 
-// const challenges = [
-//     { title: "Phishout", link: "/phishout" }
-// ]
-
 export default function Home() {
     const router = useRouter();
     const { showNotif } = useNotif()
@@ -169,7 +165,7 @@ export default function Home() {
                                 <p><span className="text-white font-bold">Description :</span> {builderValues.desc || "N/A"}</p>
                                 <p><span className="text-white font-bold">Difficulté :</span> {builderValues.difficulty || "N/A"}</p>
                                 <p><span className="text-white font-bold">Catégorie :</span> {builderValues.category || "N/A"}</p>
-                                <p><span className="text-white font-bold">Format :</span> {builderValues.flag_format || "N/A"}</p>
+                                <p><span className="text-white font-bold">Format :</span>{builderValues.flag_format || "N/A"}</p>
                                 <p><span className="text-white font-bold">Essais max :</span> {builderValues.max_attempt === 0 ? "Illimité" : builderValues.max_attempt}</p>
                                 <p><span className="text-white font-bold">Énoncé :</span></p>
                                 <p className="text-sm text-white/50">

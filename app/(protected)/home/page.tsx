@@ -1,8 +1,34 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
+import { useNotif } from "@/components/NotifProvider";
+import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation'
+import { User } from "@/lib/types";
 
 export default function Home() {
+
+    const { showNotif } = useNotif()
+    const router = useRouter();
+
+    const [userSession, setUserSession] = useState<{ userData: User | null }>({ userData: null })
+    const [sessionLoaded, setSessionLoaded] = useState(false)
+
+    useEffect(() => {
+        if (sessionLoaded) return
+        const getUser = async () => {
+            const res = await fetch("/api/session", {
+                method: "GET"
+            })
+            if (!res) {
+                router.push("/login")
+            }
+            setUserSession(await res.json())
+            setSessionLoaded(true)
+        }
+        getUser()
+    }, [])
+
     return (
         <div>
             <Navbar />

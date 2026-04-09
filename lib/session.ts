@@ -1,5 +1,6 @@
 import { randomBytes } from "crypto";
 import { sql } from "./db";
+import { NextResponse } from "next/server";
 
 export function generateSessionId() {
     return randomBytes(32).toString("hex")
