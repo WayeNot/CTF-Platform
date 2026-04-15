@@ -40,5 +40,15 @@ export type flag_list = {
     format: string
     description: string
     indice: string
-    
+}
+
+export type guessTheP = {
+    id: number
+    title: string
+    description: string
+    image: string
+    difficulty: string
+    flag: string
+    hint: string
+    points: number
 }

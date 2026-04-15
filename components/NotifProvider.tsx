@@ -22,7 +22,7 @@ let notifId = 0
 export const NotifProvider = ({ children }: { children: ReactNode }) => {
     const [notifs, setNotifs] = useState<NotifItem[]>([])
 
-    const showNotif = (message: string, type: NotifType = "success", duration = 4000) => {
+    const showNotif = (message: string, type: NotifType = "error", duration = 4000) => {
         const id = ++notifId
         setNotifs(prev => [...prev, { id, message, type, duration }])
         setTimeout(() => setNotifs(prev => prev.filter(n => n.id !== id)), duration)
