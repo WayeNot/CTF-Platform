@@ -22,7 +22,7 @@ export default function Page() {
     useEffect(() => {
         if (!params?.id) return;
         const getGTP = async () => {
-            const req = await fetch(`/api/guessThePlace/${params.id}`, {
+            const req = await fetch(`/api/challenges/guessThePlace/${params.id}`, {
                 method: "GET"
             })
             if (!req.ok) {
