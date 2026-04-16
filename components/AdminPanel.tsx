@@ -3,14 +3,18 @@
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
 import { User } from "@/lib/types"
+import { IoMdCheckboxOutline } from "react-icons/io"
+import { div } from "motion/react-client"
+import { MdCheckBoxOutlineBlank } from "react-icons/md"
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
-    
+
     const [panelTab, setPanelTab] = useState(0)
 
     const [users, setUsers] = useState<User[]>([])
     const [editUser, setEditUser] = useState<number | null>(null)
+    const [inMaintenance, setInMaintenance] = useState(false)
 
     const getAllUser = async () => {
         const res = await fetch("/api/auth/users", {
@@ -31,6 +35,19 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
             getAllUser()
         }
     }, [panelTab])
+
+    const setMaintenance = async () => {
+        const req = await fetch("/api/admin/logsSec/maintenance", {
+            method: "POST",
+            body: JSON.stringify(inMaintenance)
+        })
+
+        if (!req.ok) {
+            showNotif(await req.text())
+            return
+        }
+        setInMaintenance(!inMaintenance)
+    }
 
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
@@ -63,6 +80,15 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+                {panelTab === 8 && (
+                    <div>
+                        {inMaintenance ? (
+                            <button onClick={() => setMaintenance()} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center"><IoMdCheckboxOutline />Terminer la maintenance</button>
+                        ) : (
+                            <button onClick={() => setMaintenance()} className="flex items-center gap-3 text-red-500 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center"><MdCheckBoxOutlineBlank />Mettre le site en maintenance</button>
+                        )}
                     </div>
                 )}
                 {editUser !== null && (
