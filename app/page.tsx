@@ -15,7 +15,7 @@ export default function Home() {
     useEffect(() => {
         if (sessionLoaded) return
         async function getSession() {
-            const res = await fetch("/api/session")
+            const res = await fetch("/api/auth/session")
             const data = await res.json()
             setUserSession(data)
             setSessionLoaded(true)
