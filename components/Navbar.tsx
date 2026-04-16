@@ -43,7 +43,7 @@ export default function Navbar() {
             return
         }
         router.refresh()
-        router.push("/accounts/login")
+        router.push("/")
     }
 
     return (

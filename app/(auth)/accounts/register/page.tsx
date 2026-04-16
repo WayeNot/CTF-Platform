@@ -31,7 +31,7 @@ export default function Home() {
             return
         }
         router.refresh()
-        router.push("/")
+        router.push("/home")
     }
 
     const handleRedirect = () => {
