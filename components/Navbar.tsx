@@ -78,7 +78,7 @@ export default function Navbar() {
 
                 <div className="flex items-center">
                     <div className="flex items-center gap-5 font-bold italic text-white/40">
-                        <Link href={`/user/${userSession?.user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={userSession?.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-12 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[userSession?.status ?? "offline"]}`} />
+                        <Link href={`/user/${userSession?.user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={userSession?.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[userSession?.status ?? "offline"]}`} />
                             <span className="mx-2">-</span>
                             {userSession?.username}
                         </Link>

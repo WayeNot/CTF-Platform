@@ -7,14 +7,14 @@ import { generateSessionId } from '@/lib/session'
 
 export async function POST(req: Request) {
     try {
-        const { username, mail, password } = await req.json()
+        const { username, mail, password, pp_url } = await req.json()
 
         if (!username || !mail || !password || typeof username !== "string" || typeof mail !== "string" || typeof password !== "string") return new Response("Missing fields", { status: 400 })
 
         const hashedPassword = await bcrypt.hash(password, 6)
         const sessionId = generateSessionId()
 
-        const user = await sql`INSERT INTO users ( username, email, password ) VALUES ( ${username}, ${mail}, ${hashedPassword} ) RETURNING user_id`
+        const user = await sql`INSERT INTO users ( username, email, password, pp_url ) VALUES ( ${username}, ${mail}, ${hashedPassword}, ${pp_url} ) RETURNING user_id`
         await sql`INSERT INTO user_session ( session_id, user_id ) VALUES ( ${sessionId}, ${user[0].user_id} )`
 
         const res = NextResponse.json({ success: true })

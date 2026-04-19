@@ -20,8 +20,6 @@ export default function Home() {
     }, [])
 
     const userN = userSession?.username
-
-    console.log("Date : ", date);
     
     return (
         <div>

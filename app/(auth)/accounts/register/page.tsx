@@ -6,11 +6,12 @@ import { MdAccountBox } from "react-icons/md";
 
 import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider";
+import { default_pp } from "@/lib/config";
 
 export default function Home() {
     const { showNotif } = useNotif()
 
-    const [credentials, setCredentials] = useState({ username: "", mail: "", password: "" })
+    const [credentials, setCredentials] = useState({ username: "", mail: "", password: "", pp_url: "" })
     const router = useRouter();
 
     const validateEmail = () => {
@@ -22,7 +23,7 @@ export default function Home() {
         const res = await fetch("/api/auth/account/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: credentials.username, mail: credentials.mail, password: credentials.password })
+            body: JSON.stringify({ username: credentials.username, mail: credentials.mail, password: credentials.password, pp_url: credentials.pp_url })
         })
 
         if (!res.ok) {
@@ -50,6 +51,10 @@ export default function Home() {
                             <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Nom d'utilisateur" type="text" />
                             <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Adresse mail" type="email" />
                             <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Mot de passe" type="password" />
+                            <div className="flex flex-col items-center gap-3 w-4/5">
+                                <input value={credentials.pp_url} onChange={(e) => setCredentials({ ...credentials, pp_url: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-full text-white/80 p-[6px]" type="text" placeholder="Url de votre logo" />
+                                <img className="w-25 rounded-[25%] bg-center bg-cover bg-no-repeat" src={credentials.pp_url || default_pp} alt="Logo de l'utilisateur" />
+                            </div>
                         </div>
                         <button onClick={() => handleRegister()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 rounded-[8px] w-4/5 p-[8px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Suivant<BsArrowRight /></button>
                         <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline transition duration-500 cursor-pointer hover:text-white"><MdAccountBox />Se connecter</p>
