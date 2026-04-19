@@ -41,9 +41,9 @@ export default function Home() {
     }
 
     return (
-        <div>
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-                <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+            <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
+                <div>
                     <h2 className="text-xl font-bold text-white text-center w-full mb-4">Création de compte</h2>
                     <hr className="text-white w-4/5 my-5 m-auto" />
                     <div className="flex flex-col items-center w-full gap-4">
