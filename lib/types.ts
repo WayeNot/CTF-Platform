@@ -56,6 +56,15 @@ export type geoint = {
     points: number
 }
 
+export type NewCtfFlag = {
+    title: string
+    description: string
+    flag: string
+    format: string
+    hint: string
+    hint_cost?: number
+}
+
 export type ctf = {
     id: number
     title: string
@@ -77,6 +86,6 @@ export interface ctf_flags {
     flag_format: string;
     description: string;
     hint: string;
-    hint_cost: number;
+    hint_cost?: number
     found: boolean
 }

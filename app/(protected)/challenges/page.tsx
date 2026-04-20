@@ -3,7 +3,7 @@
 import { useNotif } from "@/components/NotifProvider";
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
-import { categoryBtn, ctf, difficultyBtn, ctf_flags, flag_geoint, geoint } from "@/lib/types"
+import { categoryBtn, ctf, difficultyBtn, ctf_flags, flag_geoint, geoint, NewCtfFlag, difficulty, category } from "@/lib/types"
 import { BiPlusCircle, BiPlusMedical } from "react-icons/bi";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { BsArrowRightCircle } from "react-icons/bs";
@@ -23,11 +23,19 @@ export default function Home() {
     const [ctf, setCtf] = useState<ctf[]>([])
 
     const [addCtf, setAddCtf] = useState(false)
-    const [ctfBuilder, setCtfBuilder] = useState({ title: "", description: "", difficulty: "", category: [], flag_format: "", files: [] })
+    const [ctfBuilder, setCtfBuilder] = useState<{
+        title: string
+        description: string
+        difficulty: difficulty | ""
+        category: category[]
+        flag_format: string
+        files: File[]
+    }>({title: "", description: "", difficulty: "", category: [], flag_format: "", files: []})
+
     const [settingsCtfBuilder, setSettingsCtfBuilder] = useState({ displayDifficulty: false, displayCategory: false, displayMaxAttempt: false, displayCreateFlags: false, displayInsertFile: false })
 
-    const [ctfFlag, setCtfFlag] = useState<ctf_flags[]>([])
-    const [ctfNewFlag, setCtfNewFlag] = useState({ title: "", description: "", flag: "", format: "", hint: "", hint_cost: undefined })
+    const [ctfFlag, setCtfFlag] = useState<NewCtfFlag[]>([])
+    const [ctfNewFlag, setCtfNewFlag] = useState<NewCtfFlag>({ title: "", description: "", flag: "", format: "", hint: "", hint_cost: undefined })
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -159,7 +167,7 @@ export default function Home() {
                                                     {settingsCtfBuilder.displayDifficulty && (
                                                         <div className="flex items-center justify-center gap-2 flex-wrap w-full mt-2">
                                                             {difficultyBtn.map((el) => (
-                                                                <button key={el.name} onClick={() => { setCtfBuilder({ ...ctfBuilder, difficulty: el.name }); setSettingsCtfBuilder({ ...settingsCtfBuilder, displayDifficulty: false }) }} className="text-white/40 bg-[#2a2a3d] rounded-xl w-fit p-2 cursor-pointer hover:bg-[#2a2a3d]/60 transition duration-500"><span className={el.color}>{el.name}</span></button>
+                                                                <button key={el.name} onClick={() => { setCtfBuilder({ ...ctfBuilder, difficulty: el.name as difficulty }); setSettingsCtfBuilder({ ...settingsCtfBuilder, displayDifficulty: false }) }} className="text-white/40 bg-[#2a2a3d] rounded-xl w-fit p-2 cursor-pointer hover:bg-[#2a2a3d]/60 transition duration-500"><span className={el.color}>{el.name}</span></button>
                                                             ))}
                                                         </div>
                                                     )}
@@ -169,7 +177,7 @@ export default function Home() {
                                                     {settingsCtfBuilder.displayCategory && (
                                                         <div className="flex items-center justify-center gap-2 flex-wrap w-full mt-2">
                                                             {categoryBtn.map((el) => (
-                                                                <button key={el.name} onClick={() => { setCtfBuilder({ ...ctfBuilder, category: [...ctfBuilder.category, el.name] }); setSettingsCtfBuilder({ ...settingsCtfBuilder, displayCategory: false }) }} className="text-white/40 bg-[#2a2a3d] rounded-xl w-fit p-2 cursor-pointer hover:bg-[#2a2a3d]/60 transition duration-500"><span className={el.color}>{el.name}</span></button>
+                                                                <button key={el.name} onClick={() => { setCtfBuilder({ ...ctfBuilder, category: [...ctfBuilder.category, el.name as category] }); setSettingsCtfBuilder({ ...settingsCtfBuilder, displayCategory: false }) }} className="text-white/40 bg-[#2a2a3d] rounded-xl w-fit p-2 cursor-pointer hover:bg-[#2a2a3d]/60 transition duration-500"><span className={el.color}>{el.name}</span></button>
                                                             ))}
                                                         </div>
                                                     )}
