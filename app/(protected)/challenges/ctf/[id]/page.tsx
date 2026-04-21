@@ -42,7 +42,6 @@ export default function Page() {
 
     const handleHint = async (id: number) => {
         id = Number(id)
-        console.log(ctf, ctfFlags);
         const data = await call(`/api/hint/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) })
         setCtfFlags(prev => prev.map((el) => el.id === id ? { ...el, hintShow: true } : el))
         updateCoin(await data.coins)

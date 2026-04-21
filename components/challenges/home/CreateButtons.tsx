@@ -2,7 +2,7 @@ import { BiPlusCircle } from "react-icons/bi";
 import { staff_role } from "@/lib/config";
 import { useCtfBuilderStore } from "@/stores/useCtfBuilderStore";
 
-export default function CreateButtons({ type, role, onGeoOpen }: any) {
+export default function CreateButtons({ type, role, onGeoOpen }: any) {    
     if (!staff_role.includes(role || "")) return null;
 
     if (type === "ctf") {

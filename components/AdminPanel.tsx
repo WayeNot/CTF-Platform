@@ -11,10 +11,13 @@ import Link from "next/link"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { LuCalendar1 } from "react-icons/lu"
 import { useApi } from "@/hooks/useApi"
+import { useNavData } from "@/app/store"
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
     const { call } = useApi()
+
+    const { username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
     const [panelTab, setPanelTab] = useState(0)
 
@@ -57,6 +60,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         const data = await call(`/api/users/${editUser}/coin/`, { method: "PATCH", body: JSON.stringify({ operation: `${value < 0 ? "remove_coin" : "add_coin"}`, value: Math.abs(value), reason: reason || "" }) }, "Nombre de coin bien mis à jour !")
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
         setShowModal(null)
+        updateCoin(data.newSold)
     }
 
     const setCoins = async (value: any, reason: string = "") => {
@@ -76,12 +80,14 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setShowModal(null)
         const data = await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "set_coin", value: Math.abs(num), reason: reason || "" }) }, "Nombre de coin set avec succès !")
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
+        updateCoin(data.newSold)
     }
 
     const resetCoin = async (reason: string = "") => {
         await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "reset_coin", value: 0, reason: reason || "" }) }, "Nombre de coin reset avec succès !")
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: 0 } : user))
         setShowModal(null)
+        updateCoin(0)
     }
 
     return (

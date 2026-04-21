@@ -16,6 +16,10 @@ export const public_routes = [
     "/main"
 ]
 
+export const noGuestRoute = [
+    "/challenges/geoint"
+];
+
 export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
 export const statusColor: Record<Status, string> = {

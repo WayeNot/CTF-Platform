@@ -9,7 +9,7 @@ export default function GeointGroups({ data, open }: any) {
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {items.map((g: any) => (
-                        <ChallengeCard key={g.id} title={g.title} onClick={() => open("geoint", g.id)}/>
+                        <ChallengeCard key={g.id} title={g.title} disab onClick={() => open("geoint", g.id)}/>
                     ))}
                 </div>
             )}

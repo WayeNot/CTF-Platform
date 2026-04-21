@@ -28,17 +28,6 @@ export default function Navbar() {
 
     const { username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
-    useEffect(() => {
-        if (!userSession) return;
-
-        updateUsername(userSession.username ?? "");
-        updateEmail(userSession.email ?? "");
-        updateRole(userSession?.role ? [userSession.role] : []);
-        updatePp_url(userSession.pp_url ?? "");
-        updateStatus(userSession.status ?? "offline");
-        updateCoin(userSession.coin ?? 0);
-    }, [userSession]);
-
     const handleLogout = async () => {
         await call("/api/auth/logout", { method: "POST" })
         router.refresh()

@@ -2,12 +2,16 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { sql } from "./lib/db";
 import { getRole, getUserIdBySessionId } from "./lib/session";
-import { maintenance_route, maitenance_role, public_routes } from "./lib/config";
+import { maintenance_route, maitenance_role, noGuestRoute, public_routes } from "./lib/config";
 
 export async function proxy(request: NextRequest) {
     const session_id = request.cookies.get("session_id")?.value;
     const isGuest = request.cookies.get('isGuest')?.value
     const path = request.nextUrl.pathname;
+
+    if (path.startsWith("/accounts")) request.cookies.delete('isGuest')
+
+    if (isGuest && noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));
 
     const isPublicRoute = public_routes.includes(path)
 

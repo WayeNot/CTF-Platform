@@ -2,13 +2,15 @@ import { create } from "zustand";
 import { Status, Role } from "@/lib/types";
 
 type NavState = {
+    isGuest: boolean;
     username: string;
     email: string;
-    role: Role[] | [];
+    role: Role[];
     pp_url: string;
     status: Status;
     coin: number;
 
+    updateIsGuest: (v: boolean) => void;
     updateUsername: (v: string) => void;
     updateEmail: (v: string) => void;
     updateRole: (v: Role[]) => void;
@@ -18,6 +20,7 @@ type NavState = {
 };
 
 export const useNavData = create<NavState>((set) => ({
+    isGuest: false,
     username: "",
     email: "",
     role: [],
@@ -25,6 +28,7 @@ export const useNavData = create<NavState>((set) => ({
     status: "offline",
     coin: 0,
 
+    updateIsGuest: (v) => set({ isGuest: v}),
     updateUsername: (v) => set({ username: v }),
     updateEmail: (v) => set({ email: v }),
     updateRole: (v) => set({ role: v }),

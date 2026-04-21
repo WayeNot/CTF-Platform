@@ -11,34 +11,49 @@ import { NotifProvider } from "@/components/NotifProvider"
 import { User } from "@/lib/types"
 import { default_pp } from "@/lib/config"
 import { useRouter } from 'next/navigation'
+import { useNavData } from "./store"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null)
+    const [guest, setGuest] = useState(false)
 
-    const getSession = async () => {
-        try {
-            const res = await fetch("/api/auth/session")
-            if (!res.ok) {
-                router.refresh()
-                router.push("/accounts/login")
-                return
-            }
-            const data = await res.json()
-            if (data.isGuest) {
-                setUser({ username: "Invité", status: "online", user_id: Date.now(), role: "guest", pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coin: 9999, created_at: "" })
-                return
-            }
-            setUser(data)
-        } catch {
-            setUser(null)
-        }
-    }
+    const { isGuest, updateIsGuest, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
     useEffect(() => {
+        const getSession = async () => {
+            try {
+                const res = await fetch("/api/auth/session")
+                if (!res.ok) {
+                    router.refresh()
+                    router.push("/accounts/login")
+                    return
+                }
+                const data = await res.json()
+                if (data.isGuest) {
+                    setGuest(true)
+                    setUser({ username: "Invité", status: "online", user_id: Date.now(), role: "guest", pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coin: 9999, created_at: "" })
+                    return
+                }
+                setGuest(false)
+                setUser(data)
+            } catch {
+                setUser(null)
+            }
+        }
         getSession()
     }, [pathname])
+
+    useEffect(() => {
+        updateIsGuest(guest);
+        updateUsername(user?.username ?? "");
+        updateEmail(user?.email ?? "");
+        updateRole(user?.role ? [user.role] : []);
+        updatePp_url(user?.pp_url ?? "");
+        updateStatus(user?.status ?? "offline");
+        updateCoin(user?.coin ?? 0);
+    }, [user]);
 
     return (
         <html lang="fr">
