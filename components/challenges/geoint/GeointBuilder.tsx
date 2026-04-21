@@ -22,7 +22,7 @@ export default function GeointBuilder({ onClose, onCreate }: any) {
                 <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl shadow-2xl text-white flex flex-col">
                     <div className="flex items-center justify-between p-4 border-b border-white/10">
                         <h2 className="font-bold text-sm flex items-center gap-2"><BsLightningChargeFill className="text-orange-400" /> GEOINT BUILDER</h2>
-                        <button onClick={onClose} className="text-white/40 hover:text-white transition"><IoMdClose size={18} /></button>
+                        <button onClick={onClose} className="text-white/40 hover:text-white transition duration-500 cursor-pointer"><IoMdClose size={18} /></button>
                     </div>
                     <div className="p-4 space-y-4 overflow-y-auto max-h-[80vh]">
                         <div className="flex gap-2">
@@ -72,8 +72,8 @@ export default function GeointBuilder({ onClose, onCreate }: any) {
                         </div>
                     </div>
                     <div className="p-4 border-t border-white/10 flex items-center justify-center gap-4">
-                        <button onClick={onClose} className="px-6 py-2 bg-red-500/10 text-red-300 rounded-lg hover:bg-red-500/20 transition">Annuler</button>
-                        <button disabled={!canCreate} onClick={() => onCreate(builder)} className="px-6 py-2 bg-green-500/10 text-green-300 rounded-lg hover:bg-green-500/20 transition disabled:opacity-40">Créer</button>
+                        <button onClick={onClose} className="px-6 py-2 bg-red-500/10 text-red-300 rounded-lg hover:bg-red-500/20 transition duration-500 cursor-pointer">Annuler</button>
+                        <button disabled={!canCreate} onClick={() => onCreate(builder)} className="px-6 py-2 bg-green-500/10 text-green-300 rounded-lg hover:bg-green-500/20 transition duration-500 cursor-pointer disabled:opacity-40">Créer</button>
                     </div>
                 </div>
                 <div className="w-1/2 bg-[#12121c] border border-white/10 rounded-2xl p-6 text-white space-y-5 shadow-[0_0_30px_rgba(0,0,0,0.4)]">
@@ -83,7 +83,7 @@ export default function GeointBuilder({ onClose, onCreate }: any) {
                             Aperçu
                         </h2>
                         <span className="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/40">
-                            live preview
+                            🔴 - live preview
                         </span>
                     </div>
 

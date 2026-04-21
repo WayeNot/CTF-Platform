@@ -6,6 +6,8 @@ import { useState } from "react";
 import DropDown from "@/components/ui/DropDown";
 import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category } from "@/lib/types";
 import { useCtfBuilderStore } from "@/stores/useCtfBuilderStore";
+import { MdOutlineDescription } from "react-icons/md";
+import { IoMdClose } from "react-icons/io";
 
 export default function CtfBuilder() {
 
@@ -27,7 +29,7 @@ export default function CtfBuilder() {
         hint_cost: undefined,
         coin_reward: undefined,
         points: undefined,
-        
+
     });
 
     const [reward, setReward] = useState(0);
@@ -91,7 +93,7 @@ export default function CtfBuilder() {
 
                     <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#161625]">
                         <h1 className="text-sm font-bold tracking-wide">CTF Builder</h1>
-                        <span className="text-[10px] text-white/30">Plus aucune limite !</span>
+                        <button onClick={() => { resetBuilder(); setOpen(false); }} className="text-white/40 hover:text-white transition duration-500 cursor-pointer"><IoMdClose size={18} /></button>
                     </div>
 
                     <div className="p-4 space-y-4 overflow-y-auto max-h-[75vh]">
@@ -176,21 +178,21 @@ export default function CtfBuilder() {
 
                         <button
                             onClick={() => setSettings(s => ({ ...s, files: true }))}
-                            className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-300 cursor-pointer"
+                            className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer"
                         >
                             📁 Fichiers
                         </button>
 
                         <button
                             onClick={() => setSettings(s => ({ ...s, flags: true }))}
-                            className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-300 cursor-pointer"
+                            className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer"
                         >
                             🚩 Flags
                         </button>
 
                         <button
                             onClick={() => { resetBuilder(); setOpen(false); }}
-                            className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 rounded-lg transition cursor-pointer"
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 rounded-lg transition duration-500 cursor-pointer"
                         >
                             Annuler
                         </button>
@@ -198,7 +200,7 @@ export default function CtfBuilder() {
                         <button
                             disabled={!canCreate}
                             onClick={handleCreate}
-                            className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 rounded-lg transition disabled:opacity-40 cursor-pointer"
+                            className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 rounded-lg transition duration-500 disabled:opacity-40 cursor-pointer"
                         >
                             Créer
                         </button>
@@ -210,9 +212,14 @@ export default function CtfBuilder() {
                 {/* RIGHT PREVIEW */}
                 <div className="w-1/2 bg-[#12121c] border border-white/10 rounded-2xl p-6 text-white space-y-5 shadow-2xl">
 
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="text-orange-400">📊</span>
-                        <h1 className="text-xl font-bold">Aperçu en direct</h1>
+                    <div className="flex items-center justify-between">
+                        <h2 className="font-bold flex items-center gap-2 text-white/90">
+                            <MdOutlineDescription className="text-orange-400 text-lg" />
+                            Aperçu
+                        </h2>
+                        <span className="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/40">
+                            🔴 - live preview
+                        </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
