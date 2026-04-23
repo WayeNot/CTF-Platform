@@ -28,7 +28,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         } else if (operation === "reset_coins") {
             await sql`UPDATE users SET coins = coins - coins WHERE user_id = ${id}`;
             newSold = 0
-        } else if (operation === "set_coin") {
+        } else if (operation === "set_coins") {
             const currentCoins = await sql`UPDATE users SET coins = ${value} WHERE user_id = ${id} RETURNING coins`;
             newSold = currentCoins[0].coins;
         }
