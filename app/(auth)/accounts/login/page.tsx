@@ -47,17 +47,17 @@ export default function Home() {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-            <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
-                <h2 className="text-xl font-bold text-white text-center w-full mb-4">Connexion</h2>
-                <hr className="text-white w-4/5 my-5 m-auto" />
+            <div className="w-full max-w-md bg-black/ border border-white/70 shadow-2xl p-6 animate-fadeIn">
+                <h2 className="text-[35px] font-bold text-white/70 text-center font-mono w-full mb-4">Login</h2>
+                <hr className="text-white/70 w-4/5 my-5 m-auto" />
                 <div className="flex flex-col items-center w-full gap-4">
                     <div className="flex flex-col items-center justify-center gap-1 w-full">
-                        <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 border-white/40 rounded-lg w-4/5 text-white/80 p-1.5" placeholder="Nom d'utilisateur" type="text" />
-                        <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 border-white/40 rounded-lg w-4/5 text-white/80 p-1.5" placeholder="Mot de passe" type="password" />
+                        <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Username" type="text" />
+                        <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Password" type="password" />
                     </div>
-                    <button onClick={() => handleLogin()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 rounded-lg w-4/5 p-2 hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Suivant<BsArrowRight /></button>
-                    <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline transition duration-500 cursor-pointer hover:text-white"><MdAccountBox />Créer un compte</p>
-                    <p onClick={() => handleGuest()} className="flex items-center gap-3 text-white/30 hover:underline transition duration-500 cursor-pointer hover:text-white"><FaHatCowboy />Continuer en tant qu'invité</p>
+                    <button onClick={() => handleLogin()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
+                    <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white pt-5"><MdAccountBox />Create an account</p>
+                    <p onClick={() => handleGuest()} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white"><FaHatCowboy />Guest mode</p>
                 </div>
             </div>
         </div>
