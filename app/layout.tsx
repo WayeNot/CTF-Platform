@@ -23,7 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coins, updateCoins, updatePoints } = useNavData()
 
     useEffect(() => {
+        
         const getSession = async () => {
+            if (pathname.startsWith("/accounts")) return;
             try {
                 const res = await fetch("/api/auth/session")
                 if (!res.ok && !pathname.startsWith("/accounts")) {
