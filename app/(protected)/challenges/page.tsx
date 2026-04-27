@@ -14,6 +14,7 @@ import HomeTabs from "@/components/challenges/home/HomeTabs";
 import CreateButtons from "@/components/challenges/home/CreateButtons";
 import { useNavData } from "@/stores/store"
 import ChallengeGroups from "@/components/challenges/home/ChallengeGroups";
+import Link from "next/link";
 
 export default function Home() {
     const { call } = useApi();
@@ -80,7 +81,7 @@ export default function Home() {
                                     <div className="text-4xl mb-3">🔒</div>
                                     <h2 className="text-white text-xl font-bold mb-2">GEOINT verrouillé</h2>
                                     <p className="text-white/60 text-sm mb-6">Connectez-vous pour accéder aux missions et suivre votre progression.</p>
-                                    <p className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</p>
+                                    <Link href="/accounts/login" className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</Link>
                                     <p className="text-white/30 text-xs mt-4"> Aperçu disponible — accès complet après connexion</p>
                                 </div>
                             </div>
