@@ -9,7 +9,7 @@ export default function Home() {
 
     return (
         <div>
-             <div className="lg:hidden fixed inset-0 bg-black z-50 flex items-center justify-center">
+             <div className="lg:hidden fixed inset-0 bg-[#1e1e2f] font-mono z-50 flex items-center justify-center">
                 <h2 className="text-white text-xl text-center">
                     The mobile version is coming soon.
                 </h2>
