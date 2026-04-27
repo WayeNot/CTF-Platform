@@ -57,42 +57,52 @@ export default function Home() {
     }, [geoint]);
 
     return (
-        <div className="min-h-screen text-white">
+        <div>
+            <div className="lg:hidden fixed inset-0 bg-black z-50 flex items-center justify-center">
+                <h2 className="text-white text-xl text-center">
+                    The mobile version is coming soon.
+                </h2>
+            </div>
 
-            <HomeTabs tab={tab} setTab={setTab} />
+            <div className="hidden lg:block"></div>
+        
+            <div className="min-h-screen text-white">
 
-            {tab === 0 && (
-                <div className="px-6 space-y-10">
-                    <CreateButtons type="ctf" role={role[0]} onGeoOpen={() => setOpenGeo(false)}/>
-                    <ChallengeGroups data={groupedCtf} open={open} type="ctf"/>
-                </div>
-            )}
+                <HomeTabs tab={tab} setTab={setTab} />
 
-            {tab === 1 && (
-                <div className="px-6 space-y-10">
-                    <CreateButtons type="geoint" role={role[0]} onGeoOpen={() => setOpenGeo(true)}/>
-                    {isGuest ? (
-                        <div className="relative">
-                            <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">
-                                <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
-                            </div>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="bg-[#1e1e2f]/90 border border-white/10 rounded-2xl p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
-                                    <div className="text-4xl mb-3">🔒</div>
-                                    <h2 className="text-white text-xl font-bold mb-2">GEOINT verrouillé</h2>
-                                    <p className="text-white/60 text-sm mb-6">Connectez-vous pour accéder aux missions et suivre votre progression.</p>
-                                    <Link href="/accounts/login" className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</Link>
-                                    <p className="text-white/30 text-xs mt-4"> Aperçu disponible — accès complet après connexion</p>
+                {tab === 0 && (
+                    <div className="px-6 space-y-10">
+                        <CreateButtons type="ctf" role={role[0]} onGeoOpen={() => setOpenGeo(false)}/>
+                        <ChallengeGroups data={groupedCtf} open={open} type="ctf"/>
+                    </div>
+                )}
+
+                {tab === 1 && (
+                    <div className="px-6 space-y-10">
+                        <CreateButtons type="geoint" role={role[0]} onGeoOpen={() => setOpenGeo(true)}/>
+                        {isGuest ? (
+                            <div className="relative">
+                                <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">
+                                    <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
+                                </div>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="bg-[#1e1e2f]/90 border border-white/10 rounded-2xl p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
+                                        <div className="text-4xl mb-3">🔒</div>
+                                        <h2 className="text-white text-xl font-bold mb-2">GEOINT verrouillé</h2>
+                                        <p className="text-white/60 text-sm mb-6">Connectez-vous pour accéder aux missions et suivre votre progression.</p>
+                                        <Link href="/accounts/login" className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</Link>
+                                        <p className="text-white/30 text-xs mt-4"> Aperçu disponible — accès complet après connexion</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
-                    )}
-                </div>
-            )}
-            <CtfBuilder />
-            {openGeo && <GeointBuilder onClose={() => setOpenGeo(false)} />}
+                        ) : (
+                            <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
+                        )}
+                    </div>
+                )}
+                <CtfBuilder />
+                {openGeo && <GeointBuilder onClose={() => setOpenGeo(false)} />}
+            </div>
         </div>
     );
 }
