@@ -6,6 +6,7 @@ import { BsArrowRight } from "react-icons/bs"
 import { useApi } from "@/hooks/useApi"
 import { RxCross2 } from "react-icons/rx";
 import Typewriter from 'typewriter-effect';
+import Link from "next/link"
 
 export default function NavbarNotConnected() {
 
@@ -64,6 +65,15 @@ export default function NavbarNotConnected() {
                 </div>
             )}
             <div className="border-b border-gray-700/50"></div>
+            <div className="space-y-4">
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30">
+                    <span className="h-px w-10 bg-white/10"/>
+                        <Link href="/home" className="w-50 mt-10 ml-5 absolute border-[#212529] border-4 rounded-full bg-[#212529] z-5">
+                            <img src="/logo.png" ></img>
+                        </Link>
+                    <span className="h-px flex-1 bg-white/10" />
+                </div>
+            </div>
         </div>
     )
 }

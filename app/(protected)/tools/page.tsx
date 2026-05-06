@@ -9,7 +9,6 @@ export default function Home() {
     const { role } = useNavData()
 
     const tools = [
-        { name: "Tools" },
         { name: "GEOINT" },
         { name: "SOCMINT" },
         { name: "OPSEC" },
@@ -23,9 +22,10 @@ export default function Home() {
             </div>
 
             <div className="hidden lg:block"></div>
-
                 {role && role.some(r => "guest".includes(r)) ? (
                     <div>
+                        <h2 className="text-white/70 text-xl text-[30px] mt-40 ml-20 font-mono font-bold">Tools</h2>
+                        <hr className="mt-5 mx-20 text-white/70" />
                         {tools.map((v, k) => (
                             <div key={k} className="blur-[6px] pointer-events-none select-none">
                                 <h2 className="text-white/70 text-xl text-[30px] mt-10 ml-20 font-mono font-bold">{v.name}</h2>
@@ -40,6 +40,8 @@ export default function Home() {
                     </div>
                 ) : (
                     <div>
+                        <h2 className="text-white/70 text-xl text-[30px] mt-40 ml-20 font-mono font-bold">Tools</h2>
+                        <hr className="mt-5 mx-20 text-white/70" />
                         {tools.map((v, k) => (
                             <div key={k}>
                                 <h2 className="text-white/70 text-xl text-[30px] mt-10 ml-20 font-mono font-bold">{v.name}</h2>

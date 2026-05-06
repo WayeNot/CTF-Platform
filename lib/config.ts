@@ -24,10 +24,10 @@ export const noGuestRoute = [
 export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
 export const statusColor: Record<Status, string> = {
-    online: "border-green-500 border-3",
-    donotdisturb: "border-red-500 border-3",
-    inactive: "border-yellow-500 border-3",
-    offline: "border-gray-500 border-3"
+    online: "border-green-500 border-2",
+    donotdisturb: "border-red-500 border-2",
+    inactive: "border-yellow-500 border-2",
+    offline: "border-gray-500 border-2"
 }
 
 export const statusColorHover: Record<Status, string> = {
