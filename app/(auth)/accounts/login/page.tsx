@@ -89,7 +89,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            {displayForgotPassword && <ModalInput title="Réinitialisation de mot de passe" input1={{ display: true, placeholder: "Quelle est votre adresse mail ?", type: "text" }} onClose={() => setDisplayForgotPassword(false)} onValidate={({ input1 }) => { handleForgotPassword(input1) }}/>}
+            {/* {displayForgotPassword && <ModalInput title="Réinitialisation de mot de passe" input1={{ display: true, placeholder: "Quelle est votre adresse mail ?", type: "text" }} onClose={() => setDisplayForgotPassword(false)} onValidate={({ input1 }) => { handleForgotPassword(input1) }}/>} */}
         </div>
     );
 }
