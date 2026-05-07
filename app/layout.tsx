@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar"
 import NavbarNotConnected from "@/components/NavbarNotConnected"
 import Footer from "@/components/Footer"
 import { NotifProvider } from "@/components/NotifProvider"
-import { User } from "@/lib/types"
+import { Role, User } from "@/lib/types"
 import { default_pp, maintenance_role } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 updateUserId(data.user_id)
                 if (data.isGuest) {
                     setGuest(true)
-                    setUser({ username: "Invité", status: "online", user_id: Date.now(), role: "guest", pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 0, points: 0, created_at: "" })
+                    setUser({ username: "Invité", status: "online", user_id: Date.now(), role: ["guest"], pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 0, points: 0, created_at: "" })
                     return
                 }
                 setGuest(false)
@@ -55,30 +55,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         getSettings();
     }, [pathname])
 
+    const handleLogout = async () => {
+        await fetch("/api/auth/logout", { method: "POST" })
+        setUser(null)
+        updateIsGuest(false)
+        router.refresh()
+        router.push("/accounts/login")
+    }
+
     useEffect(() => {
-        if (inMaintenance && maintenance_role.includes(role)) {
-            const handleLogout = async () => {
-                await fetch("/api/auth/logout", { method: "POST" })
-                setUser(null)
-                updateIsGuest(false)
-                router.refresh()
-                router.push("/accounts/login")
-            }
-            handleLogout()
-        }
+        inMaintenance && maintenance_role.includes(role as any)
     }, [inMaintenance, role])
 
     useEffect(() => {
         updateIsGuest(guest);
         updateUsername(user?.username ?? "");
         updateEmail(user?.email ?? "");
-        updateRole(user?.role ? [user?.role] : []);
+        updateRole(user?.role || []);
         updatePp_url(user?.pp_url ?? "");
         updateStatus(user?.status ?? "offline");
         updateCoins(user?.coins ?? 0);
         updatePoints(user?.points ?? 0);
-        console.log("User : ", user);
-
     }, [user]);
 
     return (

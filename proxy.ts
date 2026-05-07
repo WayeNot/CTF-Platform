@@ -24,6 +24,8 @@ export async function proxy(request: NextRequest) {
         const isAllowedRoute = path.startsWith(maintenance_route);
         const isAllowedRole = role && maintenance_role.includes(role);
 
+        console.log(role);
+
         if ((!isAllowedRoute || !isPublicRoute) && !isAllowedRole) {
             request.cookies.delete("session_id")
             request.cookies.delete("isGuest")

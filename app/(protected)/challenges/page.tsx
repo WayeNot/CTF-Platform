@@ -74,7 +74,7 @@ export default function Home() {
 
                 {tab === 0 && (
                     <div className="px-6 space-y-10">
-                        <CreateButtons type="ctf" role={role[0]} onCtfOpen={() => setOpenCtf(true)} />
+                        <CreateButtons type="ctf" role={role} onCtfOpen={() => setOpenCtf(true)} />
                         <div className="flex items-center gap-3">
                             {["Facile", "Intermédiaire", "Avancé", "Expert"].map((v, k) => (
                                 <button key={k} onClick={() => setCurrentDifficulty(v)} className="flex items-center gap-4 px-4 py-2 text-sm text-[21px] ml-10 border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40">{v}</button>
@@ -86,7 +86,7 @@ export default function Home() {
 
                 {tab === 1 && (
                     <div className="px-6 space-y-10">
-                        <CreateButtons type="geoint" role={role[0]} onGeoOpen={() => setOpenGeo(true)} />
+                        <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />
                         {isGuest ? (
                             <div className="relative">
                                 <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">

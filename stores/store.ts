@@ -6,7 +6,7 @@ type NavState = {
     user_id: number;
     username: string;
     email: string;
-    role: [];
+    role: string[];
     pp_url: string;
     status: Status;
     coins: number;
@@ -17,7 +17,7 @@ type NavState = {
     updateUserId: (v: number) => void;
     updateUsername: (v: string) => void;
     updateEmail: (v: string) => void;
-    updateRole: (v: []) => void;
+    updateRole: (v: string[]) => void;
     updatePp_url: (v: string) => void;
     updateStatus: (v: Status) => void;
     updateCoins: (v: number) => void;

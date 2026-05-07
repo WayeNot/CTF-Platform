@@ -20,7 +20,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const { coins, updateCoins } = useNavData()
 
-    const [panelTab, setPanelTab] = useState("Gestion des rôles")
+    const [panelTab, setPanelTab] = useState("")
 
     const [users, setUsers] = useState<User[]>([])
     const [editUser, setEditUser] = useState(-1)
@@ -29,7 +29,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [roles, setRoles] = useState<Roles[]>([])
     // const [permissions, setPermissions] = useState<Permissions[]>([])
 
-    const [displayCreation, setDisplayCreation] = useState(1)
+    const [displayCreation, setDisplayCreation] = useState(-1)
     const [newRole, setNewRole] = useState({ label: "", description: "", allPerms: [] })
     const [newPermission, setNewPermission] = useState({ label: "", description: "" })
 
@@ -76,12 +76,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     }
 
     const colorRole: (keyof typeof colorClasses)[] = [
-        "red",
-        "orange",
-        "amber",
-        "yellow",
-        "lime",
-        "green",
+        "red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal"
     ]
 
     const [selectedColor, setSelectedColor] = useState("")
@@ -162,8 +157,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
             showNotif("Veuillez remplir tout les champs !")
             return
         }
-
-
     }
 
     const panelTabLabel = ["Dashboard", "Gestion des utilisateurs", "Gestion des rôles", "Gestion des CTF", "Gestion des challenges", "Soumission des flags", "ScoreBoard", "Gestion des annonces", "Paramètres", "Logs & Sécurité"]
@@ -278,7 +271,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             <div className="w-full flex flex-col">
                                                 <button>Couleur du rôle</button>
                                                 <hr className="my-5 border-gray-600 w-full" />
-                                                <div className="flex items-center flex-wrap w-full gap-3">
+                                                <div className="flex items-center justify-center flex-wrap w-full gap-3">
                                                     {colorRole.map((v, k) => (
                                                         <button onClick={() => setSelectedColor(v)} key={k} className={`${selectedColor === v && "border-2 border-green-800 w-[40px] h-[40px]"} w-[30px] h-[30px] rounded-full ${colorClasses[v]} cursor-pointer transition duration-500 hover:border-2 hover:border-white/40`}></button>
                                                     ))}

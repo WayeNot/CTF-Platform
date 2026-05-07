@@ -41,7 +41,7 @@ export default function Navbar() {
             <nav className="flex items-center justify-between p-4 sm:mx-5">
                 <div className="flex items-center gap-5 text-white/40">
                     <a href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono hover:text-white/90 transition duration-500">FlagCore</a>
-                    {role.some(r => staff_role.includes(r)) && (
+                    {staff_role.includes(role as any) && (
                         <div className="flex items-center gap-3">
                             <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="text-red-500 font-bold text-[22px] hover:text-red-800 transition duration-500 cursor-pointer" />
                             <GiMusicSpell className="text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600" />

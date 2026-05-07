@@ -29,7 +29,7 @@ export type User = {
     username: string
     email: string
     password: string
-    role: []
+    role: Role[]
     created_at: string
     coins: number
     points: number
