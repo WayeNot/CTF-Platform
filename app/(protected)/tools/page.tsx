@@ -47,7 +47,7 @@ export default function Home() {
 
             <div className="hidden lg:block"></div>
 
-                {role && role.some(r => "guest".includes(r)) ? (
+                {role && "guest".includes(role as any) ? (
                     <div>
                         {tools.map((v, k) => (
                             <div key={k} className="blur-[6px] pointer-events-none select-none">

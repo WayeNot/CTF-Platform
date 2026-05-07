@@ -4,17 +4,18 @@ import { sql } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 import { generateSessionId } from '@/lib/session'
+import { default_pp } from '@/lib/config';
 
 export async function POST(req: Request) {
     try {
-        const { username, mail, password, pp_url } = await req.json()
+        const data = await req.json()        
 
-        if (!username || !mail || !password || typeof username !== "string" || typeof mail !== "string" || typeof password !== "string") return new Response("Missing fields", { status: 400 })
+        if (!data.username || !data.mail || !data.password || typeof data.username !== "string" || typeof data.mail !== "string" || typeof data.password !== "string") return new Response("Missing fields", { status: 400 })
 
-        const hashedPassword = await bcrypt.hash(password, 6)
+        const hashedPassword = await bcrypt.hash(data.password, 6)
         const sessionId = generateSessionId()
 
-        const user = await sql`INSERT INTO users ( username, email, password, pp_url ) VALUES ( ${username}, ${mail}, ${hashedPassword}, ${pp_url} ) RETURNING user_id`
+        const user = await sql`INSERT INTO users ( username, email, password, pp_url, is_anonymous ) VALUES ( ${data.username}, ${data.mail}, ${hashedPassword}, ${data.pp_url || default_pp}, ${data.is_anonymous} ) RETURNING user_id`
         await sql`INSERT INTO user_session ( session_id, user_id ) VALUES ( ${sessionId}, ${user[0].user_id} )`
 
         const res = NextResponse.json({ success: true })

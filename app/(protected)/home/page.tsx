@@ -18,8 +18,8 @@ export default function Home() {
             </div>
 
             <div className="hidden lg:block">
-                <div className="text-white/70 text-xl text-[70px] mt-37 ml-20 font-mono text-left font-bold">
-                    <Typewriter onInit={(tw) => tw.typeString('Welcome to your CTF platform.').pauseFor(800).deleteChars(18).typeString('your best CTF platform ;)').stop().start()} />
+                <div className="text-white/70 text-xl text-[70px] ml-20 font-mono text-left font-bold">
+                    <Typewriter onInit={(tw) => tw.typeString('Welcome to your CTF platform.').pauseFor(800).deleteChars(13).typeString('best CTF platform ;)').stop().start()} />
                 </div>
                 <div className="border-t-2 border-b-2 border-white/40 ml-20 mr-20 mt-20">
                     <motion.h2 className="text-white/70 text-xl text-[30px] mt-5 ml-10 font-mono text-left opacity-0" animate={{ opacity: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100] }} transition={{ duration: 5 }}>{username}@flagcore {date.toISOString().split('T')[0]} - Session not ready, loading ...</motion.h2>

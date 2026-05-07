@@ -68,18 +68,13 @@ export default function Home() {
 
             <div className="hidden lg:block"></div>
 
-            <div className="min-h-screen text-white">
+            <div className="text-white">
 
                 <HomeTabs tab={tab} setTab={setTab} />
 
                 {tab === 0 && (
                     <div className="px-6 space-y-10">
                         <CreateButtons type="ctf" role={role} onCtfOpen={() => setOpenCtf(true)} />
-                        {/* <div className="flex items-center gap-3">
-                            {["Facile", "Intermédiaire", "Avancé", "Expert"].map((v, k) => (
-                                <button key={k} onClick={() => setCurrentDifficulty(v)} className="flex items-center gap-4 px-4 py-2 text-sm text-[21px] ml-10 border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40">{v}</button>
-                            ))}
-                        </div> */}
                         <ChallengeGroups data={groupedCtf} currentDifficulty={currentDifficulty} open={open} type="ctf" />
                     </div>
                 )}

@@ -7,8 +7,11 @@ import { useApi } from "@/hooks/useApi"
 import { RxCross2 } from "react-icons/rx";
 import Typewriter from 'typewriter-effect';
 import Link from "next/link";
+import { useNavData } from "@/stores/store";
 
 export default function NavbarNotConnected() {
+
+    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coins, updateCoins, updatePoints, inMaintenance, updateInMaintenance } = useNavData();
 
     const { call } = useApi()
     const router = useRouter();
@@ -35,15 +38,22 @@ export default function NavbarNotConnected() {
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
                 <div className="hidden sm:flex items-center gap-5 text-white/40">
-                    <Link href={"/accounts/login"} className="hover:text-white/70 transition duration-500 cursor-pointer">Connexion</Link>
+                    {inMaintenance ? (
+                        <button onClick={() => setDisplayLogin(true)}>Connexion</button>
+                    ) : (
+                        <Link href={"/accounts/login"} className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Connexion</Link>
+                    )}
                 </div>
             </nav>
 
             {menuOpen && (
                 <div className="sm:hidden px-4 pb-4 animate-fadeIn">
                     <div className="flex flex-col gap-3">
-                        <Link href={"/accounts/login"} className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Connexion</Link>
-                        {/* <button onClick={() => setDisplayLogin(true)}>Connexion</button> */}
+                        {inMaintenance ? (
+                            <button onClick={() => setDisplayLogin(true)}>Connexion</button>
+                        ) : (
+                            <Link href={"/accounts/login"} className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Connexion</Link>
+                        )}
                     </div>
                 </div>
             )}

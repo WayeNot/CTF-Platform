@@ -8,24 +8,37 @@ import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider";
 import { default_pp } from "@/lib/config";
 import Typewriter from 'typewriter-effect';
-
+import { SiRedhat } from "react-icons/si";
 
 export default function Home() {
     const { showNotif } = useNotif()
 
-    const [credentials, setCredentials] = useState({ username: "", mail: "", password: "", pp_url: "" })
+    const [credentials, setCredentials] = useState({ username: "", mail: "", password: "", pp_url: default_pp, is_anonymous: false })
     const router = useRouter();
 
     const validateEmail = () => {
         return String(credentials.mail).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
     }
 
+    function isValidImage(src: string) {
+        return new Promise((resolve) => {
+            const img = new Image();
+
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+
+            img.src = src;
+        });
+    }
+
     const handleRegister = async () => {
+        credentials.pp_url !== "" && isValidImage(credentials.pp_url).then(isValid => { if (!isValid) { showNotif("Image invalide !"); setCredentials(prev => ({ ...prev, pp_url: "" })); return; } })
+
         if (!validateEmail()) return showNotif("Mauvais format d'adresse mail !", "error");
         const res = await fetch("/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: credentials.username, mail: credentials.mail, password: credentials.password, pp_url: credentials.pp_url })
+            body: JSON.stringify(credentials)
         })
 
         if (!res.ok) {
@@ -44,7 +57,7 @@ export default function Home() {
 
     return (
         <div>
-            <div className="lg:hidden fixed inset-0 bg-[#1e1e2f] font-mono z-50 flex items-center justify-center">
+            <div className="lg:hidden md:hidden fixed inset-0 bg-[#1e1e2f] font-mono z-50 flex items-center justify-center">
                 <h2 className="text-white text-xl text-center">
                     The mobile version is coming soon.
                 </h2>
@@ -60,7 +73,10 @@ export default function Home() {
                             <hr className="text-white w-4/5 my-5 m-auto" />
                             <div className="flex flex-col items-center w-full gap-4">
                                 <div className="flex flex-col items-center justify-center gap-1 w-full">
-                                    <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
+                                    <div className="flex items-center gap-3 w-4/5 h-fit">
+                                        <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-full text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
+                                        {credentials.is_anonymous ? <SiRedhat size={40} className="text-red-500/80 cursor-pointer w-1/5 p-1.5" onClick={() => setCredentials(prev => ({ ...prev, is_anonymous: false }))}/> : <SiRedhat size={40} className="text-green-500/80 cursor-pointer w-1/5 p-1.5" onClick={() => setCredentials(prev => ({ ...prev, is_anonymous: true }))} />}
+                                    </div>
                                     <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Email address" type="email" maxLength={50} />
                                     <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5  mt-1" placeholder="Password" type="password" maxLength={50} />
                                     <input value={credentials.pp_url} onChange={(e) => setCredentials({ ...credentials, pp_url: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" type="text" placeholder="URL of your logo" maxLength={150} />
@@ -68,8 +84,8 @@ export default function Home() {
                                         <img className="w-25 rounded-[25%] bg-center bg-cover bg-no-repeat mt-5 mb-5" src={credentials.pp_url || default_pp} alt="Logo de l'utilisateur" />
                                     </div>
                                 </div>
-                                <button onClick={() => handleRegister()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
-                                <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white pt-5"><MdAccountBox />Login</p>
+                                <button onClick={handleRegister} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
+                                <p onClick={handleRedirect} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white pt-5"><MdAccountBox />Login</p>
                             </div>
                         </div>
                     </div>

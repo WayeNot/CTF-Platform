@@ -36,6 +36,7 @@ export type User = {
     pp_url: string
     status: Status
     is_online: boolean
+    is_anonymous: boolean
 }
 
 export type Roles = {
@@ -57,7 +58,7 @@ export type geoint = {
     flag_format: string;
     images: string[];
     status: string;
-    creatord_id: number;
+    creator_id: number;
     created_at: string;
     coins?: number;
     points?: number;

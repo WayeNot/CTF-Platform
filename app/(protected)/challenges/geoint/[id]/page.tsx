@@ -6,6 +6,8 @@ import ModalText from '@/components/ui/ModalText'
 import { useApi } from '@/hooks/useApi'
 import { flags, geoint } from '@/lib/types'
 import { useNavData } from '@/stores/store'
+import { span } from 'framer-motion/client';
+import Link from 'next/link';
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -16,7 +18,7 @@ import { LuLightbulbOff } from 'react-icons/lu'
 
 export default function Page() {
     const { showNotif } = useNotif()
-    const { updateCoins, updatePoints } = useNavData()
+    const { updateCoins, updatePoints, public_username } = useNavData()
     const { call } = useApi()
 
     const params = useParams();
@@ -27,6 +29,7 @@ export default function Page() {
     const [geoint, setGeoint] = useState<geoint>()
     const [geointFlags, setGeointFlags] = useState<flags[]>([])
     const [currentFlags, setCurrentFlags] = useState<Record<number, string>>({})
+    const [creatorName, setCreatorName] = useState("")
 
     const [showModalBool, setShowModalBool] = useState(false)
     const [showModalText, setShowModalText] = useState(false)
@@ -53,6 +56,7 @@ export default function Page() {
             }
             setGeoint(data.challenge)
             setGeointFlags(data.flags)
+            setCreatorName(data.creator)
         }
         getGeoint()
     }, [params.id])
@@ -115,8 +119,8 @@ export default function Page() {
                     <p className="w-fit px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-3"><span className="text-green-600"><CiCircleCheck /></span>Vous avez terminé {geoint?.title} !</p>
                 )}
                 <div className='w-fit'>
-                    <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">Géoint - {geoint?.title}</h2>
-                    <p className='text-center my-2 text-white/40'>Difficulté : {geoint?.difficulty}</p>
+                    <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">Géoint - {geoint?.title} | Difficulté : {geoint?.difficulty}</h2>
+                    <p className='text-center my-2 text-white/40'>Créé par : {creatorName !== "Inconnu" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${geoint?.creator_id}`}>{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {geoint?.created_at && new Date(geoint?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                     <hr className="w-full text-white my-3" />
                 </div>
                 <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed">{geoint?.description}</p>

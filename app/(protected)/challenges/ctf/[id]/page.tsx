@@ -16,7 +16,7 @@ import ModalText from '@/components/ui/ModalText'
 
 export default function Page() {
     const { showNotif } = useNotif()
-    const { updateCoins, updatePoints, isGuest } = useNavData()
+    const { updateCoins, updatePoints, isGuest, public_username } = useNavData()
     const { call } = useApi()
     const params = useParams();
     const router = useRouter();
@@ -120,14 +120,14 @@ export default function Page() {
 
             <div className="hidden lg:block"></div>
             <div className="flex flex-col bg-[#212529]">
-                <div className="py-5 sm:py-15 px-4 bg-gray-800 flex flex-col items-center justify-center gap-5">
+                <div className="py-5 px-4 bg-[#212529] flex flex-col items-center justify-center gap-5">
                     {foundCount === flagsLen && (
                         <p className="w-fit px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-3"><span className="text-green-600"><CiCircleCheck /></span>Vous avez terminé {ctf?.title} !</p>
                     )}
                     <div className='w-fit'>
                         <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">CTF - {ctf?.title} | Difficulté : {ctf?.difficulty}</h2>
-                        <p className='text-center my-2 text-white/40'><Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${ctf?.creator_id}`}>Créé par : {creatorName}</Link> | {ctf?.created_at && new Date(ctf?.created_at).toLocaleDateString("fr-FR", {timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"})}</p>
-                        <hr className="w-full text-white my-3" />
+                        <p className='text-center my-2 text-white/40'>Créé par : {creatorName !== "Inconnu" && creatorName !== "Anonyme" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${ctf?.creator_id}`}>{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {ctf?.created_at && new Date(ctf?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                        <hr className="w-full text-white my-3"/>
                     </div>
                     <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed">{ctf?.description}</p>
                     <div className='flex items-center gap-2'>
@@ -155,7 +155,7 @@ export default function Page() {
                                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30">🔎</span>
                                             </div>) : (
                                             <div className="flex-1 relative">
-                                                <input value={currentFlags[v.id] || ""} onChange={(e) => setCurrentFlags(prev => ({ ...prev, [v.id]: e.target.value }))} type="text" placeholder={`${ctf?.flag_format}{${v.flag_format}}`} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"/>
+                                                <input value={currentFlags[v.id] || ""} onChange={(e) => setCurrentFlags(prev => ({ ...prev, [v.id]: e.target.value }))} type="text" placeholder={`${ctf?.flag_format}{${v.flag_format}}`} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
                                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30">🔎</span>
                                             </div>
                                         )}

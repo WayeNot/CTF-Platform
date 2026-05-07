@@ -1,8 +1,11 @@
 import { Role, Status } from "./types";
 
+export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
+
+export const default_user = { username: "Invité", status: "online", user_id: Date.now(), role: ["guest"], pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 0, points: 0, created_at: "" }
+
 export const owners = [
     { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
-    // { name: "Romain", linkedin: "https://www.linkedin.com/in/romain-guibert-2851a52bb/" },
     { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
 ];
 
@@ -21,8 +24,6 @@ export const public_routes = [
 export const noGuestRoute = [
     "/challenges/geoint"
 ];
-
-export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
 export const statusColor: Record<Status, string> = {
     online: "border-green-500 border-3",

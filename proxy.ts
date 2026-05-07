@@ -18,21 +18,19 @@ export async function proxy(request: NextRequest) {
     if (session_id && user_id) role = await getRole(user_id);
     if (isGuest) role = "guest";
 
-    const isPublicRoute = public_routes.some(route => path.startsWith(route));
+    const isPublicRoute = public_routes.some(route => path === route);
 
     if (is_in_maintenance) {
-        // const isAllowedRoute = path.startsWith(maintenance_route);
-        const isAllowedRole = role && maintenance_role.includes(role);
+        const isAllowedRole = role && maintenance_role.includes(role);        
 
-        if (!isPublicRoute && !maintenance_route && !isAllowedRole) {
-            alert("Yep")
+        if (path !== maintenance_route && !isAllowedRole) {
             request.cookies.delete("session_id")
             request.cookies.delete("isGuest")
             return NextResponse.redirect(new URL("/dev/maintenance", request.url));
         }
-    }
+    }    
 
-    if (!session_id && !isGuest && !isPublicRoute && path !== "/" && !is_in_maintenance) return NextResponse.redirect(new URL("/accounts/login", request.url));
+    if (!session_id && !isPublicRoute && !isGuest && path !== "/" && !is_in_maintenance) return NextResponse.redirect(new URL("/accounts/login", request.url));
 
     if (isGuest && noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));
 

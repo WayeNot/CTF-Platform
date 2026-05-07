@@ -7,11 +7,15 @@ import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider"
 import { FaHatCowboy } from "react-icons/fa";
 import Typewriter from 'typewriter-effect';
+import { GiThink } from "react-icons/gi";
+import ModalInput from "@/components/ModalInput";
+import ModalText from "@/components/ui/ModalText";
 
 
 export default function Home() {
     const { showNotif } = useNotif()
     const [credentials, setCredentials] = useState({ username: "", password: "" })
+    const [displayForgotPassword, setDisplayForgotPassword] = useState(false)
     const router = useRouter();
 
     const handleLogin = async () => {
@@ -47,6 +51,11 @@ export default function Home() {
         router.push("/home")
     }
 
+    const handleForgotPassword = (value: string) => {
+        setDisplayForgotPassword(false)
+        showNotif("Une demande de réinitialisation de mot de passe a été effectué !", "success")
+    }
+
     return (
         <div>
             <div className="lg:hidden fixed inset-0 bg-[#1e1e2f] font-mono z-50 flex items-center justify-center">
@@ -65,9 +74,12 @@ export default function Home() {
                         <div className="flex flex-col items-center w-4/5 m-auto gap-4">
                             <div className="flex flex-col items-center justify-center gap-1 w-full">
                                 <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
-                                <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5 mt-1" placeholder="Password" type="password" maxLength={50} />
+                                <div className="w-full flex flex-col gap-2">
+                                    <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5 mt-1" placeholder="Password" type="password" maxLength={50} />
+                                    {/* <button onClick={() => setDisplayForgotPassword(true)} className="w-fit flex items-center gap-3 hover:underline hover:text-white text-white/30 font-mono text-[17px] cursor-pointer transition duration-500"><GiThink />Forgotten password ?</button> */}
+                                </div>
                             </div>
-                            <button onClick={handleLogin} className="w-full cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
+                            <button onClick={handleLogin} className="w-full cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
                             <div className="w-full flex justify-between items-center gap-3 text-white/30 font-mono text-[17px] cursor-pointer">
                                 <p onClick={handleGuest} className="flex items-center gap-3 hover:underline hover:text-white transition duration-500"><FaHatCowboy />Guest mode</p>
                                 <p>|</p>
@@ -77,6 +89,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+            {displayForgotPassword && <ModalInput title="Réinitialisation de mot de passe" input1={{ display: true, placeholder: "Quelle est votre adresse mail ?", type: "text" }} onClose={() => setDisplayForgotPassword(false)} onValidate={({ input1 }) => { handleForgotPassword(input1) }}/>}
         </div>
     );
 }

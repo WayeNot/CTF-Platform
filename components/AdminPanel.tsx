@@ -360,6 +360,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
                 {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
             </div>
-        </div>
+        </div>  
     )
 }

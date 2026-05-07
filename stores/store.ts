@@ -5,6 +5,7 @@ type NavState = {
     isGuest: boolean;
     user_id: number;
     username: string;
+    public_username: string;
     email: string;
     role: string[];
     pp_url: string;
@@ -16,6 +17,7 @@ type NavState = {
     updateIsGuest: (v: boolean) => void;
     updateUserId: (v: number) => void;
     updateUsername: (v: string) => void;
+    updatePublicUsername: (v: string) => void;
     updateEmail: (v: string) => void;
     updateRole: (v: string[]) => void;
     updatePp_url: (v: string) => void;
@@ -29,6 +31,7 @@ export const useNavData = create<NavState>((set) => ({
     isGuest: false,
     user_id: -1,
     username: "",
+    public_username: "",
     email: "",
     role: [],
     pp_url: "",
@@ -40,6 +43,7 @@ export const useNavData = create<NavState>((set) => ({
     updateIsGuest: (v) => set({ isGuest: v}),
     updateUserId: (v) => set({ user_id: v}),
     updateUsername: (v) => set({ username: v }),
+    updatePublicUsername: (v) => set({ public_username: v }),
     updateEmail: (v) => set({ email: v }),
     updateRole: (v) => set({ role: v }),
     updatePp_url: (v) => set({ pp_url: v }),
