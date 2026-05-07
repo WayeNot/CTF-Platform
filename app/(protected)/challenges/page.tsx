@@ -77,7 +77,7 @@ export default function Home() {
                         <CreateButtons type="ctf" role={role[0]} onCtfOpen={() => setOpenCtf(true)} />
                         <div className="flex items-center gap-3">
                             {["Facile", "Intermédiaire", "Avancé", "Expert"].map((v, k) => (
-                                <button key={k} onClick={() => setCurrentDifficulty(v)} className="flex items-center gap-4 px-4 py-2 text-sm text-[20px] ml-10 border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40">{v}</button>
+                                <button key={k} onClick={() => setCurrentDifficulty(v)} className="flex items-center gap-4 px-4 py-2 text-sm text-[21px] ml-10 border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40">{v}</button>
                             ))}
                         </div>
                         <ChallengeGroups data={groupedCtf} currentDifficulty={currentDifficulty} open={open} type="ctf" />
