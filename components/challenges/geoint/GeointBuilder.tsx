@@ -98,7 +98,7 @@ export default function GeointBuilder({ onClose }: any) {
                                 <div className="text-white/60 text-xs">Image de départ</div>
                                 <div className="relative">
                                     <div className="flex-1 relative">
-                                        <input placeholder=" " type="text" value={currentImage} onChange={e => setCurrentImage(e.target.value)} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
+                                        <input placeholder=" " type="text" maxLength={150} value={currentImage} onChange={e => setCurrentImage(e.target.value)} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
                                         <span onClick={() => { if (!currentImage) return; handleChange("images", [...builder.images, currentImage]); setCurrentImage(""); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:bg-[#2a2a3d] cursor-pointer transition duration-500 hover:text-blue-600"><MdSend /></span>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@ export default function GeointBuilder({ onClose }: any) {
                             <div className="w-1/2 flex flex-col gap-2">
                                 <div className="text-white/60 text-xs">Format du flag ( Nom_Prénom )</div>
                                 <div className="relative">
-                                    <input placeholder=" " type="text" value={builder.flag_format} onChange={e => handleChange("flag_format", e.target.value)} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
+                                    <input placeholder=" " type="text" maxLength={35} value={builder.flag_format} onChange={e => handleChange("flag_format", e.target.value)} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
                                 </div>
                             </div>
                         </div>

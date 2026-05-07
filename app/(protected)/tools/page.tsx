@@ -9,9 +9,31 @@ export default function Home() {
     const { role } = useNavData()
 
     const tools = [
-        { name: "GEOINT" },
-        { name: "SOCMINT" },
-        { name: "OPSEC" },
+        { name: "Recherche d'information en source ouverte" },
+        { name: "OSINT", tools: [
+            {name: "Test", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+        ] },
+        { name: "GEOINT", tools: [
+            {name: "Test", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+        ] },
+        { name: "HUMINT", tools: [
+            {name: "Test", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+        ] },
+        { name: "TECHINT", tools: [
+            {name: "Test", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+        ] },
     ]
     return (
         <div>
@@ -46,6 +68,9 @@ export default function Home() {
                             <div key={k}>
                                 <h2 className="text-white/70 text-xl text-[30px] mt-10 ml-20 font-mono font-bold">{v.name}</h2>
                                 <hr className="mt-5 mx-20 text-white/70" />
+                                {v?.tools?.map((value, key) => (
+                                    <p>{value.name}</p>
+                                ))}
                             </div>
                         ))}
                     </div>

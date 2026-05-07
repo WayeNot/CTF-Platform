@@ -19,7 +19,7 @@ import { RiCoinsFill } from "react-icons/ri";
 
 export default function Navbar() {
     const { call } = useApi()
-    const { updateIsGuest, isGuest, user_id, username, status, role, pp_url, coins, points } = useNavData()
+    const { updateIsGuest, isGuest, user_id, username, status, role, pp_url, coins, points, inMaintenance } = useNavData()
 
     const router = useRouter()
 
@@ -36,9 +36,18 @@ export default function Navbar() {
     return (
         <div>
             {isGuest && (
-                <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" /> Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
+                <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500"/>Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
+                <div className="flex items-center gap-5 text-white/40">
+                    <a href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono hover:text-white/90 transition duration-500">FlagCore</a>
+                    {staff_role.includes(role as any) && (
+                        <div className="flex items-center gap-3">
+                            <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="text-red-500 font-bold text-[22px] hover:text-red-800 transition duration-500 cursor-pointer" />
+                            <GiMusicSpell className="text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600" />
+                        </div>
+                    )}
+                </div>
                 {!isGuest && (
                     <div className="flex items-center ml-60">
                             <p className="flex items-center gap-3 text-white/40 text-[20px] transition duration-500"><RiCoinsFill />{coins}</p>

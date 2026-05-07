@@ -60,10 +60,10 @@ export default function Home() {
                             <hr className="text-white w-4/5 my-5 m-auto" />
                             <div className="flex flex-col items-center w-full gap-4">
                                 <div className="flex flex-col items-center justify-center gap-1 w-full">
-                                    <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Username" type="text" />
-                                    <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Email address" type="email" />
-                                    <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5  mt-1" placeholder="Password" type="password" />
-                                    <input value={credentials.pp_url} onChange={(e) => setCredentials({ ...credentials, pp_url: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" type="text" placeholder="URL of your logo" />
+                                    <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
+                                    <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Email address" type="email" maxLength={50} />
+                                    <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5  mt-1" placeholder="Password" type="password" maxLength={50} />
+                                    <input value={credentials.pp_url} onChange={(e) => setCredentials({ ...credentials, pp_url: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" type="text" placeholder="URL of your logo" maxLength={150} />
                                     <div className="flex flex-col items-center gap-3 w-4/5">
                                         <img className="w-25 rounded-[25%] bg-center bg-cover bg-no-repeat mt-5 mb-5" src={credentials.pp_url || default_pp} alt="Logo de l'utilisateur" />
                                     </div>
