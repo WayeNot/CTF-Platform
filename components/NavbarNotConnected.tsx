@@ -6,6 +6,7 @@ import { BsArrowRight } from "react-icons/bs"
 import { useApi } from "@/hooks/useApi"
 import { RxCross2 } from "react-icons/rx";
 import Typewriter from 'typewriter-effect';
+import Link from "next/link";
 
 export default function NavbarNotConnected() {
 
@@ -34,14 +35,15 @@ export default function NavbarNotConnected() {
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
                 <div className="hidden sm:flex items-center gap-5 text-white/40">
-                    <button onClick={() => setDisplayLogin(true)} className="hover:text-white/70 transition duration-500 cursor-pointer">Connexion</button>
+                    <Link href={"/accounts/login"} className="hover:text-white/70 transition duration-500 cursor-pointer">Connexion</Link>
                 </div>
             </nav>
 
             {menuOpen && (
                 <div className="sm:hidden px-4 pb-4 animate-fadeIn">
                     <div className="flex flex-col gap-3">
-                        <button onClick={() => setDisplayLogin(true)} className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Connexion</button>
+                        <Link href={"/accounts/login"} className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Connexion</Link>
+                        {/* <button onClick={() => setDisplayLogin(true)}>Connexion</button> */}
                     </div>
                 </div>
             )}
@@ -55,8 +57,8 @@ export default function NavbarNotConnected() {
                         <hr className="text-white/70 w-4/5 my-5 m-auto" />
                         <div className="flex flex-col items-center w-full gap-4">
                             <div className="flex flex-col items-center justify-center gap-1 w-full">
-                                <input value={login.username} onChange={(e) => setLogin({ ...login, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mb-1" placeholder="Username" type="text" maxLength={25}/>
-                                <input value={login.password} onChange={(e) => setLogin({ ...login, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Password" type="password" maxLength={50}/>
+                                <input value={login.username} onChange={(e) => setLogin({ ...login, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mb-1" placeholder="Username" type="text" maxLength={25} />
+                                <input value={login.password} onChange={(e) => setLogin({ ...login, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Password" type="password" maxLength={50} />
                             </div>
                             <button onClick={() => handleLogin()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
                         </div>

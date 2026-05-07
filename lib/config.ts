@@ -15,6 +15,7 @@ export const public_routes = [
     "/",
     "/accounts/login",
     "/accounts/register",
+    // "/dev/maintenance",
 ]
 
 export const noGuestRoute = [

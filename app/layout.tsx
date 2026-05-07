@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             if (pathname.startsWith("/accounts")) return;
             try {
                 const res = await fetch("/api/auth/session")
-                if (!res.ok && !pathname.startsWith("/accounts")) {
+                if (!res.ok && !pathname.startsWith("/accounts") && pathname !== "/dev/maintenance") {
                     router.refresh()
                     router.push("/accounts/login")
                     return
@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
 
     useEffect(() => {
-        inMaintenance && maintenance_role.includes(role as any)
+        inMaintenance && !maintenance_role.includes(role as any) && handleLogout();
     }, [inMaintenance, role])
 
     useEffect(() => {
