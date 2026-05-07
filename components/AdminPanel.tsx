@@ -50,8 +50,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         { id: 9, name: "Test", description: "", isSelected: false, canBeSelected: true },
     ]])
 
-    const colorRole = ["red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky", "blue", "indigo", "purple", "pink", "rose", "slate"]
-
     const colorClasses = {
         red: "bg-red-500/40",
         orange: "bg-orange-500/40",
@@ -76,6 +74,15 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         neutral: "bg-neutral-500/40",
         stone: "bg-stone-500/40"
     }
+
+    const colorRole: (keyof typeof colorClasses)[] = [
+        "red",
+        "orange",
+        "amber",
+        "yellow",
+        "lime",
+        "green",
+    ]
 
     const [selectedColor, setSelectedColor] = useState("")
 
