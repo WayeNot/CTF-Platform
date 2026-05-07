@@ -163,24 +163,24 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
-            <div className="w-fit h-3/4 bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
-                <div className="flex flex-col gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
-                    <h2 className="text-orange-500 italic font-bold">Panel staff - FlagCore</h2>
+            <div className="w-fit h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
+                <div className="flex justify-center gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
+                    <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL - FlagCore</h2>
+                    <button onClick={closePanel} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
                 </div>
-                <hr className="my-5 border-gray-600" />
+                <hr className="my-5 border-white/30" />
                 <div className="flex justify-between items-center mb-4 gap-3">
                     <div className="flex items-center justify-center gap-3">
                         {panelTabLabel.map((v, k) => (
-                            <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>{v}</button>
+                            <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>
                         ))}
                     </div>
-                    <button onClick={closePanel} className="text-gray-400 hover:text-white cursor-pointer transition duration-500">✕</button>
                 </div>
                 {panelTab === "Gestion des utilisateurs" && (
                     <div className="w-full">
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
-                                <div onClick={() => setEditUser(el.user_id)} key={el.user_id} className="border border-gray-600 text-white/40 rounded-[7px] w-1/10 py-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">
+                                <div onClick={() => setEditUser(el.user_id)} key={el.user_id} className="border border-gray-600 text-white/40 w-1/10 py-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">
                                     <p className="text-center">{el.user_id} | {el.username}</p>
                                 </div>
                             ))}
@@ -247,14 +247,14 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 {panelTab === "Gestion des rôles" && (
                     <div className="flex flex-col gap-5 mt-5">
                         <div className="flex items-center gap-3">
-                            <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 rounded-[7px] w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
-                            <button className="border border-gray-600 text-white/40 rounded-[7px] w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer une permission</button>
+                            <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
+                            <button className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer une permission</button>
                         </div>
                         <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Rôles ↓<span className="h-px flex-1 bg-white/10" /></div>
                         <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
                     </div>
                 )}
-                {displayCreation === 1 && (
+                                {displayCreation === 1 && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
                         <div className="flex w-full max-w-6xl gap-4">
                             <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
@@ -301,7 +301,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                                         {v.canBeSelected ? (
                                                             <button key={k} onClick={() => setPermissions(prev => prev.map(perms => perms[keyTable].id === v.id ? { ...perms, isSelected: !perms[keyTable].isSelected } : perms))} className={`${v.isSelected && "bg-green-500/40 hover:bg-green-700/40"} rounded-[8px] w-fit p-2 bg-[#151522] text-sm outline-none cursor-pointer transition duration-500 hover:bg-[#151522]/80`}>{v.name}</button>
                                                         ) : (
-                                                            <button key={k} onClick={() => showNotif("Ceci n'est pas une permission !")} className={`w-fit p-2 font-bold italic rounded-lg text-sm outline-none cursor-pointer`}>{v.name} →</button>
+                                                            <button key={k} onClick={() => showNotif("Ceci n'est pas une permission !")} className={`w-fit p-2 font-bold italic rounded-lg text-sm outline-none`}>{v.name} →</button>
                                                         )}
                                                     </div>
                                                 ))}
