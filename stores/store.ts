@@ -11,6 +11,7 @@ type NavState = {
     status: Status;
     coins: number;
     points: number;
+    inMaintenance: boolean;
 
     updateIsGuest: (v: boolean) => void;
     updateUserId: (v: number) => void;
@@ -21,6 +22,7 @@ type NavState = {
     updateStatus: (v: Status) => void;
     updateCoins: (v: number) => void;
     updatePoints: (v: number) => void;
+    updateInMaintenance: (v: boolean) => void;
 };
 
 export const useNavData = create<NavState>((set) => ({    
@@ -33,6 +35,7 @@ export const useNavData = create<NavState>((set) => ({
     status: "offline",
     coins: 0,
     points: 0,
+    inMaintenance: false,
 
     updateIsGuest: (v) => set({ isGuest: v}),
     updateUserId: (v) => set({ user_id: v}),
@@ -43,4 +46,5 @@ export const useNavData = create<NavState>((set) => ({
     updateStatus: (v) => set({ status: v }),
     updateCoins: (v) => set({ coins: v }),
     updatePoints: (v) => set({ points: v }),
+    updateInMaintenance: (v) => set({ inMaintenance: v }),
 }));

@@ -11,7 +11,7 @@ export async function proxy(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     const result = await sql`SELECT is_in_maintenance FROM settings LIMIT 1`;
-    const is_in_maintenance = result[0]?.is_in_maintenance;    
+    const is_in_maintenance = result[0]?.is_in_maintenance;
 
     let role = null;
 
@@ -24,9 +24,13 @@ export async function proxy(request: NextRequest) {
         const isAllowedRoute = path.startsWith(maintenance_route);
         const isAllowedRole = role && maintenance_role.includes(role);
 
-        if ((!isAllowedRoute || !isPublicRoute) && !isAllowedRole) return NextResponse.redirect(new URL("/dev/maintenance", request.url));
+        if ((!isAllowedRoute || !isPublicRoute) && !isAllowedRole) {
+            request.cookies.delete("session_id")
+            request.cookies.delete("isGuest")
+            return NextResponse.redirect(new URL("/dev/maintenance", request.url));
+        }
     }
-    
+
     if (!session_id && !isGuest && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
 
     if (isGuest && noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));

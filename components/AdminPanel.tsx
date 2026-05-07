@@ -20,21 +20,64 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const { coins, updateCoins } = useNavData()
 
-    const [panelTab, setPanelTab] = useState("")
+    const [panelTab, setPanelTab] = useState("Gestion des rôles")
 
     const [users, setUsers] = useState<User[]>([])
     const [editUser, setEditUser] = useState(-1)
 
     const [inMaintenance, setInMaintenance] = useState(false)
     const [roles, setRoles] = useState<Roles[]>([])
-    const [permissions, setPermissions] = useState<Permissions[]>([])
+    // const [permissions, setPermissions] = useState<Permissions[]>([])
 
-    const [displayCreation, setDisplayCreation] = useState(0)
+    const [displayCreation, setDisplayCreation] = useState(1)
     const [newRole, setNewRole] = useState({ label: "", description: "", allPerms: [] })
     const [newPermission, setNewPermission] = useState({ label: "", description: "" })
 
     const [showModal, setShowModal] = useState<null | "set" | "reset">(null)
     const [panelUser, setPanelUser] = useState(0)
+
+    const [permissions, setPermissions] = useState([[
+        { id: 0, name: "Permissions générales", description: "", isSelected: false, canBeSelected: false },
+        { id: 1, name: "Test", description: "", isSelected: false, canBeSelected: true },
+        { id: 2, name: "Test", description: "", isSelected: false, canBeSelected: true },
+        { id: 3, name: "Test", description: "", isSelected: false, canBeSelected: true },
+        { id: 4, name: "Test", description: "", isSelected: false, canBeSelected: true },
+    ], [
+        { id: 5, name: "Permissions des membres", description: "", isSelected: false, canBeSelected: false },
+        { id: 6, name: "Test", description: "", isSelected: false, canBeSelected: true },
+        { id: 7, name: "Test", description: "", isSelected: false, canBeSelected: true },
+        { id: 8, name: "Test", description: "", isSelected: false, canBeSelected: true },
+        { id: 9, name: "Test", description: "", isSelected: false, canBeSelected: true },
+    ]])
+
+    const colorRole = ["red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky", "blue", "indigo", "purple", "pink", "rose", "slate"]
+
+    const colorClasses = {
+        red: "bg-red-500/40",
+        orange: "bg-orange-500/40",
+        amber: "bg-amber-500/40",
+        yellow: "bg-yellow-300/40",
+        lime: "bg-lime-500/40",
+        green: "bg-green-500/40",
+        emerald: "bg-emerald-500/40",
+        teal: "bg-teal-500/40",
+        cyan: "bg-cyan-500/40",
+        sky: "bg-sky-500/40",
+        blue: "bg-blue-500/40",
+        indigo: "bg-indigo-500/40",
+        violet: "bg-violet-500/40",
+        purple: "bg-purple-500/40",
+        fuchsia: "bg-fuchsia-500/40",
+        pink: "bg-pink-500/40",
+        rose: "bg-rose-500/40",
+        slate: "bg-slate-500/40",
+        gray: "bg-gray-500/40",
+        zinc: "bg-zinc-500/40",
+        neutral: "bg-neutral-500/40",
+        stone: "bg-stone-500/40"
+    }
+
+    const [selectedColor, setSelectedColor] = useState("")
 
     const getAllUser = async () => {
         const req = await fetch("/api/users")
@@ -51,18 +94,18 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setInMaintenance(data)
     }
 
-    const getAllRoles = async () => {
-        setRoles(await call("/api/roles/roles"));
-        setPermissions(await call("/api/roles/permissions"));
-    }
+    // const getAllRoles = async () => {
+    //     setRoles(await call("/api/roles/roles"));
+    //     setPermissions(await call("/api/roles/permissions"));
+    // }
 
     useEffect(() => {
         if (panelTab === "Gestion des utilisateurs") {
             getAllUser()
         }
-        if (panelTab === "Gestion des rôles") {
-            getAllRoles()
-        }
+        // if (panelTab === "Gestion des rôles") {
+        //     getAllRoles()
+        // }
         if (panelTab === "Logs & Sécurité") {
             getMaintenance()
         }
@@ -225,6 +268,15 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         <div className="flex flex-col items-center gap-3">
                                             <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Intitulé du rôle" value={newRole.label} onChange={e => setNewRole(prev => ({ ...prev, label: e.target.value }))} />
                                             <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description du rôle" value={newRole.description} onChange={e => setNewRole(prev => ({ ...prev, description: e.target.value }))} />
+                                            <div className="w-full flex flex-col">
+                                                <button>Couleur du rôle</button>
+                                                <hr className="my-5 border-gray-600 w-full" />
+                                                <div className="flex items-center flex-wrap w-full gap-3">
+                                                    {colorRole.map((v, k) => (
+                                                        <button onClick={() => setSelectedColor(v)} key={k} className={`${selectedColor === v && "border-2 border-green-800 w-[40px] h-[40px]"} w-[30px] h-[30px] rounded-full ${colorClasses[v]} cursor-pointer transition duration-500 hover:border-2 hover:border-white/40`}></button>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="flex w-full gap-3 mt-3">
                                             <button onClick={() => setDisplayCreation(0)} className="flex-1 py-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Annuler</button>
@@ -240,14 +292,20 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         <h2 className="text-2xl font-semibold tracking-tight text-white">Gestion des permissions</h2>
                                         <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
                                     </div>
-                                    <div className="w-2/3 flex flex-col gap-2 mt-5">
-                                        {permissions.length === 0 && (
-                                            <div>
-                                                <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>
+                                    <div className="w-2/3 flex flex-col gap-2 mt-5 bg-[#2a2a3d] w-full p-2">
+                                        {/* {permissions[0].length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>} */}
+                                        {permissions.map((table, keyTable) => (
+                                            <div key={keyTable} className="w-full flex items-center gap-2">
+                                                {table.map((v, k) => (
+                                                    <div key={k} className="flex items-center gap-2">
+                                                        {v.canBeSelected ? (
+                                                            <button key={k} onClick={() => setPermissions(prev => prev.map(perms => perms[keyTable].id === v.id ? { ...perms, isSelected: !perms[keyTable].isSelected } : perms))} className={`${v.isSelected && "bg-green-500/40 hover:bg-green-700/40"} rounded-[8px] w-fit p-2 bg-[#151522] text-sm outline-none cursor-pointer transition duration-500 hover:bg-[#151522]/80`}>{v.name}</button>
+                                                        ) : (
+                                                            <button key={k} onClick={() => showNotif("Ceci n'est pas une permission !")} className={`w-fit p-2 font-bold italic rounded-lg text-sm outline-none cursor-pointer`}>{v.name} →</button>
+                                                        )}
+                                                    </div>
+                                                ))}
                                             </div>
-                                        )}
-                                        {permissions.map((v, k) => (
-                                            <button key={k}>v</button>
                                         ))}
                                     </div>
                                 </div>

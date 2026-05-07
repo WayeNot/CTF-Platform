@@ -64,8 +64,8 @@ export default function Home() {
                         <hr className="text-white/70 w-4/5 my-5 m-auto" />
                         <div className="flex flex-col items-center w-4/5 m-auto gap-4">
                             <div className="flex flex-col items-center justify-center gap-1 w-full">
-                                <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5" placeholder="Username" type="text" />
-                                <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5 mt-1" placeholder="Password" type="password" />
+                                <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
+                                <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5 mt-1" placeholder="Password" type="password" maxLength={50} />
                             </div>
                             <button onClick={handleLogin} className="w-full cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
                             <div className="w-full flex justify-between items-center gap-3 text-white/30 font-mono text-[17px] cursor-pointer">

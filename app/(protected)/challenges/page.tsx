@@ -27,6 +27,7 @@ export default function Home() {
     const [geoint, setGeoint] = useState<geoint[]>([]);
     const [openCtf, setOpenCtf] = useState(false);
     const [openGeo, setOpenGeo] = useState(false);
+    const [currentDifficulty, setCurrentDifficulty] = useState("")
 
     useEffect(() => {
         (async () => {
@@ -66,25 +67,30 @@ export default function Home() {
             </div>
 
             <div className="hidden lg:block"></div>
-        
+
             <div className="min-h-screen text-white">
 
                 <HomeTabs tab={tab} setTab={setTab} />
 
                 {tab === 0 && (
                     <div className="px-6 space-y-10">
-                        <CreateButtons type="ctf" role={role[0]} onCtfOpen={() => setOpenCtf(true)}/>
-                        <ChallengeGroups data={groupedCtf} open={open} type="ctf"/>
+                        <CreateButtons type="ctf" role={role[0]} onCtfOpen={() => setOpenCtf(true)} />
+                        <div className="flex items-center gap-3">
+                            {["Facile", "Intermédiaire", "Avancé", "Expert"].map((v, k) => (
+                                <button onClick={() => setCurrentDifficulty(v)} className="flex items-center gap-4 px-4 py-2 text-sm text-[20px] ml-10 border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40">{v}</button>
+                            ))}
+                        </div>
+                        <ChallengeGroups data={groupedCtf} currentDifficulty={currentDifficulty} open={open} type="ctf" />
                     </div>
                 )}
 
                 {tab === 1 && (
                     <div className="px-6 space-y-10">
-                        <CreateButtons type="geoint" role={role[0]} onGeoOpen={() => setOpenGeo(true)}/>
+                        <CreateButtons type="geoint" role={role[0]} onGeoOpen={() => setOpenGeo(true)} />
                         {isGuest ? (
                             <div className="relative">
                                 <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">
-                                    <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
+                                    <ChallengeGroups data={groupedGeoint} open={open} type="geoint" />
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="bg-[#1e1e2f]/90 border border-white/10 rounded-2xl p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
@@ -97,7 +103,7 @@ export default function Home() {
                                 </div>
                             </div>
                         ) : (
-                            <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
+                            <ChallengeGroups data={groupedGeoint} open={open} type="geoint" />
                         )}
                     </div>
                 )}
