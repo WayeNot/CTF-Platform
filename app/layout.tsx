@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const [guest, setGuest] = useState(false)
 
     const [tempUsername, setTempUsername] = useState("")
-    const { updateIsGuest, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance } = useNavData()
+    const { updateIsGuest, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword } = useNavData()
 
     useEffect(() => {
         const getSettings = async () => {
@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 updateUserId(data.user_id)
                 if (data.isGuest) {
                     setGuest(true)
-                    setUser({ username: default_user.username, is_anonymous: false, status: default_user.status as Status, user_id: default_user.user_id, role: ["user"], pp_url: default_user.pp_url, password: default_user.password, is_online: default_user.is_online, email: default_user.email, coins: default_user.coins, points: default_user.points, created_at: default_user.created_at })
+                    setUser({ username: default_user.username, is_anonymous: false, status: default_user.status as Status, user_id: default_user.user_id, role: ["user"], pp_url: default_user.pp_url, password: default_user.password, is_online: default_user.is_online, email: default_user.email, coins: default_user.coins, points: default_user.points, created_at: default_user.created_at, reset_password: false })
                     return
                 }
                 setGuest(false)
@@ -73,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updateStatus(user?.status ?? "offline");
         updateCoins(user?.coins ?? 0);
         updatePoints(user?.points ?? 0);
+        updateResetPassword(user?.reset_password ?? false)
     }, [user]);
 
     return (

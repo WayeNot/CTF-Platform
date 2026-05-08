@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
-import { Permissions, Roles, User } from "@/lib/types"
+import { Permissions, Roles, User, UserSessions } from "@/lib/types"
 import { IoIosArrowDroprightCircle, IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
 import { MdAlternateEmail, MdCheckBoxOutlineBlank } from "react-icons/md"
 import InputNumber from "./ModalInput"
@@ -13,27 +13,34 @@ import { LuCalendar1 } from "react-icons/lu"
 import { useApi } from "@/hooks/useApi"
 import { useNavData } from "@/stores/store"
 import { LiaCriticalRole } from "react-icons/lia"
+import { RiAlarmWarningFill, RiHistoryFill, RiMailSendLine } from "react-icons/ri";
+import { HiLockClosed } from "react-icons/hi";
+import { FaBan } from "react-icons/fa";
+import { h2 } from "framer-motion/client";
+import { FcClock } from "react-icons/fc";
+import { CiDatabase } from "react-icons/ci";
+import ModalInput from "./ModalInput";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
     const { call } = useApi()
 
-    const { coins, updateCoins } = useNavData()
+    const { coins, updateCoins, inMaintenance, updateInMaintenance } = useNavData()
 
     const [panelTab, setPanelTab] = useState("")
+    const [userTab, setUserTab] = useState("Informations")
 
     const [users, setUsers] = useState<User[]>([])
     const [editUser, setEditUser] = useState(-1)
+    const [userSessions, setUserSessions] = useState<UserSessions[]>([])
 
-    const [inMaintenance, setInMaintenance] = useState(false)
     const [roles, setRoles] = useState<Roles[]>([])
-    // const [permissions, setPermissions] = useState<Permissions[]>([])
 
     const [displayCreation, setDisplayCreation] = useState(-1)
     const [newRole, setNewRole] = useState({ label: "", description: "", allPerms: [] })
     const [newPermission, setNewPermission] = useState({ label: "", description: "" })
 
-    const [showModal, setShowModal] = useState<null | "set" | "reset">(null)
+    const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser">(null)
     const [panelUser, setPanelUser] = useState(0)
 
     const [permissions, setPermissions] = useState([[
@@ -58,21 +65,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         lime: "bg-lime-500/40",
         green: "bg-green-500/40",
         emerald: "bg-emerald-500/40",
-        teal: "bg-teal-500/40",
-        cyan: "bg-cyan-500/40",
-        sky: "bg-sky-500/40",
-        blue: "bg-blue-500/40",
-        indigo: "bg-indigo-500/40",
-        violet: "bg-violet-500/40",
-        purple: "bg-purple-500/40",
-        fuchsia: "bg-fuchsia-500/40",
-        pink: "bg-pink-500/40",
-        rose: "bg-rose-500/40",
-        slate: "bg-slate-500/40",
-        gray: "bg-gray-500/40",
-        zinc: "bg-zinc-500/40",
-        neutral: "bg-neutral-500/40",
-        stone: "bg-stone-500/40"
+        teal: "bg-teal-500/40"
     }
 
     const colorRole: (keyof typeof colorClasses)[] = [
@@ -91,31 +84,47 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setUsers(await req.json())
     }
 
-    const getMaintenance = async () => {
-        const data = await call("/api/admin/maintenance")
-        setInMaintenance(data)
-    }
-
-    // const getAllRoles = async () => {
-    //     setRoles(await call("/api/roles/roles"));
-    //     setPermissions(await call("/api/roles/permissions"));
-    // }
-
     useEffect(() => {
         if (panelTab === "Gestion des utilisateurs") {
             getAllUser()
         }
-        // if (panelTab === "Gestion des rôles") {
-        //     getAllRoles()
-        // }
-        if (panelTab === "Logs & Sécurité") {
-            getMaintenance()
+        if (userTab === "Sessions") {
+            getUserSessions()
         }
-    }, [panelTab])
+    }, [panelTab, userTab])
 
     const setMaintenance = async () => {
         await call("/api/admin/maintenance", { method: "PATCH", body: JSON.stringify({ inMaintenance: !inMaintenance }) }, [inMaintenance ? "Maintenance terminée avec succès !" : "Maintenance activée avec succès !"])
-        setInMaintenance(!inMaintenance)
+        updateInMaintenance(!inMaintenance)
+    }
+
+    // Administration des sessions de l'utilisateur ↓
+
+    const getUserSessions = async () => {
+        const data = await call(`/api/admin/${editUser}/session`)
+        setUserSessions(data.data)
+    }
+
+    const handleChangeSession = async (user_id: number, session_id: string, is_active: boolean) => {
+        await call(`/api/admin/${user_id}/session`, { method: "PATCH", body: JSON.stringify({ session_id: session_id, is_active: is_active }) })
+        setUserSessions(prev => prev.map(session => session.session_id === session_id && session.user_id === user_id ? { ...session, is_active: !is_active } : session))
+        is_active ? showNotif(`Session n°${session_id} bien désactivée !`) : showNotif(`Session n°${session_id} bien activée !`)
+    }
+
+    const closeAllSession = async () => {
+        await call(`/api/admin/${editUser}/session/closeAllSessions`, { method: "PATCH" })
+        setUserSessions(prev => prev.map(session => session.is_active ? { ...session, is_active: false } : session))
+        showNotif("Toutes les sessions ont bien été désactivées !")
+    }
+
+    // Sanction sur l'utilisateur ↓
+
+    const warnUser = (reason: string) => {
+
+    }
+
+    const banUser = (reason: string, duration: number) => {
+
     }
 
     const updateCoin = async (value: number, reason: string) => {
@@ -160,27 +169,24 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     }
 
     const panelTabLabel = ["Dashboard", "Gestion des utilisateurs", "Gestion des rôles", "Gestion des CTF", "Gestion des challenges", "Soumission des flags", "ScoreBoard", "Gestion des annonces", "Paramètres", "Logs & Sécurité"]
+    const panelUserLabel = ["Informations", "Sessions", "Sanctions", "Gestions des coins", "Gestion des rôles", "Gestion de la progression", "Monitoring / débug"]
 
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
-            <div className="w-fit h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
+            <div className="w-7/8 h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
                 <div className="flex justify-center gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
                     <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL - FlagCore</h2>
                     <button onClick={closePanel} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
                 </div>
                 <hr className="my-5 border-white/30" />
-                <div className="flex justify-between items-center mb-4 gap-3">
-                    <div className="flex items-center justify-center gap-3">
-                        {panelTabLabel.map((v, k) => (
-                            <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>
-                        ))}
-                    </div>
+                <div className="flex items-center justify-center w-full gap-3 mb-4">
+                    {panelTabLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
                 </div>
                 {panelTab === "Gestion des utilisateurs" && (
                     <div className="w-full">
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
-                                <div onClick={() => setEditUser(el.user_id)} key={el.user_id} className="border border-gray-600 text-white/40 w-1/10 py-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">
+                                <div onClick={() => { setEditUser(el.user_id); }} key={el.user_id} className="border border-gray-600 text-white/40 w-1/10 py-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">
                                     <p className="text-center">{el.user_id} | {el.username}</p>
                                 </div>
                             ))}
@@ -196,54 +202,71 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         )}
                     </div>
                 )}
-                {editUser !== -1 && (
-                    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-                        <div className="bg-[#1e1e2f] rounded-2xl shadow-2xl p-5 w-fit animate-fadeIn relative">
-                            <div className="w-full flex items-center justify-between gap-5 mb-5">
-                                <div className="flex items-center justify-center gap-5 w-full">
-                                    <button onClick={() => setPanelUser(0)} className={`${panelUser === 0 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Informations</button>
-                                    <button onClick={() => setPanelUser(1)} className={`${panelUser === 1 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des coins</button>
-                                    <button onClick={() => setPanelUser(2)} className={`${panelUser === 2 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des rôles</button>
-                                    <button onClick={() => setPanelUser(3)} className={`${panelUser === 3 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion de la progression</button>
-                                    <button onClick={() => setPanelUser(4)} className={`${panelUser === 4 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Monitoring / débug</button>
-                                </div>
+                {/* {editUser !== -1 && ( */}
+                {/* <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                        <div className="flex justify-between items-center mb-4 gap-3">
+                            <div className="flex items-center justify-center gap-3">
+                                {panelUserLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
                                 <button onClick={() => setEditUser(-1)} className="text-gray-400 hover:text-white text-lg cursor-pointer transition duration-500">✕</button>
                             </div>
-                            {panelUser === 0 && (
-                                <div>
-                                    {users.filter(el => el.user_id === editUser).map(el => (
-                                        <div key={el.user_id} className="flex flex-col gap-5 text-white">
-                                            <div className="flex items-center gap-5">
-                                                <img src={el.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-20 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[el.status] || ""}`} />
-                                                <Link href={`/user/${el.user_id}`} className="font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500">{el.user_id} | {el.username} - ( {el.role} )</Link>
-                                            </div>
-                                            <p className="flex items-center gap-2">Actuellement connecté ?<span className={el.is_online ? "text-green-500" : "text-red-500"}>{el.is_online ? "En ligne" : "Hors ligne"}</span></p>
-                                            <Link href={`mailto:${el.email}`} className="flex items-center gap-2 font-bold italic w-fit text-[20px] text-orange-400 transition duration-500 hover:text-orange-500"><MdAlternateEmail className="text-[25px]" /> - {el.email}</Link>
-                                            <p className="flex items-center gap-2 font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500 cursor-pointer"><LuCalendar1 /> - {new Date(el.created_at).toLocaleString()}</p>
-                                            <p onClick={() => setPanelUser(1)} className="flex items-center gap-2 font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500 cursor-pointer"><TbCoinRupeeFilled /> - {el.coins || 0}</p>
-                                        </div>
-                                    ))}
+                        </div> */}
+                {/* <div className="bg-[#1e1e2f] rounded-2xl shadow-2xl p-5 w-fit animate-fadeIn relative"> */}
+                {/* <div className="w-full flex items-center justify-between gap-5 mb-5">
+                                <div className="flex items-center justify-center gap-5 w-full">
+                                    {panelUserLabel.map((v, k) => <button key={k} onClick={() => setPanelUser(k)} className={`${panelUser === k ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>{v}</button>)}
                                 </div>
-                            )}
-                            {panelUser === 1 && (
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <h2 className="text-white/40 text-[20px] font-bold w-fit">Ajout / Retrait de coins : </h2>
-                                        <div className="flex items-center gap-3 w-auto">
-                                            {coinManagement.map((v, k) => (
-                                                <button key={k} onClick={() => updateCoin(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>
-                                            ))}
+                                <button onClick={() => setEditUser(-1)} className="text-gray-400 hover:text-white text-lg cursor-pointer transition duration-500">✕</button>
+                            </div> */}
+                {/* {panelUser === 0 && (
+                            <div>
+                                {users.filter(el => el.user_id === editUser).map(el => (
+                                    <div key={el.user_id} className="flex flex-col gap-5 text-white">
+                                        <div className="flex items-center gap-5">
+                                            <img src={el.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-20 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[el.status] || ""}`} />
+                                            <Link href={`/user/${el.user_id}`} className="font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500">{el.user_id} | {el.username} - ( {el.role} )</Link>
                                         </div>
+                                        <p className="flex items-center gap-2">Actuellement connecté ?<span className={el.is_online ? "text-green-500" : "text-red-500"}>{el.is_online ? "En ligne" : "Hors ligne"}</span></p>
+                                        <Link href={`mailto:${el.email}`} className="flex items-center gap-2 font-bold italic w-fit text-[20px] text-orange-400 transition duration-500 hover:text-orange-500"><MdAlternateEmail className="text-[25px]" /> - {el.email}</Link>
+                                        <p className="flex items-center gap-2 font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500 cursor-pointer"><LuCalendar1 /> - {new Date(el.created_at).toLocaleString()}</p>
+                                        <p onClick={() => setPanelUser(1)} className="flex items-center gap-2 font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500 cursor-pointer"><TbCoinRupeeFilled /> - {el.coins || 0}</p>
                                     </div>
-                                    <div className="w-full flex items-center">
-                                        <button onClick={() => setShowModal("set")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Modifier le nombre de coins</button>
-                                        <button onClick={() => setShowModal("reset")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset le nombre de coins</button>
+                                ))}
+                            </div>
+                        )}
+                        {panelUser === 1 && (
+                            <div className="flex flex-col items-center gap-3 justify-center">
+                                <div className="flex items-center gap-3">
+                                    <button onClick={closeCurrentSession} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3"><HiLockClosed />Fermer la session de l'utilisateur</button>
+                                </div>
+                            </div>
+                        )}
+                        {panelUser === 2 && (
+                            <div className="flex flex-col items-center gap-3 justify-center">
+                                <div className="flex items-center gap-3">
+                                    <button className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3"><RiAlarmWarningFill />Avertir le joueur</button>
+                                    <button className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3"><FaBan />Bannir le joueur</button>
+                                </div>
+                            </div>
+                        )}
+                        {panelUser === 3 && (
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-white/40 text-[20px] font-bold w-fit">Ajout / Retrait de coins : </h2>
+                                    <div className="flex items-center gap-3 w-auto">
+                                        {coinManagement.map((v, k) => (
+                                            <button key={k} onClick={() => updateCoin(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>
+                                        ))}
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                )}
+                                <div className="w-full flex items-center">
+                                    <button onClick={() => setShowModal("set")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Modifier le nombre de coins</button>
+                                    <button onClick={() => setShowModal("reset")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset le nombre de coins</button>
+                                </div>
+                            </div>
+                        )} */}
+                {/* </div> */}
+                {/* </div> */}
+                {/* )} */}
                 {panelTab === "Gestion des rôles" && (
                     <div className="flex flex-col gap-5 mt-5">
                         <div className="flex items-center gap-3">
@@ -254,7 +277,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
                     </div>
                 )}
-                                {displayCreation === 1 && (
+                {displayCreation === 1 && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
                         <div className="flex w-full max-w-6xl gap-4">
                             <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
@@ -360,6 +383,67 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
                 {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
             </div>
-        </div>  
+            {editUser !== -1 && (
+                <div className="w-7/8 absolute h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
+                    <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
+                        <h2 className="font-bold italic text-[25px]">FlagCore</h2>
+                        <h2 className="text-white/70 text-[25px] font-mono font-bold">GESTION DE L'UTILISATEUR - {userTab}</h2>
+                        <button onClick={() => setEditUser(-1)} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
+                    </div>
+                    <hr className="my-5 border-white/30" />
+                    <div className="flex items-center justify-center w-full gap-3 mb-4">
+                        {panelUserLabel.map((v, k) => <button key={k} onClick={() => setUserTab(v)} className={`${userTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
+                    </div>
+                    {userTab === "Informations" && users.filter(el => el.user_id === editUser).map(el => (
+                        <div key={el.user_id} className="flex flex-col gap-5 text-white">
+                            <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
+                                <Link href={`/user/${el.user_id}`} className="flex items-center gap-3 text-[25px] hover:text-white/70 transition font-mono duration-500"><img src={el.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-20 bg-center bg-cover bg-no-repeat ${`${statusColor[el.status] || ""}`}`} /><span className="mx-2">-</span>{el.username} ( Session : {el.is_online ? <span className="text-green-700">Active</span> : <span className="text-red-700">Inactive</span>} )</Link>
+                            </div>
+                            <p className="flex items-center gap-3 text-[20px] w-fit">{el.email}<Link href={`mailto:${el.email}`}><RiMailSendLine className="cursor-pointer transition duration-500 hover:text-white/70 text-white/40" /></Link></p>
+                            <p className="flex items-center gap-3 text-[20px] w-fit">Inscrit depuis le : {new Date(el.created_at).toLocaleString()}</p>
+                        </div>
+                    ))}
+                    {userTab === "Sessions" && (
+                        <div className="flex flex-col gap-5">
+                            <button onClick={closeAllSession} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Fermer toutes les sessions de l'utilisateur</button>
+                            {userSessions.length === 0 && <h2>Aucune session pour le moment !</h2>}
+                            <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
+                                <div className="overflow-x-auto rounded-xl border border-white/10">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead className="bg-black/40 sticky top-0">
+                                            <tr className="text-white/40 text-sm font-semibold">
+                                                <th className="p-4">Id</th>
+                                                <th className="p-4">Session ID</th>
+                                                <th className="p-4">Statut</th>
+                                                <th className="p-4 text-center">Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {userSessions.map((v, k) => (
+                                                <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300">
+                                                    <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{k}</span></div></td>
+                                                    <td className="p-4"><span className="text-white/70">{v.session_id}</span></td>
+                                                    <td className="p-4"><span className={`px-3 py-1 ${v.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
+                                                    <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {userTab === "Sanctions" && (
+                        <div>
+                            <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
+                            <button onClick={() => setShowModal("banUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Bannir l'utilisateur</button>
+                        </div>
+                    )}
+                    {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }} input2={{ display: false, placeholder: "" }} />}
+                    {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée du bannissement", type: "number" }} />}
+                </div>
+            )}
+        </div>
     )
 }

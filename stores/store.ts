@@ -13,6 +13,7 @@ type NavState = {
     coins: number;
     points: number;
     inMaintenance: boolean;
+    reset_password: boolean
 
     updateIsGuest: (v: boolean) => void;
     updateUserId: (v: number) => void;
@@ -25,6 +26,7 @@ type NavState = {
     updateCoins: (v: number) => void;
     updatePoints: (v: number) => void;
     updateInMaintenance: (v: boolean) => void;
+    updateResetPassword: (v: boolean) => void;
 };
 
 export const useNavData = create<NavState>((set) => ({    
@@ -39,6 +41,7 @@ export const useNavData = create<NavState>((set) => ({
     coins: 0,
     points: 0,
     inMaintenance: false,
+    reset_password: false,
 
     updateIsGuest: (v) => set({ isGuest: v}),
     updateUserId: (v) => set({ user_id: v}),
@@ -51,4 +54,5 @@ export const useNavData = create<NavState>((set) => ({
     updateCoins: (v) => set({ coins: v }),
     updatePoints: (v) => set({ points: v }),
     updateInMaintenance: (v) => set({ inMaintenance: v }),
+    updateResetPassword: (v) => set({ reset_password: v }),
 }));

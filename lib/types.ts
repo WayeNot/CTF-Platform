@@ -37,6 +37,13 @@ export type User = {
     status: Status
     is_online: boolean
     is_anonymous: boolean
+    reset_password: boolean
+}
+
+export type UserSessions = {
+    session_id: string;
+    user_id: number;
+    is_active: boolean;
 }
 
 export type Roles = {

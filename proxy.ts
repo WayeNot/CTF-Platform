@@ -6,34 +6,55 @@ import { maintenance_role, maintenance_route, noGuestRoute, public_routes } from
 
 export async function proxy(request: NextRequest) {
     const session_id = request.cookies.get("session_id")?.value;
-    const user_id = await getUserIdBySessionId(session_id);
     const isGuest = request.cookies.get('isGuest')?.value;
     const path = request.nextUrl.pathname;
+
+    const isPublicRoute = public_routes.some(route => path === route);
 
     const result = await sql`SELECT is_in_maintenance FROM settings LIMIT 1`;
     const is_in_maintenance = result[0]?.is_in_maintenance;
 
+    let user_id = null;
     let role = null;
 
-    if (session_id && user_id) role = await getRole(user_id);
-    if (isGuest) role = "guest";
+    if (session_id) {
+        user_id = await getUserIdBySessionId(session_id);
+        if (user_id) role = await getRole(user_id);
+    }
 
-    const isPublicRoute = public_routes.some(route => path === route);
+    if (isGuest) role = "guest"
 
     if (is_in_maintenance) {
-        const isAllowedRole = role && maintenance_role.includes(role);        
+        const isAllowedRole = role && maintenance_role.includes(role);
 
-        if (path !== maintenance_route && !isAllowedRole) {
-            request.cookies.delete("session_id")
-            request.cookies.delete("isGuest")
-            return NextResponse.redirect(new URL("/dev/maintenance", request.url));
-        }
-    }    
+        if (path !== maintenance_route && !isAllowedRole) return NextResponse.redirect(new URL(maintenance_route, request.url));
+        if (path === maintenance_route) return NextResponse.next();
+    }
 
-    if (!session_id && !isPublicRoute && !isGuest && path !== "/" && !is_in_maintenance) return NextResponse.redirect(new URL("/accounts/login", request.url));
+    if (isPublicRoute) return NextResponse.next();
 
-    if (isGuest && noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));
+    if (isGuest) {
+        if (noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));
+        return NextResponse.next();
+    }
 
+    if (!session_id && path !== "/") {
+        return NextResponse.redirect(new URL("/accounts/login", request.url));
+    }
+
+    if (!user_id) {
+        const response = NextResponse.redirect(new URL("/accounts/login", request.url));
+        response.cookies.delete("session_id");
+        return response;
+    }
+
+    const currentSession = await sql`SELECT * FROM user_session WHERE user_id = ${user_id} AND session_id = ${session_id} AND is_active = TRUE LIMIT 1`;
+
+    if (!currentSession[0]) {
+        const response = NextResponse.redirect(new URL("/accounts/login", request.url));
+        response.cookies.delete("session_id");
+        return response;
+    }
     return NextResponse.next();
 }
 

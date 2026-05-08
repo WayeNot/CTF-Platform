@@ -16,9 +16,9 @@ export const maintenance_route = "/dev/maintenance"
 
 export const public_routes = [
     "/",
+    "/dev/maintenance",
     "/accounts/login",
     "/accounts/register",
-    // "/dev/maintenance",
 ]
 
 export const noGuestRoute = [
