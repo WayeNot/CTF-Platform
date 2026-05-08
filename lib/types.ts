@@ -27,6 +27,7 @@ export const categoryBtn = [
 export type User = {
     user_id: number;
     username: string;
+    bio: string;
     email: string;
     password: string;
     role: Role[];

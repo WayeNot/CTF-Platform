@@ -10,7 +10,7 @@ export default function Home() {
     const { call } = useApi()
     const params = useParams<{ id: string }>();
 
-    const [userData, setUserData] = useState<User>(); // user_id | username | email | role | created_at | coins | points | pp_url | status | is_online | is_anonymous | banner
+    const [userData, setUserData] = useState<User>(); // user_id | username | bio | email | role | created_at | coins | points | pp_url | status | is_online | is_anonymous | banner
 
     const getUserData = async () => {
         console.log(params.id);
@@ -28,8 +28,11 @@ export default function Home() {
             <div>
                 <img className="w-full bg-cover bg-center bg-no-repeat h-100 " src={userData?.banner} alt="" />
                 <div className="flex items-end relative">
-                    <div className="absolute bottom-5 left-5 flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={userData?.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-35 bg-center bg-cover bg-no-repeat ${statusColor[userData?.status ?? "offline"]}`}/></div>
-                    <p className="text-white/40 pl-45 bg-[#232336] w-full p-5 font-bold text-[23px] flex items-center">@{userData?.username}</p>
+                    <div className="absolute bottom-5 left-5 flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={userData?.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-35 bg-center bg-cover bg-no-repeat ${statusColor[userData?.status ?? "offline"]}`} /></div>
+                    <div className="text-white/40 pl-45 bg-[#232336] w-full p-5">
+                        <p className="font-bold text-[23px] flex items-center">@{userData?.username}</p>
+                        <p>{'>'} {userData?.bio ? userData?.bio : "Aucune bio pour le moment !"}</p>
+                    </div>
                 </div>
             </div>
         </div>

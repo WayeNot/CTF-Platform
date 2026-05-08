@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 updateUserId(data.user_id)
                 if (data.isGuest) {
                     setGuest(true)
-                    setUser({ username: default_user.username, is_anonymous: false, status: default_user.status as Status, user_id: default_user.user_id, role: ["user"], pp_url: default_user.pp_url, password: default_user.password, is_online: default_user.is_online, email: default_user.email, coins: default_user.coins, points: default_user.points, created_at: default_user.created_at, reset_password: false, banner: "" })
+                    setUser({ username: default_user.username, bio: "", is_anonymous: false, status: default_user.status as Status, user_id: default_user.user_id, role: ["user"], pp_url: default_user.pp_url, password: default_user.password, is_online: default_user.is_online, email: default_user.email, coins: default_user.coins, points: default_user.points, created_at: default_user.created_at, reset_password: false, banner: "" })
                     return
                 }
                 setGuest(false)
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }
         const getWarn = async () => {
             const warn = await fetch(`/api/users/${user_id}/sanctions/warn`)
-            const data = await warn.json()            
+            const data = await warn.json()
             if (data) updateWarn(data)
         }
         getSession();
