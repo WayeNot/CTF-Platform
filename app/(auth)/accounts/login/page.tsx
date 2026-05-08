@@ -10,6 +10,9 @@ import Typewriter from 'typewriter-effect';
 import { GiThink } from "react-icons/gi";
 import ModalInput from "@/components/ModalInput";
 import ModalText from "@/components/ui/ModalText";
+import { UserSanctions } from "@/lib/types";
+import ModalSanction from "@/components/ui/sanction/ModalBan";
+import ModalBan from "@/components/ui/sanction/ModalBan";
 
 
 export default function Home() {
@@ -17,6 +20,9 @@ export default function Home() {
     const [credentials, setCredentials] = useState({ username: "", password: "" })
     const [displayForgotPassword, setDisplayForgotPassword] = useState(false)
     const router = useRouter();
+
+    const [ban, setBan] = useState<UserSanctions>()
+    const [showBan, setShowBan] = useState(false)
 
     const handleLogin = async () => {
         const res = await fetch("/api/auth/login", {
@@ -28,6 +34,8 @@ export default function Home() {
         if (!res.ok) {
             const err = await res.json()
             showNotif(err.error, "error")
+            setBan(err.ban)
+            setShowBan(true)
             return
         }
         router.refresh()
@@ -89,6 +97,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+            {ban && showBan && <ModalBan id={ban?.id} staff_id={ban?.staff_id} duration={ban?.duration} reason={ban?.reason} expires_at={ban?.expires_at} onSelect={() => setShowBan(false)}/>}
             {/* {displayForgotPassword && <ModalInput title="Réinitialisation de mot de passe" input1={{ display: true, placeholder: "Quelle est votre adresse mail ?", type: "text" }} onClose={() => setDisplayForgotPassword(false)} onValidate={({ input1 }) => { handleForgotPassword(input1) }}/>} */}
         </div>
     );

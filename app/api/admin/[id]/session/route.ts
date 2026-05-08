@@ -6,7 +6,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const { id } = await params;
     try {
         const result = await sql`SELECT * FROM user_session WHERE user_id = ${id}`
-        console.log(result);
         return Response.json({ success: true, data: result })
     } catch (err: any) {
         console.error(err)

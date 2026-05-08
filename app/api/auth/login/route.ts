@@ -16,6 +16,13 @@ export async function POST(req: Request) {
 
         if (!user[0] || !isGoodPassword) return NextResponse.json({ success: false, error: "Erreur d'identification" }, { status: 401 })
 
+        await sql`UPDATE sanctions SET is_active = FALSE WHERE expires_at < NOW()`;
+        const bans = await sql`SELECT * FROM sanctions WHERE user_id = ${user[0].user_id} AND type = 'ban' AND is_active = TRUE LIMIT 1`;
+        const ban = bans[0]
+        const date = Date.now()        
+
+        if ( ban && (ban.permanent || ban.expires_at && new Date(ban.expires_at).getTime() > date)) { return NextResponse.json({ success: false, error: `Vous avez été banni ${ban.permanent ? "définitivement" : "temporairement"}`, ban: ban }, { status: 401 }) }
+
         const sessionId = generateSessionId()
 
         await sql`WITH disabled AS (UPDATE user_session SET is_active = FALSE WHERE user_id = ${user[0].user_id}) INSERT INTO user_session (session_id, user_id) VALUES (${sessionId}, ${user[0].user_id})`

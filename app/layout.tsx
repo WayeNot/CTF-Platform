@@ -20,8 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const [user, setUser] = useState<User | null>(null)
     const [guest, setGuest] = useState(false)
 
-    const [tempUsername, setTempUsername] = useState("")
-    const { updateIsGuest, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword } = useNavData()
+    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, warn, updateWarn } = useNavData()
 
     useEffect(() => {
         const getSettings = async () => {
@@ -32,9 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }
         getSettings()
     }, [])
+
     useEffect(() => {
+        if (pathname.startsWith("/accounts")) return;
         const getSession = async () => {
-            if (pathname.startsWith("/accounts")) return;
             try {
                 const res = await fetch("/api/auth/session")
                 const data = await res.json()
@@ -50,7 +50,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 setUser(null)
             }
         }
+        const getWarn = async () => {
+            const warn = await fetch(`/api/users/${user_id}/sanctions/warn`)
+            const data = await warn.json()            
+            if (data) updateWarn(data)
+        }
         getSession();
+        if (user_id) getWarn();
     }, [pathname])
 
     const handleLogout = async () => {
@@ -74,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updateCoins(user?.coins ?? 0);
         updatePoints(user?.points ?? 0);
         updateResetPassword(user?.reset_password ?? false)
+        updateWarn(warn || null)
     }, [user]);
 
     return (

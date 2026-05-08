@@ -46,6 +46,20 @@ export type UserSessions = {
     is_active: boolean;
 }
 
+export type UserSanctions = {
+    id: number;
+    type: string;
+    reason: string;
+    duration: number;
+    created_at: string;
+    user_id: number;
+    staff_id: number;
+    show_notif: boolean;
+    permanent: boolean;
+    expires_at: string;
+    is_active: boolean;
+}
+
 export type Roles = {
     id: number;
     label: string;

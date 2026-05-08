@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
-import { Permissions, Roles, User, UserSessions } from "@/lib/types"
+import { Permissions, Roles, User, UserSanctions, UserSessions } from "@/lib/types"
 import { IoIosArrowDroprightCircle, IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
 import { MdAlternateEmail, MdCheckBoxOutlineBlank } from "react-icons/md"
 import InputNumber from "./ModalInput"
@@ -20,6 +20,10 @@ import { h2 } from "framer-motion/client";
 import { FcClock } from "react-icons/fc";
 import { CiDatabase } from "react-icons/ci";
 import ModalInput from "./ModalInput";
+import { json } from "node:stream/consumers";
+import ModalBan from "./ui/sanction/ModalBan";
+import DisplayBan from "./ui/sanction/DisplayBan";
+import DisplayWarn from "./ui/sanction/DisplayWarn";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
@@ -33,6 +37,8 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [users, setUsers] = useState<User[]>([])
     const [editUser, setEditUser] = useState(-1)
     const [userSessions, setUserSessions] = useState<UserSessions[]>([])
+    const [userSanctions, setUserSanctions] = useState<UserSanctions[]>([])
+    const [sanction, setSanction] = useState<UserSanctions>()
 
     const [roles, setRoles] = useState<Roles[]>([])
 
@@ -40,7 +46,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [newRole, setNewRole] = useState({ label: "", description: "", allPerms: [] })
     const [newPermission, setNewPermission] = useState({ label: "", description: "" })
 
-    const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser">(null)
+    const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser" | "displayReasonBan" | "displayReasonWarn">(null)
     const [panelUser, setPanelUser] = useState(0)
 
     const [permissions, setPermissions] = useState([[
@@ -91,6 +97,9 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         if (userTab === "Sessions") {
             getUserSessions()
         }
+        if (userTab === "Sanctions") {
+            getUserSanctions()
+        }
     }, [panelTab, userTab])
 
     const setMaintenance = async () => {
@@ -105,26 +114,36 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setUserSessions(data.data)
     }
 
+    const getUserSanctions = async () => {
+        const data = await call(`/api/admin/${editUser}/sanctions`)
+        setUserSanctions(data.data)
+    }
+
     const handleChangeSession = async (user_id: number, session_id: string, is_active: boolean) => {
-        await call(`/api/admin/${user_id}/session`, { method: "PATCH", body: JSON.stringify({ session_id: session_id, is_active: is_active }) })
+        await call(`/api/admin/${editUser}/session`, { method: "PATCH", body: JSON.stringify({ session_id: session_id, is_active: is_active }) })
         setUserSessions(prev => prev.map(session => session.session_id === session_id && session.user_id === user_id ? { ...session, is_active: !is_active } : session))
-        is_active ? showNotif(`Session n°${session_id} bien désactivée !`) : showNotif(`Session n°${session_id} bien activée !`)
+        is_active ? showNotif(`Session n°${session_id} bien désactivée !`, "success") : showNotif(`Session n°${session_id} bien activée !`, "success")
     }
 
     const closeAllSession = async () => {
         await call(`/api/admin/${editUser}/session/closeAllSessions`, { method: "PATCH" })
         setUserSessions(prev => prev.map(session => session.is_active ? { ...session, is_active: false } : session))
-        showNotif("Toutes les sessions ont bien été désactivées !")
+        showNotif("Toutes les sessions ont bien été désactivées !", "success")
     }
 
     // Sanction sur l'utilisateur ↓
 
-    const warnUser = (reason: string) => {
-
+    const warnUser = async (reason: string) => {
+        await call(`/api/admin/${editUser}/sanctions/warn`, { method: "POST", body: JSON.stringify({ reason: reason }) })
+        showNotif(`L'utilisateur avec l'id ${editUser} a bien été averti !`, "success")
+        setShowModal(null)
     }
 
-    const banUser = (reason: string, duration: number) => {
-
+    const banUser = async (reason: string, duration: number) => {
+        setShowModal(null)
+        await call(`/api/admin/${editUser}/sanctions/ban`, { method: "POST", body: JSON.stringify({ reason: reason, duration: duration }) })
+        showNotif(`L'utilisateur avec l'id ${editUser} a bien été banni ${duration === 0 ? "définitivement" : "temporairement"} !`, "success")
+        closeAllSession()
     }
 
     const updateCoin = async (value: number, reason: string) => {
@@ -435,13 +454,55 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     )}
                     {userTab === "Sanctions" && (
-                        <div>
-                            <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
-                            <button onClick={() => setShowModal("banUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Bannir l'utilisateur</button>
+                        <div className="flex flex-col gap-5">
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
+                                <button onClick={() => setShowModal("banUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Bannir l'utilisateur</button>
+                            </div>
+                            {userSanctions.length === 0 && <h2>Aucune session pour le moment !</h2>}
+                            <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
+                                <div className="overflow-x-auto rounded-xl border border-white/10">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead className="bg-black/40 sticky top-0">
+                                            <tr className="text-white/40 text-sm font-semibold">
+                                                <th className="p-4">Id</th>
+                                                <th className="p-4">Type</th>
+                                                <th className="p-4">Raison</th>
+                                                <th className="p-4">Durée ( minute )</th>
+                                                <th className="p-4">User Id</th>
+                                                <th className="p-4">Staff Id</th>
+                                                <th className="p-4">Date</th>
+                                                <th className="p-4">Date d'expiration</th>
+                                                <th className="p-4">Statut</th>
+                                                {/* <th className="p-4 text-center">Action</th> */}
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {userSanctions.map((v, k) => (
+                                                <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
+                                                    <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
+                                                    <td className="p-4"><span className="text-white/70">{v?.type}</span></td>
+                                                    <td onClick={() => { setSanction(v); v?.type === "ban" ? setShowModal("displayReasonBan") : setShowModal("displayReasonWarn") }} className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason}</span></td>
+                                                    <td className="p-4"><span className="text-white/70">{v?.duration}</span></td>
+                                                    <td className="p-4"><span className="text-white/70">{v?.user_id}</span></td>
+                                                    <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
+                                                    <td className="p-4"><span className="text-white/70">{v?.created_at}</span></td>
+                                                    <td className="p-4"><span className="text-white/70">{v.duration === 0 ? "Jamais" : new Date(v.expires_at).toLocaleString()}</span></td>
+                                                    <td className="p-4"><span className={`px-3 py-1 ${v?.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
+                                                    {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     )}
                     {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }} input2={{ display: false, placeholder: "" }} />}
-                    {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée du bannissement", type: "number" }} />}
+                    {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée ( en minute )", type: "number" }} />}
+                    {showModal === "displayReasonBan" && <DisplayBan id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} duration={sanction?.duration || -1} expires_at={sanction?.expires_at || ""} onSelect={() => setShowModal(null)}/> }
+                    {showModal === "displayReasonWarn" && <DisplayWarn id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} onSelect={() => setShowModal(null)}/> }
                 </div>
             )}
         </div>

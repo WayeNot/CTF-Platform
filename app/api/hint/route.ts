@@ -16,8 +16,6 @@ export async function POST(req: Request) {
         const coins = await sql`SELECT coins FROM users WHERE user_id = ${user_id}`;
         const hint_cost = await sql`SELECT hint_cost FROM flags WHERE id = ${flag_id} AND challenge_id = ${challenge_id} AND challenge_type = ${type}`
         
-        console.log(coins[0].coins, hint_cost[0].hint_cost);
-        
         if (!coins[0].coins || !hint_cost[0].hint_cost) return NextResponse.json({ success: false, error: "Données invalides" }, { status: 400 })
 
         if (coins[0].coins < hint_cost[0].hint_cost) return NextResponse.json({ success: false, error: "Vous n'avez pas assez de coins !" }, { status: 406 })

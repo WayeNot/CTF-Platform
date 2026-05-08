@@ -38,10 +38,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
         const foundFlags = new Set(flag_find.map((f: any) => f.flag_id));
         const shownHints = new Set(hint_show.map((h: any) => h.flag_id));
-        const flagsWithStatus = flags.map((flag: any) => ({ ...flag, found: foundFlags.has(flag.id), hint_show: shownHints.has(flag.id) }));
-
-        console.log(creator_name[0]);
-        
+        const flagsWithStatus = flags.map((flag: any) => ({ ...flag, found: foundFlags.has(flag.id), hint_show: shownHints.has(flag.id) }));        
 
         return NextResponse.json({ challenge: challenge[0], flags: flagsWithStatus, creator: creator_name })
     } catch (err) {
