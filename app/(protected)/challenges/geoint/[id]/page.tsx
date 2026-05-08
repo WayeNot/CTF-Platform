@@ -120,7 +120,7 @@ export default function Page() {
                 )}
                 <div className='w-fit'>
                     <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">Géoint - {geoint?.title} | Difficulté : {geoint?.difficulty}</h2>
-                    <p className='text-center my-2 text-white/40'>Créé par : {creatorName !== "Inconnu" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${geoint?.creator_id}`}>{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {geoint?.created_at && new Date(geoint?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                    <p className='text-center my-2 text-white/40'>Créé par : {creatorName !== "Inconnu" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${creatorName}`}>{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {geoint?.created_at && new Date(geoint?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                     <hr className="w-full text-white my-3" />
                 </div>
                 <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed">{geoint?.description}</p>
