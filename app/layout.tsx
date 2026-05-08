@@ -12,6 +12,7 @@ import { Role, Status, User } from "@/lib/types"
 import { default_pp, default_user, maintenance_role } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
+import NavbarLight from "@/components/NavBar/NavbarLight";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -41,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 updateUserId(data.user_id)
                 if (data.isGuest) {
                     setGuest(true)
-                    setUser({ username: default_user.username, is_anonymous: false, status: default_user.status as Status, user_id: default_user.user_id, role: ["user"], pp_url: default_user.pp_url, password: default_user.password, is_online: default_user.is_online, email: default_user.email, coins: default_user.coins, points: default_user.points, created_at: default_user.created_at, reset_password: false })
+                    setUser({ username: default_user.username, is_anonymous: false, status: default_user.status as Status, user_id: default_user.user_id, role: ["user"], pp_url: default_user.pp_url, password: default_user.password, is_online: default_user.is_online, email: default_user.email, coins: default_user.coins, points: default_user.points, created_at: default_user.created_at, reset_password: false, banner: "" })
                     return
                 }
                 setGuest(false)
@@ -56,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             if (data) updateWarn(data)
         }
         getSession();
-        if (user_id) getWarn();
+        if (user_id >= 0) getWarn();
     }, [pathname])
 
     const handleLogout = async () => {
@@ -87,7 +88,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
-                    {pathname !== "/" && !pathname.startsWith("/accounts") && user ? <Navbar /> : <NavbarNotConnected />}
+                    {pathname.startsWith("/user") && <NavbarLight />}
+                    {!pathname.startsWith("/user") && pathname !== "/" && !pathname.startsWith("/accounts") && user && <Navbar />}
+                    {pathname === "/" && <NavbarNotConnected />}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}
                 </NotifProvider>

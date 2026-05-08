@@ -25,19 +25,20 @@ export const categoryBtn = [
 ]
 
 export type User = {
-    user_id: number
-    username: string
-    email: string
-    password: string
-    role: Role[]
-    created_at: string
-    coins: number
-    points: number
-    pp_url: string
-    status: Status
-    is_online: boolean
-    is_anonymous: boolean
-    reset_password: boolean
+    user_id: number;
+    username: string;
+    email: string;
+    password: string;
+    role: Role[];
+    created_at: string;
+    coins: number;
+    points: number;
+    pp_url: string;
+    status: Status;
+    is_online: boolean;
+    is_anonymous: boolean;
+    reset_password: boolean;
+    banner: string;
 }
 
 export type UserSessions = {
@@ -58,6 +59,17 @@ export type UserSanctions = {
     permanent: boolean;
     expires_at: string;
     is_active: boolean;
+}
+
+export type UserTransactions = {
+    id: number;
+    user_id: number;
+    amount: string;
+    type: string;
+    reference_id: number;
+    created_at: string;
+    staff_id: number;
+    reason: string;
 }
 
 export type Roles = {

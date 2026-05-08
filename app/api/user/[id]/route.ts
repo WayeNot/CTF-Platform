@@ -1,0 +1,15 @@
+import { sql } from "@/lib/db";
+import { NextResponse } from "next/dist/api/server";
+
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {    
+    try {
+        const { id } = await params;
+        
+        const result = await sql`SELECT user_id, username, email, role, created_at, coins, points, pp_url, status, is_anonymous, banner FROM users WHERE username = ${id} LIMIT 1`;
+        
+        return NextResponse.json({ success: true, data: result[0] })
+    } catch (err) {
+        console.error(err)
+        return new Response("DB Error", { status: 500 })
+    }
+}

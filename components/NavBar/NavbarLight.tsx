@@ -21,7 +21,7 @@ import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
 
 
-export default function Navbar() {
+export default function NavbarLight() {
     const { showNotif } = useNotif()
     const { call } = useApi()
     const { updateIsGuest, isGuest, user_id, username, status, role, pp_url, coins, points, inMaintenance, warn, updateWarn } = useNavData()
@@ -42,7 +42,7 @@ export default function Navbar() {
 
     const handleWarn = async () => {
         setShowWarn(false)
-        await fetch(`/api/users/${user_id}/sanctions/warn`, { method: "PATCH", body: JSON.stringify({ warn_id: warn?.id })})
+        await fetch(`/api/users/${user_id}/sanctions/warn`, { method: "PATCH", body: JSON.stringify({ warn_id: warn?.id }) })
         if (warn) updateWarn({ ...warn, show_notif: false })
         showNotif("Vous avez pris connaissance du warn !", "success")
     }
@@ -53,7 +53,7 @@ export default function Navbar() {
                 <div>
                     <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" />Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
                     <nav className="flex items-center justify-between p-4 sm:mx-5 z-6">
-                        <Link href="/home"><img src="/logo.png" alt="Logo du site" className="h-35 w-55" /></Link>
+                        <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</Link>
                         <div className="flex items-center justify-end w-full">
                             <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
                             <div className="hidden sm:flex items-center gap-5 text-white/40">
@@ -77,21 +77,23 @@ export default function Navbar() {
                 </div>
             )}
             {!isGuest && (
-                <div>
+                <div className="flex flex-col w-[95%] m-auto mb-4">
                     {warn && warn.show_notif && warn.reason && (
                         <p onClick={() => setShowWarn(true)} className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><IoWarning className="text-orange-500" />Vous avez actuellement un avertissement : <span className="text-orange-500">{warn?.reason}</span><IoWarning className="text-orange-500" /></p>
                     )}
-                    <nav className="flex items-center justify-between p-4 sm:mx-5">
-                        <div className="flex items-center">
-                            <Link href="/home"><img src="/logo.png" alt="Logo du site" className="h-35 w-55" /></Link>
-                            <p className="flex items-center gap-3 text-white/40 text-[20px] transition duration-500"><RiCoinsFill />{coins}</p>
-                            <p className="text-white/40 text-[20px] mx-5"> | </p>
-                            <p className="flex items-center gap-3 text-white/40 text-[20px] transition duration-500"><SiOpslevel />{points}</p>
+                    <nav className="flex items-center justify-between py-5">
+                        <div className="flex items-center gap-15">
+                            <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</Link>
+                            <div className="flex items-center">
+                                <p className="flex items-center gap-3 text-white/40 text-[20px] transition duration-500"><RiCoinsFill />{coins}</p>
+                                <p className="text-white/40 text-[20px] mx-5"> | </p>
+                                <p className="flex items-center gap-3 text-white/40 text-[20px] transition duration-500"><SiOpslevel />{points}</p>
+                            </div>
                         </div>
                         <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
                         <div className="hidden sm:flex items-center gap-5 text-white/40">
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
-                                <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`}/><span className="mx-2">-</span>{username}</Link>
+                                <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
                             </div>
                             <Link href="/home" className="hover:text-white/70 hover:text-underline border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono text-[20px]">Accueil</Link>
                             <Link href="/tools" className="hover:text-white/70 border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono ml-5 text-[20px]">Tools</Link>
@@ -106,9 +108,9 @@ export default function Navbar() {
                             </div>
                         </div>
                     </nav>
+                    <hr className="text-white/40 w-full" />
                 </div>
             )}
-            <hr className="text-white/40 w-[95%] m-auto mb-10" />
             {menuOpen && (
                 <div className="sm:hidden px-4 pb-4 animate-fadeIn">
                     <div className="flex flex-col gap-3">
@@ -119,8 +121,8 @@ export default function Navbar() {
                         <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition duration-500"><MdExitToApp />Déconnexion</button>
                     </div>
                 </div>
-            )} 
-            {showWarn && warn && warn?.reason && <ModalWarn id={warn.id} staff_id={warn?.staff_id} reason={warn?.reason} onSelect={handleWarn}/>}
+            )}
+            {showWarn && warn && warn?.reason && <ModalWarn id={warn.id} staff_id={warn?.staff_id} reason={warn?.reason} onSelect={handleWarn} />}
             {showAdminPanel && <AdminPanel closePanel={() => setShowAdminPanel(false)} />}
         </div>
     )

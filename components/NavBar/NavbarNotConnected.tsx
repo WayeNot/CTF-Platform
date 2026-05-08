@@ -31,9 +31,7 @@ export default function NavbarNotConnected() {
     return (
         <div>
             <nav className="flex items-center justify-between p-4 sm:mx-5">
-                <div className="flex items-center gap-3 text-white/40">
-                    <a href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</a>
-                </div>
+                <a href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</a>
 
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 

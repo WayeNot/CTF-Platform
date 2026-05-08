@@ -1,5 +1,4 @@
 import { sql } from "@/lib/db"
-import { cookies } from "next/headers"
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
