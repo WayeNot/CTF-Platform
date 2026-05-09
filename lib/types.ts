@@ -149,7 +149,7 @@ export interface flags {
 export type GeointBuilderState = {
     title: string;
     description: string;
-    difficulty: difficulty | "";
+    difficulty: Option | null;
     flag_format: string;
     images: string[];
     coins?: number;
@@ -170,13 +170,13 @@ export type CtfBuilderState = {
 };
 
 export type NewCtfFlag = {
-    title: string
-    difficulty: difficulty | ""
-    description: string
-    flag: string
-    flag_format: string
-    hint: string
-    hint_cost?: number
-    coins?: number
-    points?: number
-}
+    title: string;
+    difficulty: Option | null;
+    description: string;
+    flag: string;
+    flag_format: string;
+    hint: string;
+    hint_cost?: number;
+    coins?: number;
+    points?: number;
+};

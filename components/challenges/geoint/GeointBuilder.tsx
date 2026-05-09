@@ -14,7 +14,7 @@ import { TiWarning } from "react-icons/ti";
 
 export default function GeointBuilder({ onClose }: any) {
     const { showNotif } = useNotif()
-    const [builder, setBuilder] = useState<GeointBuilderState>({ title: "", description: "", difficulty: "", flag_format: "", coins: undefined, points: undefined, images: [] });
+    const [builder, setBuilder] = useState<GeointBuilderState>({ title: "", description: "", difficulty: null, flag_format: "", coins: undefined, points: undefined, images: [] });
     const [flags, setFlags] = useState<NewCtfFlag[]>([])
     const [difficultyOpen, setDifficultyOpen] = useState(false);
     const canCreate = builder.title && builder.description && builder.difficulty && builder.flag_format && builder.images.length > 0 && flags.length > 0;
@@ -67,7 +67,7 @@ export default function GeointBuilder({ onClose }: any) {
                             <div className="w-1/2 flex flex-col gap-2">
                                 <div className="text-white/60 text-xs font-mono">Difficulty</div>
                                 <div className="relative">
-                                    <DropDown isOnce label="Difficulté" value={builder.difficulty} isOpen={difficultyOpen} options={difficultyBtn} onToggle={() => setDifficultyOpen(!difficultyOpen)} onSelect={(v) => { handleChange("difficulty", v as difficulty); setDifficultyOpen(false) }} />
+                                    <DropDown isOnce label="Difficulty" value={builder.difficulty} isOpen={difficultyOpen} options={difficultyBtn} onToggle={() => setDifficultyOpen(!difficultyOpen)} onSelect={(v) => { handleChange("difficulty", v); setDifficultyOpen(false) }} />
                                 </div>
                             </div>
                         </div>
@@ -132,7 +132,7 @@ export default function GeointBuilder({ onClose }: any) {
 
                         <div className="bg-[#363a3f] border border-white/10 p-3">
                             <p className="text-white/40 text-xs font-mono">Difficulty</p>
-                            <p className="text-orange-300 font-medium">{builder.difficulty || "N/A"}</p>
+                            <p className="text-orange-300 font-medium">{builder.difficulty?.label || "N/A"}</p>
                         </div>
 
                         <div className="bg-[#363a3f] border border-white/10 p-3">
