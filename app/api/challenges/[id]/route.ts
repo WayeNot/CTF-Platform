@@ -41,7 +41,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
         return NextResponse.json({ challenge: challenge[0], flags: flagsWithStatus, creator: creator_name })
     } catch (err) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }

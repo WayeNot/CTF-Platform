@@ -6,10 +6,6 @@ import { FaHelmetSafety } from "react-icons/fa6";
 import Link from "next/link";
 
 export default function Home() {
-    const { username } = useNavData()
-
-    let date = new Date();
-
     return (
         <div>
             <motion.div animate={{ rotate: [0, 180, 360] }} transition={{ duration: 3, repeat: Infinity }} className="w-fit m-auto">
@@ -17,10 +13,7 @@ export default function Home() {
             </motion.div>
             <h2 className="w-full text-center text-white/40 font-mono text-[45px] pt-20">Page currently under developement !</h2>
             <div className="border-t border-white/40 ml-100 mr-100 mt-10"></div>
-            <div className="flex flex-col items-center gap-3 w-full text-center text-white/40 font-mono">
-                <h2 className="w text-[45px]">We will be back soon</h2>
-                <Link href={"/home"} className="text-[25px] italic underline cursor-pointer transition duration-500 hover:text-white/60">Go back</Link>
-            </div>
+            <h2 className="w-full text-center text-white/40 font-mono text-[45px]">We will be back soon</h2>
         </div>
     )
 }

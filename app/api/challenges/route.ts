@@ -13,7 +13,6 @@ export async function GET(req: Request) {
         const result = await sql`SELECT id, title, difficulty FROM challenges WHERE type = ${challengeType} AND status = 'active'`;
         return NextResponse.json(result)
     } catch (err) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }
@@ -42,7 +41,6 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, id: result[0].id });
     } catch (err) {
-        console.error(err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

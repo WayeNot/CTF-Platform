@@ -14,7 +14,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         await sql`INSERT INTO sanctions (type, reason, duration, user_id, staff_id) VALUES ('warn', ${reason}, 0, ${id}, ${staff_id})`        
         return NextResponse.json({ success: true })
     } catch (err: any) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
     }
 }

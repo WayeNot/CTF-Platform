@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { sql } from "./lib/db";
-import { getRole, getUserIdBySessionId, hasPermission } from "./lib/session";
-import { maintenance_alias, maintenance_role, maintenance_route, noGuestRoute, Permissions, public_routes } from "./lib/config";
+import { getUserIdBySessionId, hasPermission } from "./lib/session";
+import { maintenance_route, noGuestRoute, Permissions, public_routes } from "./lib/config";
 
 export async function proxy(request: NextRequest) {
     const session_id = request.cookies.get("session_id")?.value;

@@ -6,7 +6,6 @@ export async function GET() {
         const req = await sql`SELECT * FROM roles`
         return NextResponse.json({ success: true, data: req })
     } catch (err) {
-        console.error(err)
         return new Response("DB Error", { status: 500 })
     }
 }
@@ -25,7 +24,6 @@ export async function POST(req: Request) {
         const allRoles = await sql`SELECT * FROM roles`
         return NextResponse.json({ success: true, data: allRoles })
     } catch (err: any) {
-        // console.error(err);
         if (err.code === '23505') return NextResponse.json({ error: "Label de rôle déjà utilisé !" }, { status: 400 });
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

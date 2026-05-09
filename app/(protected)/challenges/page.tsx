@@ -61,7 +61,7 @@ export default function Home() {
 
     return (
         <div>
-            <div className="lg:hidden fixed inset-0 bg-black z-50 flex items-center justify-center">
+            <div className="sm:hidden fixed inset-0 bg-black z-50 flex items-center justify-center">
                 <h2 className="text-white text-xl text-center">
                     The mobile version is coming soon.
                 </h2>
@@ -103,8 +103,8 @@ export default function Home() {
                         )}
                     </div>
                 )}
-                {openCtf && Array.isArray(permissions) && permissions.includes(Permissions.contributor.canCreate.ctf) && <CtfBuilder onClose={() => setOpenCtf(false)} />}
-                {openGeo && Array.isArray(permissions) && permissions.includes(Permissions.contributor.canCreate.geoint) && <GeointBuilder onClose={() => setOpenGeo(false)} />}
+                {openCtf && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf) ) && <CtfBuilder onClose={() => setOpenCtf(false)} />}
+                {openGeo && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint) ) && <GeointBuilder onClose={() => setOpenGeo(false)} />}
             </div>
         </div>
     );

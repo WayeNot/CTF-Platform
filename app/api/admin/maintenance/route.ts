@@ -12,7 +12,6 @@ export async function PATCH(req: Request) {
         await sql`UPDATE settings SET is_in_maintenance = ${inMaintenance}`;
         return NextResponse.json({ success: true })
     } catch (err) {
-        console.error(err)
         return new Response("DB Error", { status: 500 })
     }
 }

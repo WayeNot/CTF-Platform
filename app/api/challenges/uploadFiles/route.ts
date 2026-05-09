@@ -18,7 +18,6 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, files: file_to_download });
     } catch (err) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }

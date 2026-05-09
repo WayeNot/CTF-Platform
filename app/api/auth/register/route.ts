@@ -30,8 +30,6 @@ export async function POST(req: Request) {
 
         return res
     } catch (err: any) {
-        console.error(err)
-
         if (err.code === '23505') {
             return new Response("Email / Nom d'utilisateur déjà pris !", { status: 400 })
         }

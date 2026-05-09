@@ -9,7 +9,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         const aliases = result.map(r => r.alias);                
         return NextResponse.json({ success: true, data: aliases })
     } catch (err) {
-        console.error(err)
         return new Response("DB Error", { status: 500 })
     }
 }

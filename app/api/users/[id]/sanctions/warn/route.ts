@@ -9,7 +9,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         const data = await sql`SELECT * FROM sanctions WHERE type = 'warn' AND user_id = ${id} AND show_notif = TRUE ORDER BY id DESC LIMIT 1`;        
         return NextResponse.json(data[0] || null)
     } catch (err) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }
@@ -21,7 +20,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         const data = await sql`UPDATE sanctions SET show_notif = FALSE WHERE id = ${warn_id} AND user_id = ${id}`;
         return NextResponse.json(data[0])
     } catch (err) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }

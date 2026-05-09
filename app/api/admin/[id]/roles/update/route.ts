@@ -14,7 +14,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         }
         return NextResponse.json({ success: true })
     } catch (err: any) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
     }
 }
