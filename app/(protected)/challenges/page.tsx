@@ -82,7 +82,7 @@ export default function Home() {
 
                 {tab === 1 && (
                     <div className="px-6 space-y-10">
-                        {permissions && Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf)) && <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />}
+                        {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf)) && <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />}
                         {isGuest ? (
                             <div className="relative">
                                 <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">

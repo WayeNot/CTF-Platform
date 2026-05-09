@@ -8,19 +8,18 @@ import Navbar from "@/components/NavBar/Navbar"
 import NavbarNotConnected from "@/components/NavBar/NavbarNotConnected"
 import Footer from "@/components/Footer"
 import { NotifProvider } from "@/components/NotifProvider"
-import { Role, Status, User } from "@/lib/types"
-import { default_pp, default_user, maintenance_role } from "@/lib/config"
+import { Status, User } from "@/lib/types"
+import { default_user, maintenance_role, Permissions } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
-    const router = useRouter();
 
     const [user, setUser] = useState<User | null>(null)
     const [guest, setGuest] = useState(false)
 
-    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, warn, updateWarn, updatePermissions } = useNavData()
+    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, warn, updateWarn, updatePermissions, permissions } = useNavData()
 
     useEffect(() => {
         const getSettings = async () => {
@@ -50,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 setUser(null)
             }
         }
+        inMaintenance && Array.isArray(permissions) && ((!permissions.includes(Permissions.advanced.administrator) && !permissions.includes(Permissions.bypass.maintenance))) && handleLogout();
         getSession();
     }, [pathname])
 
@@ -82,10 +82,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
 
     useEffect(() => {
-        inMaintenance && !maintenance_role.includes(role as any) && handleLogout();
-    }, [inMaintenance, role])
-
-    useEffect(() => {
         updateIsGuest(guest);
         updateUsername(user?.username ?? "");
         updateEmail(user?.email ?? "");
@@ -102,8 +98,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
-                    {pathname !== "/" && !pathname.startsWith("/accounts") && user && <Navbar />}
-                    {pathname === "/" && <NavbarNotConnected />}
+                    {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && <Navbar />}
+                    {pathname === "/" || pathname === "/dev/maintenance" && <NavbarNotConnected />}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}
                 </NotifProvider>

@@ -47,10 +47,6 @@ export default function Navbar() {
         showNotif("Vous avez pris connaissance du warn !", "success")
     }
 
-    useEffect(() => {
-        console.log(permissions);
-    }, [permissions])
-
     return (
         <div>
             {isGuest && (

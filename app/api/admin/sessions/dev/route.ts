@@ -1,6 +1,6 @@
-import { maintenance_role } from "@/lib/config";
+import { maintenance_role, Permissions } from "@/lib/config";
 import { sql } from "@/lib/db";
-import { generateSessionId } from "@/lib/session";
+import { generateSessionId, hasPermission } from "@/lib/session";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
@@ -15,13 +15,15 @@ export async function POST(req: Request) {
         const hash = user[0]?.password ?? "$2a$10$invalidhashinvalidhashinvalidhashinv"
         const isGoodPassword = await bcrypt.compare(password, hash)
 
-        const role = user[0]?.role
+        const user_id = user[0].user_id
+
+        const isAllowedRole = await hasPermission(Permissions.advanced.administrator, user_id) || await hasPermission(Permissions.bypass.maintenance, user_id);
         
-        if (!user[0] || !isGoodPassword || !maintenance_role.includes(role)) return NextResponse.json({ success: false, error: "Erreur d'identification / rôle non authorisé" }, { status: 401 })
+        if (!user[0] || !isGoodPassword || !isAllowedRole) return NextResponse.json({ success: false, error: "Erreur d'identification / rôle non autorisé" }, { status: 401 })
 
         const sessionId = generateSessionId()
 
-        await sql`WITH disabled AS (UPDATE user_session SET is_active = FALSE WHERE user_id = ${user[0].user_id}) INSERT INTO user_session (session_id, user_id) VALUES (${sessionId}, ${user[0].user_id})`
+        await sql`WITH disabled AS (UPDATE user_session SET is_active = FALSE WHERE user_id = ${user_id}) INSERT INTO user_session (session_id, user_id) VALUES (${sessionId}, ${user_id})`
         
         const res = NextResponse.json({ success: true })
 
