@@ -110,7 +110,7 @@ export default function GeointBuilder({ onClose }: any) {
                                 </div>
                             </div>
                         </div>
-                        {currentImage && <img src={currentImage} onClick={() => { setDisplayImage(true) }} className="bg-[#232336] border-white/10 rounded-2xl p-2 w-fit m-auto shadow-lg sm:h-36 sm:w-36 object-cover border cursor-pointer hover:scale-105 hover:border-white/20 transition duration-300" />}
+                        {currentImage && <img src={currentImage} onClick={() => { setDisplayImage(true) }} className="bg-[#363a3f] border-white/10 p-2 w-fit m-auto shadow-lg sm:h-36 sm:w-36 object-cover border cursor-pointer hover:scale-105 hover:border-white/20 transition duration-300" />}
                     </div>
                     <div className="p-4 border-t border-white/10 flex items-center justify-center gap-4 mt-auto">
                         <button onClick={() => setDisplayFlags(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono w-40">Flag creation</button>
@@ -159,17 +159,17 @@ export default function GeointBuilder({ onClose }: any) {
                         </div>
                     )}
                     {builder.images.length > 0 ? (
-                        <div className="bg-[#1b1b2a] border border-white/10 rounded-[8px] p-2 flex items-start justify-center gap-8 w-full flex-wrap">
+                        <div className="bg-[#363a3f] border border-white/10 p-2 flex items-start justify-center gap-8 w-full flex-wrap">
                             {builder.images.map((v, k) => (
                                 <div key={k} onClick={(e) => { e.stopPropagation() }} className="relative">
                                     <img key={k} src={v} onClick={() => setDisplayImageRightPanel(k)} alt="Image de départ" className="h-40 w-40 object-cover rounded-lg border border-white/10 cursor-pointer transition duration-500" />
-                                    <button onClick={() => handleRemoveImage(k)} className="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow-lg hover:scale-110 transition duration-500 cursor-pointer hover:text-red-600"><AiFillDelete size={15} /></button>
+                                    <button onClick={() => handleRemoveImage(k)} className="absolute -top-4 -right-4 bg-[#212529] text-white rounded-full p-2 shadow-lg hover:scale-110 transition duration-500 cursor-pointer hover:text-red-600"><AiFillDelete size={15} /></button>
                                 </div>
                             ))}
                         </div>
                     ) : <h2 className="text-orange-400 text-center bg-[#363a3f] border border-white/10 py-5 flex items-center justify-center gap-3 font-mono"><TiWarning size={25}/>No images available at the moment<TiWarning size={25}/></h2>}
                     {flags.length > 0 ? (
-                        <div className="bg-[#1b1b2a] border border-white/10 rounded-[8px] p-2 flex flex-col items-start justify-start gap-2 w-full flex-wrap">
+                        <div className="bg-[#363a3f] border border-white/10 p-2 flex flex-col items-start justify-start gap-2 w-full flex-wrap">
                             <h2>Liste des flags : ( Titre | Flag )</h2>
                             {flags.map((v, k) => (
                                 <div key={k} className="flex items-center justify-between w-full">

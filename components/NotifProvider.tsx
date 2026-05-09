@@ -33,7 +33,7 @@ export const NotifProvider = ({ children }: { children: ReactNode }) => {
             {children}
             <div className="fixed top-4 right-4 z-500 flex flex-col gap-2">
                 {notifs.map(n => (
-                    <div key={n.id} className={`flex items-center gap-3 p-3  shadow-lg animate-slideDown border-2 border-white/30 ${n.type === "success" ? "bg-[#363a3f] text-green-700" : n.type === "error" ? "bg-[#212529] text-red-700" : "bg-yellow-50 text-yellow-700"}`}>
+                    <div key={n.id} className={`flex items-center gap-3 p-3  shadow-lg animate-slideDown border-2 border-white/30 ${n.type === "success" ? "bg-[#212529] text-green-700" : n.type === "error" ? "bg-[#212529] text-red-700" : "bg-yellow-50 text-yellow-700"}`}>
                         <div>{n.type === "success" ? <FaCheckCircle size={20} /> : n.type === "error" ? <FaTimesCircle size={20} /> : <FaExclamationTriangle size={20} />}</div>
                         <div className="flex-1 text-sm text-white/70 font-mono">{n.message}</div>
                         <button onClick={() => setNotifs(prev => prev.filter(x => x.id !== n.id))} className="font-bold hover:opacity-70 cursor-pointer transition duration-500 text-white/70">✕</button>
