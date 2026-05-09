@@ -25,34 +25,34 @@ export default function CreateFlag({ onClose, onSubmit } : CreateFlagType ) {
 
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
-            <div className="bg-[#1e1e2f] p-6 rounded-2xl w-2/7 text-white shadow-2xl space-y-5 border border-white/10">
+            <div className="bg-[#212529] p-6 w-2/7 text-white shadow-2xl space-y-5 border border-white/10">
                 <div className="text-center space-y-1">
-                    <h2 className="text-xl font-bold">Création d’un flag</h2>
-                    <p className="text-white/40 text-xs">Configure chaque flag a ta manière !</p>
+                    <h2 className="text-xl font-bold font-mono">Creating a flag</h2>
+                    <p className="text-white/40 text-xs font-mono">Configure each flag to your liking</p>
                 </div>
-                <div className="bg-[#2a2a3d] px-3 py-2 rounded-lg text-xs text-white/60">Format du flag attendu : <span className="text-orange-400 font-semibold">Prénom_Nom</span></div>
+                <div className="bg-[#363a3f] px-3 py-2 text-xs text-white/60">Expected flag format : <span className="text-orange-400 font-semibold">FirstName_LastName</span></div>
                 <div className="space-y-2">
                     <div className="grid grid-cols-2 gap-2">
-                        <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Titre" value={newFlag.title} onChange={e => setNewFlag({ ...newFlag, title: e.target.value })} />
-                        <DropDown isOnce label="Difficulté" value={newFlag.difficulty} isOpen={settingsNewFlag.difficulty} options={difficultyBtn} onToggle={() => setSettingsNewFlag(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setNewFlag({ ...newFlag, difficulty: v as difficulty }); setSettingsNewFlag({ ...settingsNewFlag, difficulty: false }) }} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Title" value={newFlag.title} onChange={e => setNewFlag({ ...newFlag, title: e.target.value })} />
+                        <DropDown isOnce label="Difficulty" value={newFlag.difficulty} isOpen={settingsNewFlag.difficulty} options={difficultyBtn} onToggle={() => setSettingsNewFlag(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setNewFlag({ ...newFlag, difficulty: v as difficulty }); setSettingsNewFlag({ ...settingsNewFlag, difficulty: false }) }} />
                     </div>
-                    <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description" value={newFlag.description} onChange={e => setNewFlag({ ...newFlag, description: e.target.value })} />
+                    <textarea className="w-full p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20 font-mono" placeholder="Description" value={newFlag.description} onChange={e => setNewFlag({ ...newFlag, description: e.target.value })} />
                     <div className="grid grid-cols-2 gap-2">
-                        <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Format (Prénom_Nom)" value={newFlag.flag_format} onChange={e => setNewFlag({ ...newFlag, flag_format: e.target.value })} />
-                        <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Flag attendu" value={newFlag.flag} onChange={e => setNewFlag({ ...newFlag, flag: e.target.value })} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                        <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Indice" value={newFlag.hint} onChange={e => setNewFlag({ ...newFlag, hint: e.target.value })} />
-                        <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Coût hint" value={newFlag.hint_cost ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, hint_cost: Number(e.target.value) })} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Format (FirstName_LastName)" value={newFlag.flag_format} onChange={e => setNewFlag({ ...newFlag, flag_format: e.target.value })} />
+                        <input className="w-full p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Flag expected" value={newFlag.flag} onChange={e => setNewFlag({ ...newFlag, flag: e.target.value })} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                        <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Coins" value={newFlag.coins ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, coins: Number(e.target.value) })} />
-                        <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Points" value={newFlag.points ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, points: Number(e.target.value) })} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Hint" value={newFlag.hint} onChange={e => setNewFlag({ ...newFlag, hint: e.target.value })} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Cost hint" value={newFlag.hint_cost ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, hint_cost: Number(e.target.value) })} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Coins" value={newFlag.coins ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, coins: Number(e.target.value) })} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Points" value={newFlag.points ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, points: Number(e.target.value) })} />
                     </div>
                 </div>
                 <div className="flex gap-2 pt-1">
-                    <button onClick={onClose} className="flex-1 bg-red-600 hover:bg-red-500 transition py-1.5 rounded-lg text-sm font-medium">Fermer</button>
-                    <button onClick={() => { if (!canSubmit) { showNotif("Veuillez remplir tout les champs !"); return; } onSubmit(newFlag); resetForms(); }} className="flex-1 bg-green-600 hover:bg-green-500 transition py-1.5 rounded-lg text-sm font-medium">Ajouter</button>
+                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-60">Fermer</button>
+                    <button onClick={() => { if (!canSubmit) { showNotif("Please fill in all fields !"); return; } onSubmit(newFlag); resetForms(); }} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono w-60">Ajouter</button>
                 </div>
             </div>
         </div>
