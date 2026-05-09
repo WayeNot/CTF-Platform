@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { sql } from "./lib/db";
-import { getRole, getUserIdBySessionId, hasAlias } from "./lib/session";
-import { maintenance_alias, maintenance_role, maintenance_route, noGuestRoute, public_routes } from "./lib/config";
+import { getRole, getUserIdBySessionId, hasPermission } from "./lib/session";
+import { maintenance_alias, maintenance_role, maintenance_route, noGuestRoute, Permissions, public_routes } from "./lib/config";
 
 export async function proxy(request: NextRequest) {
     const session_id = request.cookies.get("session_id")?.value;
@@ -15,17 +15,11 @@ export async function proxy(request: NextRequest) {
     const is_in_maintenance = result[0]?.is_in_maintenance;
 
     let user_id = null;
-    let role = null;
 
-    if (session_id) {
-        user_id = await getUserIdBySessionId(session_id);
-        if (user_id) role = await getRole(user_id);
-    }
-
-    if (isGuest) role = "guest"    
+    if (session_id) user_id = await getUserIdBySessionId(session_id);
 
     if (is_in_maintenance) {
-        const isAllowedRole = role && maintenance_alias.includes(await hasAlias("paneladmin.user.sanctions", user_id));
+        const isAllowedRole = await hasPermission(Permissions.advanced.administrator, user_id) || await hasPermission(Permissions.bypass.maintenance, user_id);
 
         if (path !== maintenance_route && !isAllowedRole) return NextResponse.redirect(new URL(maintenance_route, request.url));
         if (path === maintenance_route) return NextResponse.next();
