@@ -29,7 +29,7 @@ export default function Home() {
                 <img className="w-full bg-cover bg-center bg-no-repeat h-100 " src={userData?.banner} alt="" />
                 <div className="flex items-end relative">
                     <div className="absolute bottom-5 left-5 flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={userData?.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-35 bg-center bg-cover bg-no-repeat ${statusColor[userData?.status ?? "offline"]}`} /></div>
-                    <div className="text-white/40 pl-45 bg-[#232336] w-full p-5">
+                    <div className="pl-45 bg-white/30 text-[#212529] w-full p-5">
                         <p className="font-bold text-[23px] flex items-center">@{userData?.username}</p>
                         <p>{'>'} {userData?.bio ? userData?.bio : "Aucune bio pour le moment !"}</p>
                     </div>

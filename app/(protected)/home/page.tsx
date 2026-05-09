@@ -18,7 +18,7 @@ export default function Home() {
             </div>
 
             <div className="hidden lg:block">
-                <div className="text-white/70 text-xl text-[70px] ml-20 font-mono text-left font-bold">
+                <div className="text-white/70 text-xl text-[70px] ml-20 font-mono text-left font-bold mt-25">
                     <Typewriter onInit={(tw) => tw.typeString('Welcome to your CTF platform.').pauseFor(800).deleteChars(13).typeString('best CTF platform ;)').stop().start()} />
                 </div>
                 <div className="border-t-2 border-b-2 border-white/40 ml-20 mr-20 mt-20">

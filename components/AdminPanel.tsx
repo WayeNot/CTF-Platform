@@ -199,10 +199,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
             <div className="w-7/8 h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
-                <div className="flex justify-center gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
-                    <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL - FlagCore</h2>
-                    <button onClick={closePanel} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
-                </div>
+                <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
+                        <h2 className="font-bold italic text-[25px]">FlagCore</h2>
+                        <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL</h2>
+                        <button onClick={closePanel} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
+                    </div>
                 <hr className="my-5 border-white/30" />
                 <div className="flex items-center justify-center w-full gap-3 mb-4">
                     {panelTabLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
