@@ -52,18 +52,21 @@ export default function Navbar() {
             {isGuest && (
                 <div>
                     <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" />Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
-                    <nav className="flex items-center justify-between p-4 sm:mx-5 z-6">
-                        <Link href="/home"><img src="/logo.png" alt="Logo du site" className="h-35 w-55" /></Link>
-                        <div className="flex items-center justify-end w-full">
-                            <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
+                    <nav className="flex items-center justify-between p-4 sm:mx-5">
+                        <div className="flex items-center">
+                            <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono mr-12">FlagCore</Link>
                             <div className="hidden sm:flex items-center gap-5 text-white/40">
-                                <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
-                                    <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
-                                </div>
                                 <Link href="/home" className="hover:text-white/70 hover:text-underline border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono text-[20px]">Accueil</Link>
                                 <Link href="/tools" className="hover:text-white/70 border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono ml-5 text-[20px]">Tools</Link>
                                 <Link href="/challenges" className="hover:text-white/70 border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono ml-5 mr-5 text-[20px]">Nos challenges</Link>
-                                <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
+                            </div>
+                        </div>
+                        <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
+                        <div className="hidden sm:flex items-center text-white/40">
+                            <div className="flex items-center gap-5 font-bold text-white/40 mr-10">
+                                <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`}/><span className="mx-2">-</span>{username}</Link>
+                            </div>
+                            <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
                                 <div className="flex ml-3 items-center gap-5 text-white/40">
                                     {staff_role.includes(role as any) && (
                                         <div className="flex items-center gap-3">
@@ -72,7 +75,6 @@ export default function Navbar() {
                                     )}
                                 </div>
                             </div>
-                        </div>
                     </nav>
                 </div>
             )}

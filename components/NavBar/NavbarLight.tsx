@@ -53,7 +53,7 @@ export default function NavbarLight() {
                 <div>
                     <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" />Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
                     <nav className="flex items-center justify-between p-4 sm:mx-5 z-6">
-                        <Link href="/home"><img src="/logo.png" alt="Logo du site" className="h-35 w-55" /></Link>
+                        <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono mr-12">FlagCore</Link>
                         <div className="flex items-center justify-end w-full">
                             <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
                             <div className="hidden sm:flex items-center gap-5 text-white/40">
