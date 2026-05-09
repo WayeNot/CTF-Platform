@@ -14,7 +14,7 @@ import InsertFile from "../InsertFile";
 export default function CtfBuilder({ onClose } : any) {
     const { showNotif } = useNotif()
 
-    const [builder, setBuilder] = useState<CtfBuilderState>({ title: "", description: "", difficulty: "", category: [], flag_format: "", coins: undefined, points: undefined, files: [] });
+    const [builder, setBuilder] = useState<CtfBuilderState>({ title: "", description: "", difficulty: null, category: [], flag_format: "", coins: undefined, points: undefined, files: [] });
     const [flags, setFlags] = useState<NewCtfFlag[]>([])
     const [files, setFiles] = useState<File[]>([]);
 
@@ -24,7 +24,7 @@ export default function CtfBuilder({ onClose } : any) {
     const [displayFlags, setDisplayFlags] = useState(false)
 
     const resetBuilder = () => {
-        setBuilder({ title: "", description: "", difficulty: "", category: [], flag_format: "", coins: undefined, points: undefined, files: [] })
+        setBuilder({ title: "", description: "", difficulty: null, category: [], flag_format: "", coins: undefined, points: undefined, files: [] })
         setFlags([])
         setFiles([])
         setSettings({ difficulty: false, category: false })
@@ -66,7 +66,7 @@ export default function CtfBuilder({ onClose } : any) {
         resetBuilder();
     };
 
-    const canCreate = builder.title && builder.description && builder.difficulty && builder.category.length && builder.flag_format;
+    const canCreate = builder.title && builder.description && builder.difficulty && builder.category?.length && builder.flag_format;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
@@ -92,10 +92,10 @@ export default function CtfBuilder({ onClose } : any) {
                             <div className="text-[11px] text-white/40">Configuration du challenge</div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="bg-[#232336] rounded-lg p-2">
-                                    <DropDown isOnce label="Difficulté" value={builder.difficulty} isOpen={settings.difficulty} options={difficultyBtn} onToggle={() => setSettings(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setBuilder({ ...builder, difficulty: v as difficulty }); setSettings({ ...settings, difficulty: false }) }} />
+                                    <DropDown isOnce label="Difficulté" value={builder.difficulty} isOpen={settings.difficulty} options={difficultyBtn} onToggle={() => setSettings(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={(v) => { setBuilder({ ...builder, difficulty: v }); setSettings({ ...settings, difficulty: false }) }} />
                                 </div>
                                 <div className="bg-[#232336] rounded-lg p-2">
-                                    <DropDown isOnce={false} label="Catégorie" value={builder.category} isOpen={settings.category} options={categoryBtn} onToggle={() => setSettings(s => ({ ...s, category: !s.category }))} onSelect={(v) => { setBuilder({ ...builder, category: builder.category.includes(v as category) ? builder.category.filter(c => c !== v) : [...builder.category, v as category] }); }} />
+                                    <DropDown isOnce={false} label="Catégorie" value={builder.category} isOpen={settings.category} options={categoryBtn} onToggle={() => setSettings(s => ({ ...s, category: !s.category }))} onSelect={(v) => { setBuilder(prev => ({ ...prev, category: prev.category.some(c => c.value === v.value) ? prev.category.filter(c => c.value !== v.value) : [...prev.category, v] })); }} />
                                 </div>
                             </div>
                         </div>
@@ -134,13 +134,13 @@ export default function CtfBuilder({ onClose } : any) {
                                 <p className="text-white/60 w-full text-sm leading-relaxed wrap-break-word whitespace-pre-line">{builder.description || "Aucune description"}</p>
                             </div>
                         </div>
-                        <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">
+                        <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5 flex flex-col gap-2">
                             <div className="flex items-center gap-2 text-white/50">⚡ <span>Difficulté</span></div>
-                            <p className="text-white font-medium">{builder.difficulty || "N/A"}</p>
+                            <p className={`text-[12px] w-fit px-2 py-0.5 rounded-full bg-green-500/10 ${builder.difficulty?.color}`}>{builder.difficulty?.label || "N/A"}</p>
                         </div>
-                        <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">
+                        <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5 flex flex-col gap-2">
                             <div className="flex items-center gap-2 text-white/50">🏷️ <span>Catégories</span></div>
-                            <p className="text-white font-medium">{builder.category.length ? builder.category.join(", ") : "N/A"}</p>
+                            <p className="text-white font-medium flex items-center gap-2 flex-wrap">{builder.category?.length ? builder.category.map(v => <span className={`text-[12px] px-2 py-0.5 rounded-full bg-green-500/10 ${v.color}`}>{v.value}</span>) : "N/A"}</p>
                         </div>
                         <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">
                             <div className="flex items-center gap-2 text-white/50">🪙 <span>Récompense ( coins )</span></div>

@@ -1,14 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
 import { useNavData } from "@/stores/store"
 
 import AdminPanel from "../AdminPanel"
-import { default_pp, staff_role, statusColor, } from "@/lib/config"
+import { default_pp, Permissions, staff_role, statusColor, } from "@/lib/config"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
@@ -19,12 +19,13 @@ import { IoWarning } from "react-icons/io5";
 import ModalText from "../ui/ModalText";
 import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
+import { hasAlias } from "@/lib/session";
 
 
 export default function Navbar() {
     const { showNotif } = useNotif()
     const { call } = useApi()
-    const { updateIsGuest, isGuest, user_id, username, status, role, pp_url, coins, points, inMaintenance, warn, updateWarn } = useNavData()
+    const { updateIsGuest, isGuest, user_id, username, status, role, pp_url, coins, points, inMaintenance, warn, updateWarn, permissions } = useNavData()
 
     const router = useRouter()
 
@@ -42,10 +43,14 @@ export default function Navbar() {
 
     const handleWarn = async () => {
         setShowWarn(false)
-        await fetch(`/api/users/${user_id}/sanctions/warn`, { method: "PATCH", body: JSON.stringify({ warn_id: warn?.id })})
+        await fetch(`/api/users/${user_id}/sanctions/warn`, { method: "PATCH", body: JSON.stringify({ warn_id: warn?.id }) })
         if (warn) updateWarn({ ...warn, show_notif: false })
         showNotif("Vous avez pris connaissance du warn !", "success")
     }
+
+    useEffect(() => {
+        console.log(permissions);
+    }, [permissions])
 
     return (
         <div>
@@ -93,37 +98,35 @@ export default function Navbar() {
                         <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
                         <div className="hidden sm:flex items-center text-white/40">
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
-                                <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`}/><span className="mx-2">-</span>{username}</Link>
+                                <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
                             </div>
-                                <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 ml-5"><RiCoinsFill />{coins}</p>
-                                <p className="text-white/70 text-[20px] mx-5"> | </p>
-                                <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 mr-15"><SiOpslevel />{points}</p>
+                            <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 ml-5"><RiCoinsFill />{coins}</p>
+                            <p className="text-white/70 text-[20px] mx-5"> | </p>
+                            <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 mr-15"><SiOpslevel />{points}</p>
                             <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
                             <div className="flex ml-3 items-center gap-5 text-white/40">
-                                {staff_role.includes(role as any) && (
-                                    <div className="flex items-center gap-3">
-                                        <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="font-bold text-[30px] hover:text-red-800 transition duration-500 cursor-pointer ml-7" />
-                                    </div>
-                                )}
+                                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.canOpen) ) && <div className="flex items-center gap-3"><MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="font-bold text-[30px] hover:text-red-800 transition duration-500 cursor-pointer ml-7" /></div>}
                             </div>
                         </div>
                     </nav>
-                </div>
+                </div >
             )}
             <hr className="text-white/40 m-auto mb-10" />
-            {menuOpen && (
-                <div className="sm:hidden px-4 pb-4 animate-fadeIn">
-                    <div className="flex flex-col gap-3">
-                        <Link href="/home"><button className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Accueil</button></Link>
-                        <Link href="/tools"><button className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Tools</button></Link>
-                        <Link href="/challenges"><button className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Nos challenges</button></Link>
-                        <Link href="/accounts"><button className="w-full text-left px-4 py-3 rounded-lg bg-[#2a2a3d] text-white/70 hover:bg-[#3a3a4d] transition duration-500">Mon compte</button></Link>
-                        <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition duration-500"><MdExitToApp />Déconnexion</button>
+            {
+                menuOpen && (
+                    <div className="sm:hidden px-4 pb-4 animate-fadeIn">
+                        <div className="flex flex-col gap-3">
+                            <Link href="/home"><button className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Accueil</button></Link>
+                            <Link href="/tools"><button className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Tools</button></Link>
+                            <Link href="/challenges"><button className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Nos challenges</button></Link>
+                            <Link href="/accounts"><button className="w-full text-left px-4 py-3 rounded-lg bg-[#2a2a3d] text-white/70 hover:bg-[#3a3a4d] transition duration-500">Mon compte</button></Link>
+                            <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition duration-500"><MdExitToApp />Déconnexion</button>
+                        </div>
                     </div>
-                </div>
-            )} 
-            {showWarn && warn && warn?.reason && <ModalWarn id={warn.id} staff_id={warn?.staff_id} reason={warn?.reason} onSelect={handleWarn}/>}
+                )
+            }
+            {showWarn && warn && warn?.reason && <ModalWarn id={warn.id} staff_id={warn?.staff_id} reason={warn?.reason} onSelect={handleWarn} />}
             {showAdminPanel && <AdminPanel closePanel={() => setShowAdminPanel(false)} />}
-        </div>
+        </div >
     )
 }

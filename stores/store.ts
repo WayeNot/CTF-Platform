@@ -26,6 +26,7 @@ type NavState = {
     inMaintenance: boolean;
     reset_password: boolean;
     warn: Warn | null;
+    permissions: string[];
 
     updateIsGuest: (v: boolean) => void;
     updateUserId: (v: number) => void;
@@ -40,6 +41,7 @@ type NavState = {
     updateInMaintenance: (v: boolean) => void;
     updateResetPassword: (v: boolean) => void;
     updateWarn: (v: Warn | null) => void;
+    updatePermissions: (v: string[]) => void;
 };
 
 export const useNavData = create<NavState>((set) => ({
@@ -56,6 +58,7 @@ export const useNavData = create<NavState>((set) => ({
     inMaintenance: false,
     reset_password: false,
     warn: null,
+    permissions: [],
 
     updateIsGuest: (v) => set({ isGuest: v }),
     updateUserId: (v) => set({ user_id: v }),
@@ -70,4 +73,5 @@ export const useNavData = create<NavState>((set) => ({
     updateInMaintenance: (v) => set({ inMaintenance: v }),
     updateResetPassword: (v) => set({ reset_password: v }),
     updateWarn: (v) => set({ warn: v }),
+    updatePermissions: (v) => set({ permissions: v }),
 }));

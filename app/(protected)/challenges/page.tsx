@@ -15,12 +15,13 @@ import CreateButtons from "@/components/challenges/home/CreateButtons";
 import { useNavData } from "@/stores/store"
 import ChallengeGroups from "@/components/challenges/home/ChallengeGroups";
 import Link from "next/link";
+import { Permissions } from "@/lib/config";
 
 export default function Home() {
     const { call } = useApi();
     const router = useRouter();
 
-    const { isGuest, role } = useNavData()
+    const { isGuest, role, permissions } = useNavData()
 
     const [tab, setTab] = useState<0 | 1>(0);
     const [ctf, setCtf] = useState<ctf[]>([]);
@@ -74,7 +75,7 @@ export default function Home() {
 
                 {tab === 0 && (
                     <div className="px-6 space-y-10">
-                        <CreateButtons type="ctf" role={role} onCtfOpen={() => setOpenCtf(true)} />
+                        {Array.isArray(permissions) && permissions.includes(Permissions.contributor.canCreate.ctf) && <CreateButtons type="ctf" role={role} onCtfOpen={() => setOpenCtf(true)}/>}
                         <ChallengeGroups data={groupedCtf} currentDifficulty={currentDifficulty} open={open} type="ctf" />
                     </div>
                 )}
@@ -102,8 +103,8 @@ export default function Home() {
                         )}
                     </div>
                 )}
-                {openCtf && <CtfBuilder onClose={() => setOpenCtf(false)} />}
-                {openGeo && <GeointBuilder onClose={() => setOpenGeo(false)} />}
+                {openCtf && Array.isArray(permissions) && permissions.includes(Permissions.contributor.canCreate.ctf) && <CtfBuilder onClose={() => setOpenCtf(false)} />}
+                {openGeo && Array.isArray(permissions) && permissions.includes(Permissions.contributor.canCreate.geoint) && <GeointBuilder onClose={() => setOpenGeo(false)} />}
             </div>
         </div>
     );

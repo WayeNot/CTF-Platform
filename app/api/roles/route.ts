@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
         const id = await sql`INSERT INTO roles (label, description, color) VALUES (${role.label}, ${role.description}, ${role.color}) RETURNING id`;
         for (const perm of role.allPerms) {
-            await sql`INSERT INTO roles_relation (id_role, id_permission) VALUES (${id[0].id}, ${perm})`;
+            await sql`INSERT INTO roles_relation (id_role, alias) VALUES (${id[0].id}, ${perm})`;
         }
         
         const allRoles = await sql`SELECT * FROM roles`

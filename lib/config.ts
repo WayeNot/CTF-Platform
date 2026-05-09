@@ -9,8 +9,50 @@ export const owners = [
     { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
 ];
 
+export const Permissions = {
+    contributor: {
+        canCreate: {
+            ctf: "contributor.canCreate.ctf",
+            geoint: "contributor.canCreate.geoint",
+        },
+    },
+
+    paneladmin: {
+        canOpen: "panelAdmin.canOpen",
+        dashboard: "paneladmin.dashboard",
+        manageUser: "paneladmin.manageUser",
+        role: "panelAdmin.role",
+        challenges: "panelAdmin.challenges",
+        flags: "panelAdmin.flags",
+        scoreboard: "panelAdmin.scoreboard",
+        announcement: "panelAdmin.announcement",
+        settings: "panelAdmin.settings",
+        logs: "panelAdmin.logs",
+        user: {
+            session: "panelAdmin.user.session",
+            sanctions: "panelAdmin.user.sanctions",
+            coins: "panelAdmin.user.coins",
+            role: "panelAdmin.user.role",
+            progression: "panelAdmin.user.progression",
+            monitoring: "panelAdmin.user.monitoring",
+        }
+    },
+
+    advanced: {
+        administrator: "advanced.administrator"
+    },
+
+    bypass: {
+        maintenance: "bypass.maintenance",
+    },
+} as const
+
+export const has = (userPerms: string[], perm: string) => userPerms.includes(perm)
+
 export const staff_role = ["owner", "admin", "dev"];
 export const maintenance_role: Role[] = ["owner", "admin", "dev", "contributor"];
+
+export const maintenance_alias = "bypass.maintenance";
 
 export const maintenance_route = "/dev/maintenance"
 

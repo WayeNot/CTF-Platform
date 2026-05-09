@@ -12,7 +12,6 @@ import { Role, Status, User } from "@/lib/types"
 import { default_pp, default_user, maintenance_role } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
-import NavbarLight from "@/components/NavBar/NavbarLight";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -21,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const [user, setUser] = useState<User | null>(null)
     const [guest, setGuest] = useState(false)
 
-    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, warn, updateWarn } = useNavData()
+    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, warn, updateWarn, updatePermissions } = useNavData()
 
     useEffect(() => {
         const getSettings = async () => {
@@ -51,14 +50,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 setUser(null)
             }
         }
+        getSession();
+    }, [pathname])
+
+    useEffect(() => {
+        if (pathname.startsWith("/accounts")) return;
+        const getRoles = async () => {
+            const roles = await fetch(`/api/user/${user_id}/role`)
+            const dataRoles = await roles.json()
+            dataRoles && updateRole(dataRoles.data)
+        }
+        const getPermissions = async () => {
+            const perm = await fetch(`/api/user/${user_id}/permissions`)
+            const DataPerm = await perm.json()
+            DataPerm && updatePermissions(DataPerm.data)
+        }
         const getWarn = async () => {
             const warn = await fetch(`/api/users/${user_id}/sanctions/warn`)
             const data = await warn.json()
             if (data) updateWarn(data)
         }
-        getSession();
-        if (user_id >= 0) getWarn();
-    }, [pathname])
+        getWarn();
+        getRoles();
+        user_id !== -1 && getPermissions();
+    }, [user_id])
 
     const handleLogout = async () => {
         await fetch("/api/auth/logout", { method: "POST" })
@@ -74,7 +89,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updateIsGuest(guest);
         updateUsername(user?.username ?? "");
         updateEmail(user?.email ?? "");
-        updateRole(user?.role || []);
         updatePublicUsername(user?.is_anonymous ? "Anonyme" : user?.username ?? "")
         updatePp_url(user?.pp_url ?? "");
         updateStatus(user?.status ?? "offline");
@@ -88,8 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
-                    {pathname.startsWith("/user") && <NavbarLight />}
-                    {!pathname.startsWith("/user") && pathname !== "/" && !pathname.startsWith("/accounts") && user && <Navbar />}
+                    {pathname !== "/" && !pathname.startsWith("/accounts") && user && <Navbar />}
                     {pathname === "/" && <NavbarNotConnected />}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}
