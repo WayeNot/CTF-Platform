@@ -75,14 +75,14 @@ export default function Home() {
 
                 {tab === 0 && (
                     <div className="px-6 space-y-10">
-                        {Array.isArray(permissions) && permissions.includes(Permissions.contributor.canCreate.ctf) && <CreateButtons type="ctf" role={role} onCtfOpen={() => setOpenCtf(true)}/>}
+                        {permissions && Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf)) && <CreateButtons type="ctf" role={role} onCtfOpen={() => setOpenCtf(true)} />}
                         <ChallengeGroups data={groupedCtf} currentDifficulty={currentDifficulty} open={open} type="ctf" />
                     </div>
                 )}
 
                 {tab === 1 && (
                     <div className="px-6 space-y-10">
-                        <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />
+                        {permissions && Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf)) && <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />}
                         {isGuest ? (
                             <div className="relative">
                                 <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">
