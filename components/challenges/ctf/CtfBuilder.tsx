@@ -109,7 +109,7 @@ export default function CtfBuilder({ onClose } : any) {
                     </div>
                     <div className="p-3 border-t border-white/10 bg-[#212529] grid grid-cols-2 gap-2">
                         <button onClick={() => setDisplayFiles(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono">Files</button>
-                        <button onClick={() => setDisplayFlags(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono">Flags</button>
+                        <button onClick={() => setDisplayFlags(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono">Flag creation</button>
                         <button onClick={() => resetBuilder() } className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono">Cancel</button>
                         <button disabled={!canCreate} onClick={handleCreate} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono">Create</button>
                     </div>
