@@ -9,33 +9,49 @@ export default function Home() {
     const { role } = useNavData()
 
     const tools = [
-        { name: "Recherche d'information en source ouverte" },
-        { name: "OSINT", tools: [
+        { name: "Open Source Intelligence - Renseignement d’Origine Sources Ouvertes" },
+        { name: "Identity", tools: [
+            {name: "Epios", description: "Founded by a cybersecurity and OSINT specialist with more than 10 years of experience, Epieos provides training, investigation and software services to organisations and individuals. We facilitate their efforts to collect and analyse open source information.", image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Finvestigators-toolbox.com%2Fwp-content%2Fuploads%2F2021%2F05%2Fepieos.png&f=1&nofb=1&ipt=7d251e47888ea11c8a0b322d02ec526519c51b5bde5b18a4497f53ddff20c354", link: "https://epieos.com/"},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+        ] },
+        { name: "Username", tools: [
             {name: "Test", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
         ] },
-        { name: "GEOINT", tools: [
+        { name: "Email", tools: [
             {name: "Test", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
         ] },
-        { name: "HUMINT", tools: [
+        { name: "Phone Number", tools: [
             {name: "Test", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
         ] },
-        { name: "TECHINT", tools: [
+        { name: "Social Media", tools: [
             {name: "Test", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
             {name: "", description: "", image: "", link: ""},
         ] },
-        { name: "SOCMINT" },
-        { name: "OPSEC" },
+        { name: "Companies", tools: [
+            {name: "Test", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+        ] },
+        { name: "Geoint", tools: [
+            {name: "Test", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+            {name: "", description: "", image: "", link: ""},
+        ] },
     ]
     return (
         <div>
@@ -67,8 +83,15 @@ export default function Home() {
                             <div key={k}>
                                 <h2 className="text-white/70 text-xl text-[30px] mt-10 ml-20 font-mono font-bold">{v.name}</h2>
                                 <hr className="mt-5 mx-20 text-white/70" />
-                                {v?.tools?.map((value, key) => (
-                                    <p>{value.name}</p>
+                                {v?.tools?.map((value) => (
+                                    <div className="border-2 border-white/30 my-10 mx-30 p-5">
+                                        <div className="flex justify-between">
+                                            <p className="text-white/70 text-[25px] font-mono font-bold">{value.name}</p>
+                                            <img src={value.image} className="w-50"></img>
+                                        </div>
+                                        <p className="text-white/70 font-mono mt-5">{value.description}</p>
+                                        <a target="_blank" className="text-white/70 underline font-mono hover:text-white transition duration-500" href={value.link}>Try the tool</a>
+                                    </div>
                                 ))}
                             </div>
                         ))}
