@@ -76,6 +76,7 @@ export type UserTransactions = {
 export type Roles = {
     id: number;
     label: string;
+    description: string;
 }
 
 export type Permissions = {

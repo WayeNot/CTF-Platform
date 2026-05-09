@@ -15,6 +15,7 @@ import { RiMailSendLine } from "react-icons/ri";
 import { CiDatabase } from "react-icons/ci";
 import DisplayBan from "./ui/sanction/DisplayBan";
 import DisplayWarn from "./ui/sanction/DisplayWarn";
+import { button, pre } from "framer-motion/client";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
@@ -37,23 +38,29 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [roles, setRoles] = useState<Roles[]>([])
 
     const [displayCreation, setDisplayCreation] = useState(-1)
-    const [newRole, setNewRole] = useState({ label: "", description: "", allPerms: [] })
+
+    const [newRole, setNewRole] = useState<{ label: string; description: string; color: string; allPerms: string[]; }>({ label: "", description: "", color: "", allPerms: [] })
 
     const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser" | "displayReasonBan" | "displayReasonWarn">(null)
 
-    const [permissions, setPermissions] = useState([[
-        { id: 0, name: "Permissions générales", description: "", isSelected: false, canBeSelected: false },
-        { id: 1, name: "Test", description: "", isSelected: false, canBeSelected: true },
-        { id: 2, name: "Test", description: "", isSelected: false, canBeSelected: true },
-        { id: 3, name: "Test", description: "", isSelected: false, canBeSelected: true },
-        { id: 4, name: "Test", description: "", isSelected: false, canBeSelected: true },
-    ], [
-        { id: 5, name: "Permissions des membres", description: "", isSelected: false, canBeSelected: false },
-        { id: 6, name: "Test", description: "", isSelected: false, canBeSelected: true },
-        { id: 7, name: "Test", description: "", isSelected: false, canBeSelected: true },
-        { id: 8, name: "Test", description: "", isSelected: false, canBeSelected: true },
-        { id: 9, name: "Test", description: "", isSelected: false, canBeSelected: true },
-    ]])
+    const [permissions, setPermissions] = useState([
+        { label: "Permissions générales", description: "", alias: "", isSelected: false, canBeSelected: false },
+
+        { label: "Permissions de création", description: "", alias: "", isSelected: false, canBeSelected: false },
+        { label: "Création de CTF", description: "Peut créer des CTF à sa guise", alias: "creator.ctf", isSelected: false, canBeSelected: true },
+        { label: "Création de Géoint", description: "Peut créer des Géoint à sa guise", alias: "creator.geoint", isSelected: false, canBeSelected: true },
+
+        { label: "Permissions panel admin", description: "", alias: "", isSelected: false, canBeSelected: false },
+        { label: "Dashboard", description: "Les membres avec ce rôle auront accès au dashboard", alias: "paneladmin.dashboard", isSelected: false, canBeSelected: true },
+        { label: "Gestion des utilisateurs", description: "Les membres avec ce rôle auront accès à la gestion des utilisateurs", alias: "paneladmin.manageUser", isSelected: false, canBeSelected: true },
+        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "paneladmin.role", isSelected: false, canBeSelected: true },
+
+        { label: "Permissions Gestion des utilisateurs", description: "", alias: "", isSelected: false, canBeSelected: false, onlyIf: "Gestion des utilisateurs" },
+        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "paneladmin.role", isSelected: false, canBeSelected: true },
+
+        { label: "Permissions avancées", description: "", alias: "", isSelected: false, canBeSelected: false },
+        { label: "Administrateur", description: "Les membres ayant cette permission auront toutes les permissions et pourront passer outre les restrictions.", alias: "advanced.administrator", isSelected: false, canBeSelected: true },
+    ])
 
     const colorClasses = {
         red: "bg-red-500/40",
@@ -70,20 +77,19 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         "red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal"
     ]
 
-    const [selectedColor, setSelectedColor] = useState("")
-
     const getAllUser = async () => {
-        const req = await fetch("/api/users")
-        if (!req.ok) {
-            const err = await req.json()
-            showNotif(err.error)
-            return
-        }
-        setUsers(await req.json())
+        const data = await call("/api/users")
+        setUsers(await data.data)
+    }
+
+    const getAllRoles = async () => {
+        const data = await call(`/api/roles`)
+        setRoles(data.data)
     }
 
     useEffect(() => {
         if (panelTab === "Gestion des utilisateurs") getAllUser()
+        if (panelTab === "Gestion des rôles") getAllRoles()
         if (userTab === "Sessions") getUserSessions()
         if (userTab === "Sanctions") getUserSanctions()
         if (userTab === "Gestion des coins") getUserTransactions();
@@ -171,11 +177,20 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setShowModal(null)
     }
 
-    const handleCreateRole = () => {
-        if (!newRole || !newRole.label || !newRole.description || newRole.allPerms.length === 0) {
+    const handleCreateRole = async () => {
+        if (!newRole || !newRole.label || !newRole.description) {
             showNotif("Veuillez remplir tout les champs !")
             return
         }
+
+        const perms = permissions.filter((v): v is typeof v & { alias: string } => v.canBeSelected && v.isSelected && typeof v.alias === "string").map(p => p.alias);
+
+        setNewRole(prev => ({ ...prev, allPerms: perms }));
+        const data = await call(`/api/roles`, { method: "POST", body: JSON.stringify({ role: newRole }) })
+        setRoles(data.data)
+        setDisplayCreation(-1)
+        setNewRole({ label: "", description: "", color: "", allPerms: [] })
+        showNotif("Rôle bien créé !", "success")
     }
 
     const panelTabLabel = ["Dashboard", "Gestion des utilisateurs", "Gestion des rôles", "Gestion des CTF", "Gestion des challenges", "Soumission des flags", "ScoreBoard", "Gestion des annonces", "Paramètres", "Logs & Sécurité"]
@@ -192,6 +207,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 <div className="flex items-center justify-center w-full gap-3 mb-4">
                     {panelTabLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
                 </div>
+                {panelTab === "Dashboard" && (
+                    <div className="flex flex-col gap-5 mt-5">
+                        {/* Dashboard à dèv */}
+                    </div>
+                )}
                 {panelTab === "Gestion des utilisateurs" && (
                     <div className="w-full">
                         <div className="flex items-center gap-3 w-full">
@@ -203,6 +223,22 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     </div>
                 )}
+                {panelTab === "Gestion des rôles" && (
+                    <div className="flex flex-col gap-5 mt-5">
+                        <div className="flex items-center gap-3">
+                            <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
+                            <button className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer une permission</button>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Rôles ↓<span className="h-px flex-1 bg-white/10" /></div>
+                        <div className="my-2">
+                            <div>
+                                {roles.length === 0 && "Aucun rôle pour le moment !"}
+                                {roles.map((v, k) => <button key={k} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center flex items-center flex-col gap-2"><p>{v?.label}</p></button>)}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
+                    </div>
+                )}
                 {panelTab === "Logs & Sécurité" && (
                     <div>
                         {inMaintenance ? (
@@ -210,16 +246,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         ) : (
                             <button onClick={() => setMaintenance()} className="flex items-center gap-3 text-red-500 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center"><MdCheckBoxOutlineBlank />Mettre le site en maintenance</button>
                         )}
-                    </div>
-                )}
-                {panelTab === "Gestion des rôles" && (
-                    <div className="flex flex-col gap-5 mt-5">
-                        <div className="flex items-center gap-3">
-                            <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
-                            <button className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer une permission</button>
-                        </div>
-                        <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Rôles ↓<span className="h-px flex-1 bg-white/10" /></div>
-                        <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
                     </div>
                 )}
                 {displayCreation === 1 && (
@@ -240,9 +266,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                                 <button>Couleur du rôle</button>
                                                 <hr className="my-5 border-gray-600 w-full" />
                                                 <div className="flex items-center justify-center flex-wrap w-full gap-3">
-                                                    {colorRole.map((v, k) => (
-                                                        <button onClick={() => setSelectedColor(v)} key={k} className={`${selectedColor === v && "border-2 border-green-800 w-10 h-10"} w-7.5 h-7.5 rounded-full ${colorClasses[v]} cursor-pointer transition duration-500 hover:border-2 hover:border-white/40`}></button>
-                                                    ))}
+                                                    {colorRole.map((v, k) => <button onClick={() => setNewRole(prev => ({ ...prev, color: colorClasses[v] }))} key={k} className={`${newRole.color === v && "border-2 border-green-800 w-10 h-10"} w-7.5 h-7.5 rounded-full ${colorClasses[v]} cursor-pointer transition duration-500 hover:border-2 hover:border-white/40`}></button>)}
                                                 </div>
                                             </div>
                                         </div>
@@ -260,21 +284,9 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         <h2 className="text-2xl font-semibold tracking-tight text-white">Gestion des permissions</h2>
                                         <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
                                     </div>
-                                    <div className="flex flex-col gap-2 mt-5 bg-[#2a2a3d] w-full p-2">
-                                        {/* {permissions[0].length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>} */}
-                                        {permissions.map((table, keyTable) => (
-                                            <div key={keyTable} className="w-full flex items-center gap-2">
-                                                {table.map((v, k) => (
-                                                    <div key={k} className="flex items-center gap-2">
-                                                        {v.canBeSelected ? (
-                                                            <button key={k} onClick={() => setPermissions(prev => prev.map(perms => perms[keyTable].id === v.id ? { ...perms, isSelected: !perms[keyTable].isSelected } : perms))} className={`${v.isSelected && "bg-green-500/40 hover:bg-green-700/40"} rounded-lg w-fit p-2 bg-[#151522] text-sm outline-none cursor-pointer transition duration-500 hover:bg-[#151522]/80`}>{v.name}</button>
-                                                        ) : (
-                                                            <button key={k} onClick={() => showNotif("Ceci n'est pas une permission !")} className={`w-fit p-2 font-bold italic rounded-lg text-sm outline-none`}>{v.name} →</button>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ))}
+                                    <div className="flex flex-col gap-2 mt-5 bg-[#2a2a3d] w-full p-2 max-h-75 overflow-y-scroll">
+                                        {permissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>}
+                                        {permissions.map((v, k) => v.canBeSelected ? <button key={k} onClick={() => setPermissions(prev => prev.map(perms => perms.alias === v.alias ? { ...perms, isSelected: !perms.isSelected } : perms))} className={`${v.isSelected && "bg-green-500/40 hover:bg-green-700/40"} rounded-lg w-full p-2 bg-[#151522] text-sm outline-none cursor-pointer transition duration-500 hover:bg-[#151522]/80 flex items-start justify-start text-start flex-col gap-2`}><p className="font-bold">{v.label}</p><p className="italic text-[12px]">{v?.description}</p></button> : <div className={`flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30 mb-2 ${k !== 0 && "mt-3"}`}><span className="h-px w-6 bg-white/20" />{v.label}<span className="h-px flex-1 bg-white/10" /></div>)}
                                     </div>
                                 </div>
                             </div>
@@ -311,14 +323,8 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
                                     </div>
                                     <div className="w-2/3 flex flex-col gap-2 mt-5">
-                                        {permissions.length === 0 && (
-                                            <div>
-                                                <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>
-                                            </div>
-                                        )}
-                                        {permissions.map((v, k) => (
-                                            <button key={k}>v</button>
-                                        ))}
+                                        {permissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>}
+                                        {permissions.map((v, k) => <button key={k}>v</button>)}
                                     </div>
                                 </div>
                             </div>
@@ -365,14 +371,13 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         </thead>
 
                                         <tbody>
-                                            {userSessions.map((v, k) => (
-                                                <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300">
-                                                    <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{k}</span></div></td>
-                                                    <td className="p-4"><span className="text-white/70">{v.session_id}</span></td>
-                                                    <td className="p-4"><span className={`px-3 py-1 ${v.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
-                                                    <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td>
-                                                </tr>
-                                            ))}
+                                            {userSessions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300">
+                                                <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{k}</span></div></td>
+                                                <td className="p-4"><span className="text-white/70">{v.session_id}</span></td>
+                                                <td className="p-4"><span className={`px-3 py-1 ${v.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
+                                                <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td>
+                                            </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -405,20 +410,19 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         </thead>
 
                                         <tbody>
-                                            {userSanctions.map((v, k) => (
-                                                <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
-                                                    <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
-                                                    <td className="p-4"><span className="text-white/70">{v?.type}</span></td>
-                                                    <td onClick={() => { setSanction(v); v?.type === "ban" ? setShowModal("displayReasonBan") : setShowModal("displayReasonWarn") }} className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{v?.duration}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{v?.user_id}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{v.duration === 0 ? "Jamais" : new Date(v.expires_at).toLocaleString()}</span></td>
-                                                    <td className="p-4"><span className={`px-3 py-1 ${v?.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
-                                                    {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
-                                                </tr>
-                                            ))}
+                                            {userSanctions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
+                                                <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
+                                                <td className="p-4"><span className="text-white/70">{v?.type}</span></td>
+                                                <td onClick={() => { setSanction(v); v?.type === "ban" ? setShowModal("displayReasonBan") : setShowModal("displayReasonWarn") }} className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{v?.duration}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{v?.user_id}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{v.duration === 0 ? "Jamais" : new Date(v.expires_at).toLocaleString()}</span></td>
+                                                <td className="p-4"><span className={`px-3 py-1 ${v?.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
+                                                {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
+                                            </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -430,9 +434,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             <div className="flex items-center gap-3">
                                 <h2 className="text-white/40 text-[20px] font-bold w-fit">Ajout / Retrait de coins : </h2>
                                 <div className="flex items-center gap-3 w-auto">
-                                    {coinManagement.map((v, k) => (
-                                        <button key={k} onClick={() => updateCoin(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>
-                                    ))}
+                                    {coinManagement.map((v, k) => <button key={k} onClick={() => updateCoin(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>)}
                                 </div>
                             </div>
                             <div className="w-full flex items-center">
@@ -456,18 +458,17 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {userTransactions.map((v, k) => (
-                                                <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
-                                                    <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
-                                                    <td className="p-4"><span className={`${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && "Ajout"}{v?.type === "remove_coins" && "Retrait"}{v?.type === "set_coins" && "Set"}{v?.type === "reset_coins" && "Reset"}</span></td>
-                                                    <td className="p-4"><span className={`p-2 ${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && `+${v?.amount}`}{v?.type === "remove_coins" && `-${v?.amount}`}{v?.type === "set_coins" && `${v?.amount}`}{v?.type === "reset_coins" && `${v?.amount}`}</span></td>
-                                                    <td className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason ? v?.reason : "Aucune"}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{v?.reference_id ? v?.reference_id : "Aucune"}</span></td>
-                                                    <td className="p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
-                                                    {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
-                                                </tr>
-                                            ))}
+                                            {userTransactions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
+                                                <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
+                                                <td className="p-4"><span className={`${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && "Ajout"}{v?.type === "remove_coins" && "Retrait"}{v?.type === "set_coins" && "Set"}{v?.type === "reset_coins" && "Reset"}</span></td>
+                                                <td className="p-4"><span className={`p-2 ${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && `+${v?.amount}`}{v?.type === "remove_coins" && `-${v?.amount}`}{v?.type === "set_coins" && `${v?.amount}`}{v?.type === "reset_coins" && `${v?.amount}`}</span></td>
+                                                <td className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason ? v?.reason : "Aucune"}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{v?.reference_id ? v?.reference_id : "Aucune"}</span></td>
+                                                <td className="p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
+                                                {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
+                                            </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
