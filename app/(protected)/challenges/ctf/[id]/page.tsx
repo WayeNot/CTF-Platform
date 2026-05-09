@@ -123,7 +123,7 @@ export default function Page() {
                 
                 <div className="py-5 px-4 bg-[#212529] flex flex-col items-center justify-center gap-5">
                     {foundCount === flagsLen && (
-                        <p className="w-fit px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-3"><span className="text-green-600"><CiCircleCheck /></span>Vous avez terminé {ctf?.title} !</p>
+                        <p className="w-fit px-4 py-2 bg-[#212529] border-2 border-white/30 text-white/70 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-3"><span className="text-green-600"><CiCircleCheck /></span>Vous avez terminé {ctf?.title} !</p>
                     )}
                     <div className='w-fit border-2 border-white/30 pl-50 pr-50 pt-10'>
                         <h2 className="text-white/60 font-mono text-[40px] text-center">CTF - {ctf?.title} | Difficulty : {ctf?.difficulty}</h2>

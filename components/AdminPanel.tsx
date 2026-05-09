@@ -358,7 +358,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                     {userTab === "Sessions" && (
                         <div className="flex flex-col gap-5">
                             <button onClick={closeAllSession} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Fermer toutes les sessions de l'utilisateur</button>
-                            {userSessions.length === 0 && <h2>Aucune session pour le moment !</h2>}
+                            {userSessions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
                             <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
                                 <div className="overflow-x-auto rounded-xl border border-white/10">
                                     <table className="w-full text-left border-collapse">
@@ -391,7 +391,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                 <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
                                 <button onClick={() => setShowModal("banUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Bannir l'utilisateur</button>
                             </div>
-                            {userSanctions.length === 0 && <h2>Aucune session pour le moment !</h2>}
+                            {userSanctions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
                             <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
                                 <div className="overflow-x-auto rounded-xl border border-white/10">
                                     <table className="w-full text-left border-collapse">
@@ -442,7 +442,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                 <button onClick={() => setShowModal("set")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Modifier le nombre de coins</button>
                                 <button onClick={() => setShowModal("reset")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset le nombre de coins</button>
                             </div>
-                            {userTransactions.length === 0 && <h2>Aucune session pour le moment !</h2>}
+                            {userTransactions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
                             <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
                                 <div className="overflow-x-auto rounded-xl border border-white/10">
                                     <table className="w-full text-left border-collapse">
