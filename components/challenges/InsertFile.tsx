@@ -24,18 +24,18 @@ export default function InsertFile({ onClose, onSubmit }: InsertFileType) {
 
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
-            <div className="bg-[#12121c] w-140 rounded-2xl p-5 text-white shadow-2xl border border-white/10 space-y-4">
+            <div className="bg-[#212529] w-140 p-5 text-white shadow-2xl border border-white/10 space-y-4">
                 <div className="text-center">
-                    <h2 className="text-lg font-bold">Fichiers du challenge</h2>
-                    <p className="text-white/40 text-xs">Glisser-déposer ou sélectionner des fichiers</p>
+                    <h2 className="text-lg font-bold font-mono">Challenge files</h2>
+                    <p className="text-white/40 text-xs font-mono">Drag and drop or select files</p>
                 </div>
                 <div className="border border-dashed border-white/20 rounded-xl p-6 cursor-pointer hover:border-orange-500 transition duration-500 flex flex-col items-center justify-center gap-2" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const files = Array.from(e.dataTransfer.files || []); setFiles(prev => [...prev, ...files]); }} onClick={() => document.getElementById("fileInput")?.click()}>
                     <input id="fileInput" type="file" multiple className="hidden" onChange={(e) => { const fileInput = e.target.files; if (!fileInput) return; setFiles(prev => [...prev, ...Array.from(fileInput)]); }} />
                     <div className="text-3xl">📁</div>
-                    <div className="text-sm text-white/50 text-center">Clique ou dépose tes fichiers ici</div>
+                    <div className="text-sm text-white/50 text-center">Click or drop your files here</div>
                 </div>
                 <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
-                    {files.length === 0 && <div className="text-center text-white/30 text-sm">Aucun fichier</div>}
+                    {files.length === 0 && <div className="text-center text-white/30 text-sm">No file</div>}
                     {files.map((f, i) => (
                         <div key={i} className="flex items-center justify-between bg-[#1a1a28] p-2 rounded-lg text-sm hover:bg-[#232336] transition duration-500">
                             <div className="truncate max-w-[70%] flex items-center gap-2">📄 {f.name}</div>
@@ -47,8 +47,8 @@ export default function InsertFile({ onClose, onSubmit }: InsertFileType) {
                     ))}
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={onClose} className="w-1/2 bg-white/10 hover:bg-white/20 cursor-pointer transition duration-500 py-2 rounded-xl text-sm">Annuler</button>
-                    <button disabled={!canSubmit} onClick={handleSubmit} className="w-1/2 bg-green-600 hover:bg-green-500 cursor-pointer transition duration-500 py-2 rounded-xl text-sm font-medium">Valider</button>
+                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-65">Cancel</button>
+                    <button disabled={!canSubmit} onClick={handleSubmit} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono w-65">Send</button>
                 </div>
             </div>
         </div>
