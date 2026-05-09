@@ -19,7 +19,6 @@ import { IoWarning } from "react-icons/io5";
 import ModalText from "../ui/ModalText";
 import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
-import { hasAlias } from "@/lib/session";
 
 
 export default function Navbar() {
