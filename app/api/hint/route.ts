@@ -16,8 +16,6 @@ export async function POST(req: Request) {
         const coins = await sql`SELECT coins FROM users WHERE user_id = ${user_id}`;
         const hint_cost = await sql`SELECT hint_cost FROM flags WHERE id = ${flag_id} AND challenge_id = ${challenge_id} AND challenge_type = ${type}`
         
-        if (!coins[0].coins || !hint_cost[0].hint_cost) return NextResponse.json({ success: false, error: "Données invalides" }, { status: 400 })
-
         if (coins[0].coins < hint_cost[0].hint_cost) return NextResponse.json({ success: false, error: "Vous n'avez pas assez de coins !" }, { status: 406 })
         const has_buy_hint = await sql`SELECT id FROM hint_show WHERE user_id = ${user_id} AND challenge_id = ${challenge_id} AND flag_id = ${flag_id} AND type = ${type} LIMIT 1`
         if (has_buy_hint.length > 0) return NextResponse.json({ success: false, error: "Vous avez déjà dévérouiller cet indice !" }, { status: 406 })
@@ -25,7 +23,6 @@ export async function POST(req: Request) {
         await sql`INSERT INTO hint_show (user_id, challenge_id, flag_id, type) VALUES (${user_id}, ${challenge_id}, ${flag_id}, ${type})`
         return NextResponse.json({ success: true, currentCoins: currentCoins[0].coins })
     } catch (err) {
-        console.error(err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

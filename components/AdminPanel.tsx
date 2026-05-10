@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
-import { Roles, User, UserSanctions, UserSessions, UserTransactions } from "@/lib/types"
+import { Option, Roles, User, UserRoles, UserSanctions, UserSessions, UserTransactions } from "@/lib/types"
 import { IoIosArrowDroprightCircle, IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
 import { MdCheckBoxOutlineBlank } from "react-icons/md"
 import InputNumber from "./ModalInput"
-import { coinManagement, default_pp, statusColor } from "@/lib/config"
+import { coinManagement, default_pp, Permissions, statusColor } from "@/lib/config"
 import Link from "next/link"
 import { useApi } from "@/hooks/useApi"
 import { useNavData } from "@/stores/store"
@@ -15,13 +15,13 @@ import { RiMailSendLine } from "react-icons/ri";
 import { CiDatabase } from "react-icons/ci";
 import DisplayBan from "./ui/sanction/DisplayBan";
 import DisplayWarn from "./ui/sanction/DisplayWarn";
-import { button, pre } from "framer-motion/client";
+import DropDown from "./ui/DropDown";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
     const { call } = useApi()
 
-    const { inMaintenance, updateInMaintenance } = useNavData()
+    const { inMaintenance, updateInMaintenance, permissions } = useNavData()
 
     const [panelTab, setPanelTab] = useState("")
     const [userTab, setUserTab] = useState("Informations")
@@ -32,6 +32,9 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [userSessions, setUserSessions] = useState<UserSessions[]>([])
     const [userSanctions, setUserSanctions] = useState<UserSanctions[]>([])
     const [userTransactions, setUserTransactions] = useState<UserTransactions[]>([])
+    const [userRoles, setUserRoles] = useState<UserRoles[]>([])
+    const [tempUserRoles, setTempUserRoles] = useState<Option[]>([])
+    const [displayUserRoles, setDisplayUserRoles] = useState(false)
 
     const [sanction, setSanction] = useState<UserSanctions>()
 
@@ -43,22 +46,28 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser" | "displayReasonBan" | "displayReasonWarn">(null)
 
-    const [permissions, setPermissions] = useState([
-        { label: "Permissions générales", description: "", alias: "", isSelected: false, canBeSelected: false },
+    const [allPermissions, setAllPermissions] = useState([
+        { label: "Permissions générales", isSelected: false, canBeSelected: false },
+        { label: "Accès au panel admin", description: "Les membres avec ce rôle auront accès au panel admin", alias: Permissions.panelAdmin.canOpen, isSelected: false, canBeSelected: true },
 
-        { label: "Permissions de création", description: "", alias: "", isSelected: false, canBeSelected: false },
-        { label: "Création de CTF", description: "Peut créer des CTF à sa guise", alias: "creator.ctf", isSelected: false, canBeSelected: true },
-        { label: "Création de Géoint", description: "Peut créer des Géoint à sa guise", alias: "creator.geoint", isSelected: false, canBeSelected: true },
+        { label: "Permissions de création", isSelected: false, canBeSelected: false },
+        { label: "Création de CTF", description: "Peut créer des CTF à sa guise", alias: Permissions.contributor.canCreate.ctf, isSelected: false, canBeSelected: true },
+        { label: "Création de Géoint", description: "Peut créer des Géoint à sa guise", alias: Permissions.contributor.canCreate.geoint, isSelected: false, canBeSelected: true },
 
-        { label: "Permissions panel admin", description: "", alias: "", isSelected: false, canBeSelected: false },
-        { label: "Dashboard", description: "Les membres avec ce rôle auront accès au dashboard", alias: "paneladmin.dashboard", isSelected: false, canBeSelected: true },
-        { label: "Gestion des utilisateurs", description: "Les membres avec ce rôle auront accès à la gestion des utilisateurs", alias: "paneladmin.manageUser", isSelected: false, canBeSelected: true },
-        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "paneladmin.role", isSelected: false, canBeSelected: true },
+        { label: "Permissions panel admin", isSelected: false, canBeSelected: false, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Dashboard", description: "Les membres avec ce rôle auront accès au dashboard", alias: Permissions.panelAdmin.dashboard, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Gestion des utilisateurs", description: "Les membres avec ce rôle auront accès à la gestion des utilisateurs", alias: Permissions.panelAdmin.manageUser, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: Permissions.panelAdmin.role, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
 
-        { label: "Permissions Gestion des utilisateurs", description: "", alias: "", isSelected: false, canBeSelected: false, onlyIf: "Gestion des utilisateurs" },
-        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "paneladmin.role", isSelected: false, canBeSelected: true },
+        { label: "Permissions Gestion des utilisateurs", isSelected: false, canBeSelected: false, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir les sessions, les activer / désactiver et supprimer toutes les sessions.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        { label: "Gestion des sanctions", description: "Les membres avec ce rôle pourront voir les sanctions, avertir et bannir l'utilisateur.", alias: "panelAdmin.user.sanctions", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        { label: "Gestion des coins", description: "Les membres avec ce rôle pourront voir les transactions, ajouter / retirer des coins et les reset.", alias: "panelAdmin.user.coins", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir les rôles de l'utilisateur, lui en ajouter / retirer.", alias: "panelAdmin.user.role", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        // { label: "Gestion de la progression", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true },
+        // { label: "Gestion du monitoring / débug", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true },
 
-        { label: "Permissions avancées", description: "", alias: "", isSelected: false, canBeSelected: false },
+        { label: "Permissions avancées", isSelected: false, canBeSelected: false },
         { label: "Administrateur", description: "Les membres ayant cette permission auront toutes les permissions et pourront passer outre les restrictions.", alias: "advanced.administrator", isSelected: false, canBeSelected: true },
     ])
 
@@ -93,6 +102,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         if (userTab === "Sessions") getUserSessions()
         if (userTab === "Sanctions") getUserSanctions()
         if (userTab === "Gestion des coins") getUserTransactions();
+        if (userTab === "Gestion des rôles") { getAllRoles(); getUserRoles(); }
     }, [panelTab, userTab])
 
     const setMaintenance = async () => {
@@ -117,6 +127,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setUserTransactions(data.data)
     }
 
+    const getUserRoles = async () => {
+        const data = await call(`/api/admin/${editUser}/roles`)
+        setUserRoles(data.data)        
+        setTempUserRoles(data.data.map((r: any) => ({ label: r.label, value: r.role_id, color: r.color })))
+    }
+
     const handleChangeSession = async (user_id: number, session_id: string, is_active: boolean) => {
         await call(`/api/admin/${editUser}/session`, { method: "PATCH", body: JSON.stringify({ session_id: session_id, is_active: is_active }) })
         setUserSessions(prev => prev.map(session => session.session_id === session_id && session.user_id === user_id ? { ...session, is_active: !is_active } : session))
@@ -127,6 +143,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         await call(`/api/admin/${editUser}/session/closeAllSessions`, { method: "PATCH" })
         setUserSessions(prev => prev.map(session => session.is_active ? { ...session, is_active: false } : session))
         showNotif("Toutes les sessions ont bien été désactivées !", "success")
+    }
+
+    const resetPassword = async () => {
+        await call(`/api/admin/${editUser}/session/resetPassword`, { method: "POST" })
+        showNotif("Reset de mot de passe bien envoyé !", "success")
     }
 
     // Sanction sur l'utilisateur ↓
@@ -177,13 +198,15 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setShowModal(null)
     }
 
+    // Admministration sur la gestion des rôles de l'utilisateur ↓
+
     const handleCreateRole = async () => {
         if (!newRole || !newRole.label || !newRole.description) {
             showNotif("Veuillez remplir tout les champs !")
             return
         }
 
-        const perms = permissions.filter((v): v is typeof v & { alias: string } => v.canBeSelected && v.isSelected && typeof v.alias === "string").map(p => p.alias);
+        const perms = allPermissions.filter((v): v is typeof v & { alias: string } => v.canBeSelected && v.isSelected && typeof v.alias === "string").map(p => p.alias);
 
         setNewRole(prev => ({ ...prev, allPerms: perms }));
         const data = await call(`/api/roles`, { method: "POST", body: JSON.stringify({ role: newRole }) })
@@ -193,6 +216,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         showNotif("Rôle bien créé !", "success")
     }
 
+    const handleSetRoles = async () => {        
+        await call(`/api/admin/${editUser}/roles/update`, { method: "POST", body: JSON.stringify({ roles: tempUserRoles }) })
+        getUserRoles();
+        showNotif(`Les rôles de l'utilisateur avec l'id ${editUser} ont bien changé !`, "success")
+    }
+
     const panelTabLabel = ["Dashboard", "Gestion des utilisateurs", "Gestion des rôles", "Gestion des CTF", "Gestion des challenges", "Soumission des flags", "ScoreBoard", "Gestion des annonces", "Paramètres", "Logs & Sécurité"]
     const panelUserLabel = ["Informations", "Sessions", "Sanctions", "Gestion des coins", "Gestion des rôles", "Gestion de la progression", "Monitoring / débug"]
 
@@ -200,20 +229,20 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
             <div className="w-7/8 h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
                 <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
-                        <h2 className="font-bold italic text-[25px]">FlagCore</h2>
-                        <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL</h2>
-                        <button onClick={closePanel} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
-                    </div>
+                    <h2 className="font-bold italic text-[25px]">FlagCore</h2>
+                    <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL</h2>
+                    <button onClick={closePanel} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
+                </div>
                 <hr className="my-5 border-white/30" />
                 <div className="flex items-center justify-center w-full gap-3 mb-4">
                     {panelTabLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
                 </div>
-                {panelTab === "Dashboard" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.dashboard) ) && panelTab === "Dashboard" && (
                     <div className="flex flex-col gap-5 mt-5">
                         {/* Dashboard à dèv */}
                     </div>
                 )}
-                {panelTab === "Gestion des utilisateurs" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser) ) && panelTab === "Gestion des utilisateurs" && (
                     <div className="w-full">
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
@@ -224,7 +253,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     </div>
                 )}
-                {panelTab === "Gestion des rôles" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role) ) && panelTab === "Gestion des rôles" && (
                     <div className="flex flex-col gap-5 mt-5">
                         <div className="flex items-center gap-3">
                             <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
@@ -240,7 +269,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
                     </div>
                 )}
-                {panelTab === "Logs & Sécurité" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.logs) ) && panelTab === "Logs & Sécurité" && (
                     <div>
                         {inMaintenance ? (
                             <button onClick={() => setMaintenance()} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center"><IoMdCheckboxOutline />Terminer la maintenance</button>
@@ -249,7 +278,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         )}
                     </div>
                 )}
-                {displayCreation === 1 && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role) ) && displayCreation === 1 && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
                         <div className="flex w-full max-w-6xl gap-4">
                             <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
@@ -286,46 +315,23 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
                                     </div>
                                     <div className="flex flex-col gap-2 mt-5 bg-[#2a2a3d] w-full p-2 max-h-75 overflow-y-scroll">
-                                        {permissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>}
-                                        {permissions.map((v, k) => v.canBeSelected ? <button key={k} onClick={() => setPermissions(prev => prev.map(perms => perms.alias === v.alias ? { ...perms, isSelected: !perms.isSelected } : perms))} className={`${v.isSelected && "bg-green-500/40 hover:bg-green-700/40"} rounded-lg w-full p-2 bg-[#151522] text-sm outline-none cursor-pointer transition duration-500 hover:bg-[#151522]/80 flex items-start justify-start text-start flex-col gap-2`}><p className="font-bold">{v.label}</p><p className="italic text-[12px]">{v?.description}</p></button> : <div className={`flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30 mb-2 ${k !== 0 && "mt-3"}`}><span className="h-px w-6 bg-white/20" />{v.label}<span className="h-px flex-1 bg-white/10" /></div>)}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {displayCreation === 2 && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
-                        <div className="flex w-full max-w-6xl gap-4">
-                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
-                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
-                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><LiaCriticalRole /></div>
-                                    <div className="flex items-center flex-col gap-2">
-                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Création d'une permission</h2>
-                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Créer n'importe quelle permission grâce à notre configurateur !</p>
-                                    </div>
-                                    <div className="w-2/3 flex flex-col gap-2 mt-5">
-                                        <div className="flex flex-col items-center gap-3">
-                                            <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Intitulé du rôle" value={newRole.label} onChange={e => setNewRole(prev => ({ ...prev, label: e.target.value }))} />
-                                            <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description du rôle" value={newRole.description} onChange={e => setNewRole(prev => ({ ...prev, description: e.target.value }))} />
-                                        </div>
-                                        <div className="flex w-full gap-3 mt-3">
-                                            <button onClick={() => setDisplayCreation(0)} className="flex-1 py-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Annuler</button>
-                                            <button onClick={handleCreateRole} className="flex-1 py-2.5 rounded-xl bg-linear-to-r from-yellow-400 to-yellow-500 text-black font-semibold shadow-[0_15px_35px_rgba(250,204,21,0.4)] hover:brightness-110 transition duration-500 cursor-pointer active:scale-95 flex items-center justify-center gap-3 hover:text-black/70">Créer<IoIosArrowDroprightCircle /></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
-                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
-                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><IoMdPersonAdd /></div>
-                                    <div className="flex items-center flex-col gap-2">
-                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Gestion des permissions</h2>
-                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
-                                    </div>
-                                    <div className="w-2/3 flex flex-col gap-2 mt-5">
-                                        {permissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>}
-                                        {permissions.map((v, k) => <button key={k}>v</button>)}
+                                        {allPermissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>}
+                                        {allPermissions.map((v, k) => {
+                                            const hasPermission = newRole.allPerms.includes(v.alias || "");
+                                            const canDisplay = !v.onlyIf || newRole.allPerms.includes(v.onlyIf);
+
+                                            if (!v.canBeSelected) {
+                                                return (
+                                                    <div key={k} className={`flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30 mb-2 ${k !== 0 && "mt-3"}`}><span className="h-px w-6 bg-white/20" />{v.label}<span className="h-px flex-1 bg-white/10" /></div>
+                                                )
+                                            }
+
+                                            if (!v.alias || !canDisplay) return null
+
+                                            return (
+                                                <button key={k} onClick={() => setNewRole(prev => ({ ...prev, allPerms: hasPermission ? prev.allPerms.filter(p => p !== v.alias) : [...prev.allPerms, v.alias] }))} className={`rounded-lg w-full p-2 text-sm outline-none cursor-pointer transition duration-500 flex items-start justify-start text-start flex-col gap-2 ${hasPermission ? "bg-green-500/40 hover:bg-green-700/40" : "bg-[#151522] hover:bg-[#151522]/80"}`}><p className="font-bold">{v.label}</p><p className="italic text-[12px]">{v.description}</p></button>
+                                            )
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -335,7 +341,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
                 {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
             </div>
-            {editUser !== -1 && (
+            {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser) ) && editUser !== -1 && (
                 <div className="w-7/8 absolute h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
                     <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
                         <h2 className="font-bold italic text-[25px]">FlagCore</h2>
@@ -355,9 +361,10 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             <p className="flex items-center gap-3 text-[20px] w-fit">Inscrit depuis le : {new Date(el.created_at).toLocaleString()}</p>
                         </div>
                     ))}
-                    {userTab === "Sessions" && (
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session) ) && userTab === "Sessions" && (
                         <div className="flex flex-col gap-5">
                             <button onClick={closeAllSession} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Fermer toutes les sessions de l'utilisateur</button>
+                            <button onClick={resetPassword} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Réinitialiser le mot de passe</button>
                             {userSessions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
                             <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
                                 <div className="overflow-x-auto rounded-xl border border-white/10">
@@ -366,6 +373,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             <tr className="text-white/40 text-sm font-semibold">
                                                 <th className="p-4">Id</th>
                                                 <th className="p-4">Session ID</th>
+                                                <th className="p-4">Date</th>
                                                 <th className="p-4">Statut</th>
                                                 <th className="p-4 text-center">Action</th>
                                             </tr>
@@ -375,6 +383,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             {userSessions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300">
                                                 <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{k}</span></div></td>
                                                 <td className="p-4"><span className="text-white/70">{v.session_id}</span></td>
+                                                <td className="p-4"><span className={`px-3 py-1 text-white/70`}>{new Date(v.connected_at).toLocaleString()}</span></td>
                                                 <td className="p-4"><span className={`px-3 py-1 ${v.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
                                                 <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td>
                                             </tr>
@@ -385,7 +394,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             </div>
                         </div>
                     )}
-                    {userTab === "Sanctions" && (
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.sanctions) ) && userTab === "Sanctions" && (
                         <div className="flex flex-col gap-5">
                             <div className="flex items-center gap-3">
                                 <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
@@ -430,7 +439,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             </div>
                         </div>
                     )}
-                    {userTab === "Gestion des coins" && (
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.coins) ) && userTab === "Gestion des coins" && (
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-white/40 text-[20px] font-bold w-fit">Ajout / Retrait de coins : </h2>
@@ -474,6 +483,14 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                     </table>
                                 </div>
                             </div>
+                        </div>
+                    )}
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.role) ) && roles && userTab === "Gestion des rôles" && (
+                        <div className="flex items-center gap-2">
+                            <div className="bg-[#232336] rounded-lg p-2 w-fit">
+                                <DropDown isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id }))} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => prev.some(role => role.value === v.value) ? prev.filter(role => role.value !== v.value) : [...prev, v])} />
+                            </div>
+                            <button onClick={handleSetRoles}>Enregistrer</button>
                         </div>
                     )}
                     {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }} input2={{ display: false, placeholder: "" }} />}

@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function NotFound() {
     return (
         <div>
-            <div className="lg:hidden fixed inset-0 bg-black z-50 flex items-center justify-center">
+            <div className="sm:hidden fixed inset-0 bg-black z-50 flex items-center justify-center">
                 <h2 className="text-white text-xl text-center">
                     The mobile version is coming soon.
                 </h2>

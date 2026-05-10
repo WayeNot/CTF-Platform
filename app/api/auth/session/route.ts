@@ -9,9 +9,7 @@ export async function GET(req: Request) {
     const session = cookieStore.get('session_id')?.value
     const isGuest = cookieStore.get('isGuest')?.value
 
-    if (!session && !isGuest) {
-        return NextResponse.json({ success: false }, { status: 401 })
-    }
+    if (!session && !isGuest) return NextResponse.json({ success: false }, { status: 401 })
 
     if (!session) return Response.json({ isGuest })
 

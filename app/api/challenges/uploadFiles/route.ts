@@ -2,6 +2,9 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2 } from "@/lib/r2";
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
+import { getUserIdBySessionId, hasPermission } from "@/lib/session";
+import { Permissions } from "@/lib/config";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
     try {
@@ -18,12 +21,16 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, files: file_to_download });
     } catch (err) {
-        console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }
 
 export async function uploadFile(file: File) {
+    const cookieStore = await cookies()
+    const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
+
+    if (!await hasPermission(Permissions.advanced.administrator, user_id) && (!await hasPermission(Permissions.contributor.canCreate.ctf, user_id) && !await hasPermission(Permissions.contributor.canCreate.geoint, user_id))) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+
     const buffer = Buffer.from(await file.arrayBuffer());
 
     const fileName = `${randomUUID()}-${file.name.replace(/\s/g, "_")}`;

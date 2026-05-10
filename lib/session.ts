@@ -5,23 +5,29 @@ export function generateSessionId() {
     return randomBytes(32).toString("hex")
 }
 
-export async function getUserIdBySessionId (session_id: any) {
+export async function getUserIdBySessionId(session_id: any) {
     if (!session_id) return null;
     const result = await sql`SELECT user_id FROM user_session WHERE session_id = ${session_id}`
     return result[0]?.user_id ?? null
 }
 
-export async function getUserData (user_id: any) {
+export async function getUserData(user_id: any) {
     return await sql`SELECT * FROM users WHERE user_id = ${user_id}`
 }
 
-export async function getRole (user_id: any) { 
+export async function getRole(user_id: any) {
     if (!user_id) return null
-    const req = await sql`SELECT role FROM users WHERE user_id = ${await user_id}`
-    return req[0]?.role ?? null
+    const result = await sql`SELECT ur.role_id, r.label, r.description, r.color, rr.alias FROM user_roles ur JOIN roles r ON ur.role_id = r.id LEFT JOIN roles_relation rr ON rr.id_role = r.id WHERE ur.user_id = ${await user_id}`;
+    return result || null;
 }
 
 export async function hasRole(role: any, user_id: any) {
-    if (!user_id || !role) return null    
-    return (await getRole(user_id)).includes(role)
+    if (!user_id || !role) return null
+    return (await getRole(user_id))?.includes(role)
+}
+
+export async function hasPermission(permission: string, user_id: number) {
+    const result = await sql`SELECT DISTINCT rr.alias FROM user_roles ur JOIN roles r ON ur.role_id = r.id LEFT JOIN roles_relation rr ON rr.id_role = r.id WHERE ur.user_id = ${user_id} AND rr.alias IS NOT NULL`;
+    const aliases = result.map(r => r.alias);
+    return aliases.includes(permission)
 }

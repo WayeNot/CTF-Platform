@@ -40,7 +40,6 @@ export async function POST(req: Request) {
         
         return NextResponse.json({ success: true, currentCoins: coins, currentPoint: points, challengeEnd: flags.length === countFlags.length })
     } catch (err) {
-        console.error(err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

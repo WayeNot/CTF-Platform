@@ -8,15 +8,12 @@ import Typewriter from 'typewriter-effect';
 
 
 export default function Home() {
-    const { username } = useNavData()
-
-    let date = new Date();
-
     return (
 
 
 
         <div>
+<<<<<<< HEAD
             <h2 className="text-white/50 font-mono text-[50px] text-center mt-30 font-bold border-t-2 border-b-2">Create an account {">"} Log in {">"} Start exploring</h2>
             <div className="text-white/70 font-mono text-[40px] ml-60 mt-23">
                 <Typewriter onInit={(tw) => tw.typeString('What is flagcore ?').stop().start()} />
@@ -26,6 +23,14 @@ export default function Home() {
             <div className="flex items-center justify-center mb-20 mt-20">
                  <Link href="/login" className="text-white/70 p-3 text-center text-xl text-[30px] font-mono border-t-2 border-b-2 border-white/40 font-bold transition duration-500 hover:bg-white/70 hover:text-[#1e1e2f]">Enter on Flagcore</Link>   
             </div>
+=======
+            <motion.div animate={{ rotate: [0, 180, 360] }} transition={{ duration: 3, repeat: Infinity }} className="w-fit m-auto">
+                <FaHelmetSafety className="text-center text-orange-500/40 size-20 mt-40" />
+            </motion.div>
+            <h2 className="w-full text-center text-white/40 font-mono text-[45px] pt-20">Page currently under developement !</h2>
+            <div className="border-t border-white/40 ml-100 mr-100 mt-10"></div>
+            <h2 className="w-full text-center text-white/40 font-mono text-[45px]">We will be back soon</h2>
+>>>>>>> 5a095039216f87d90be19c8a49c93aaa9a0926ca
         </div>
     )
 }

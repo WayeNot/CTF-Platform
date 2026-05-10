@@ -1,8 +1,6 @@
 import { BiPlusCircle } from "react-icons/bi";
-import { staff_role } from "@/lib/config";
 
 export default function CreateButtons({ type, role, onGeoOpen, onCtfOpen }: any) {
-    if (!staff_role.includes(role || "")) return null;
     if (type === "ctf") {
         return (
             <div>
