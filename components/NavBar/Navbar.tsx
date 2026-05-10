@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
@@ -9,14 +9,11 @@ import { useNavData } from "@/stores/store"
 
 import AdminPanel from "../AdminPanel"
 import { default_pp, Permissions, statusColor, } from "@/lib/config"
-import { TbCoinRupeeFilled } from "react-icons/tb"
-import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
 import { FaFire } from "react-icons/fa"
 import { SiOpslevel } from "react-icons/si"
 import { RiCoinsFill } from "react-icons/ri";
 import { IoWarning } from "react-icons/io5";
-import ModalText from "../ui/ModalText";
 import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
 
@@ -52,7 +49,6 @@ export default function Navbar() {
             {isGuest && (
                 <div>
                     <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" />Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
-<<<<<<< HEAD
                     <nav className="flex items-center justify-between p-4 sm:mx-5">
                         <div className="flex items-center">
                             <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono mr-12">FlagCore</Link>
@@ -69,11 +65,9 @@ export default function Navbar() {
                             </div>
                             <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
                                 <div className="flex ml-3 items-center gap-5 text-white/40">
-                                    {staff_role.includes(role as any) && (
                                         <div className="flex items-center gap-3">
                                             <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="font-bold text-[30px] hover:text-red-800 transition duration-500 cursor-pointer" />
                                         </div>
-                                    )}
                                 </div>
                             </div>
                     </nav>
@@ -84,8 +78,6 @@ export default function Navbar() {
                     {warn && warn.show_notif && warn.reason && (
                         <p onClick={() => setShowWarn(true)} className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><IoWarning className="text-orange-500" />Vous avez actuellement un avertissement : <span className="text-orange-500">{warn?.reason}</span><IoWarning className="text-orange-500" /></p>
                     )}
-=======
->>>>>>> 5a095039216f87d90be19c8a49c93aaa9a0926ca
                     <nav className="flex items-center justify-between p-4 sm:mx-5">
                         <div className="flex items-center">
                             <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono mr-12">FlagCore</Link>
