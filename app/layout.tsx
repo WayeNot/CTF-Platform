@@ -9,7 +9,7 @@ import NavbarNotConnected from "@/components/NavBar/NavbarNotConnected"
 import Footer from "@/components/Footer"
 import { NotifProvider } from "@/components/NotifProvider"
 import { Status, User } from "@/lib/types"
-import { default_user, maintenance_role, Permissions } from "@/lib/config"
+import { default_user, Permissions } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
 
