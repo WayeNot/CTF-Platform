@@ -15,6 +15,8 @@ export async function PATCH(req: Request) {
         const cookieStore = await cookies()
         const staff_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
 
+        console.log();
+        
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.bypass.maintenance, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         await sql`UPDATE settings SET is_in_maintenance = ${inMaintenance}`;
