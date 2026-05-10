@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, reset_password, warn, updateWarn, updatePermissions, permissions } = useNavData()
 
     useEffect(() => {
-        if (pathname.startsWith("/accounts") || pathname !== "/") return;
+        if (pathname.startsWith("/accounts")) return;
         const getSettings = async () => {
             const req = await fetch("/api/admin/maintenance")
             const data = await req.json()
