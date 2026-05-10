@@ -110,6 +110,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         updateInMaintenance(!inMaintenance)
     }
 
+    const closeEditUser = () => {
+        setEditUser(-1)
+        setUserTab("Informations")
+        setDisplayUserRoles(false)
+    }
+
     // Administration des sessions de l'utilisateur ↓
 
     const getUserSessions = async () => {
@@ -129,7 +135,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const getUserRoles = async () => {
         const data = await call(`/api/admin/${editUser}/roles`)
-        setUserRoles(data.data)        
+        setUserRoles(data.data)
         setTempUserRoles(data.data.map((r: any) => ({ label: r.label, value: r.role_id, color: r.color })))
     }
 
@@ -216,7 +222,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         showNotif("Rôle bien créé !", "success")
     }
 
-    const handleSetRoles = async () => {        
+    const handleSetRoles = async () => {
         await call(`/api/admin/${editUser}/roles/update`, { method: "POST", body: JSON.stringify({ roles: tempUserRoles }) })
         getUserRoles();
         showNotif(`Les rôles de l'utilisateur avec l'id ${editUser} ont bien changé !`, "success")
@@ -227,7 +233,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
-            <div className="w-7/8 h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
+            <div className="w-7/8 h-9/10 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
                 <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
                     <h2 className="font-bold italic text-[25px]">FlagCore</h2>
                     <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL</h2>
@@ -237,12 +243,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 <div className="flex items-center justify-center w-full gap-3 mb-4">
                     {panelTabLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
                 </div>
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.dashboard) ) && panelTab === "Dashboard" && (
+                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.dashboard)) && panelTab === "Dashboard" && (
                     <div className="flex flex-col gap-5 mt-5">
                         {/* Dashboard à dèv */}
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser) ) && panelTab === "Gestion des utilisateurs" && (
+                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser)) && panelTab === "Gestion des utilisateurs" && (
                     <div className="w-full">
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
@@ -253,7 +259,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role) ) && panelTab === "Gestion des rôles" && (
+                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role)) && panelTab === "Gestion des rôles" && (
                     <div className="flex flex-col gap-5 mt-5">
                         <div className="flex items-center gap-3">
                             <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
@@ -269,7 +275,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.logs) ) && panelTab === "Logs & Sécurité" && (
+                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.logs)) && panelTab === "Logs & Sécurité" && (
                     <div>
                         {inMaintenance ? (
                             <button onClick={() => setMaintenance()} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center"><IoMdCheckboxOutline />Terminer la maintenance</button>
@@ -278,7 +284,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         )}
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role) ) && displayCreation === 1 && (
+                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role)) && displayCreation === 1 && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
                         <div className="flex w-full max-w-6xl gap-4">
                             <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
@@ -341,12 +347,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
                 {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
             </div>
-            {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser) ) && editUser !== -1 && (
-                <div className="w-7/8 absolute h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
+            {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser)) && editUser !== -1 && (
+                <div className="w-7/8  min-h-0 absolute h-9/10 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
                     <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
                         <h2 className="font-bold italic text-[25px]">FlagCore</h2>
                         <h2 className="text-white/70 text-[25px] font-mono font-bold">GESTION DE L'UTILISATEUR - {userTab}</h2>
-                        <button onClick={() => setEditUser(-1)} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
+                        <button onClick={closeEditUser} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
                     </div>
                     <hr className="my-5 border-white/30" />
                     <div className="flex items-center justify-center w-full gap-3 mb-4">
@@ -361,100 +367,96 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             <p className="flex items-center gap-3 text-[20px] w-fit">Inscrit depuis le : {new Date(el.created_at).toLocaleString()}</p>
                         </div>
                     ))}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session) ) && userTab === "Sessions" && (
+                    {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session)) && userTab === "Sessions" && (
                         <div className="flex flex-col gap-5">
                             <button onClick={closeAllSession} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Fermer toutes les sessions de l'utilisateur</button>
                             <button onClick={resetPassword} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Réinitialiser le mot de passe</button>
                             {userSessions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
-                            <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
-                                <div className="overflow-x-auto rounded-xl border border-white/10">
-                                    <table className="w-full text-left border-collapse">
-                                        <thead className="bg-black/40 sticky top-0">
-                                            <tr className="text-white/40 text-sm font-semibold">
-                                                <th className="p-4">Id</th>
-                                                <th className="p-4">Session ID</th>
-                                                <th className="p-4">Date</th>
-                                                <th className="p-4">Statut</th>
-                                                <th className="p-4 text-center">Action</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            {userSessions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300">
-                                                <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{k}</span></div></td>
-                                                <td className="p-4"><span className="text-white/70">{v.session_id}</span></td>
-                                                <td className="p-4"><span className={`px-3 py-1 text-white/70`}>{new Date(v.connected_at).toLocaleString()}</span></td>
-                                                <td className="p-4"><span className={`px-3 py-1 ${v.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
-                                                <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td>
-                                            </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div className="max-h-[calc(100vh-370px)] overflow-y-auto overflow-x-auto rounded-xl border border-white/10">
+                                <table className="min-w-[900px] w-full text-left border-collapse">
+                                    <thead className="bg-black/40 sticky top-0">
+                                        <tr className="text-white/40 text-sm font-semibold">
+                                            <th className="p-4">Id</th>
+                                            <th className="p-4">Session ID</th>
+                                            <th className="p-4">Date</th>
+                                            <th className="p-4">Statut</th>
+                                            <th className="p-4 text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {userSessions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300">
+                                            <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{k}</span></div></td>
+                                            <td className="p-4"><span className="text-white/70">{v.session_id}</span></td>
+                                            <td className="p-4"><span className={`px-3 py-1 text-white/70`}>{new Date(v.connected_at).toLocaleString()}</span></td>
+                                            <td className="p-4"><span className={`px-3 py-1 ${v.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
+                                            <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td>
+                                        </tr>
+                                        )}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     )}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.sanctions) ) && userTab === "Sanctions" && (
+                    {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.sanctions)) && userTab === "Sanctions" && (
                         <div className="flex flex-col gap-5">
                             <div className="flex items-center gap-3">
                                 <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
                                 <button onClick={() => setShowModal("banUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Bannir l'utilisateur</button>
                             </div>
-                            {userSanctions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
-                            <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
-                                <div className="overflow-x-auto rounded-xl border border-white/10">
-                                    <table className="w-full text-left border-collapse">
-                                        <thead className="bg-black/40 sticky top-0">
-                                            <tr className="text-white/40 text-sm font-semibold">
-                                                <th className="p-4">Id</th>
-                                                <th className="p-4">Type</th>
-                                                <th className="p-4">Raison</th>
-                                                <th className="p-4">Durée ( minute )</th>
-                                                <th className="p-4">User Id</th>
-                                                <th className="p-4">Staff Id</th>
-                                                <th className="p-4">Date</th>
-                                                <th className="p-4">Date d'expiration</th>
-                                                <th className="p-4">Statut</th>
-                                                {/* <th className="p-4 text-center">Action</th> */}
-                                            </tr>
-                                        </thead>
+                            {userSanctions.length === 0 && <h2 className="text-white/70">Aucune sanction pour le moment !</h2>}
+                            <div className="max-h-[calc(100vh-370px)] overflow-y-auto overflow-x-auto rounded-xl border border-white/10">
+                                <table className="min-w-[900px] w-full text-left border-collapse">
+                                    <thead className="bg-black/40 sticky top-0">
+                                        <tr className="text-white/40 text-sm font-semibold">
+                                            <th className="p-4">Id</th>
+                                            <th className="p-4">Type</th>
+                                            <th className="p-4">Raison</th>
+                                            <th className="p-4">Durée ( minute )</th>
+                                            <th className="p-4">User Id</th>
+                                            <th className="p-4">Staff Id</th>
+                                            <th className="p-4">Date</th>
+                                            <th className="p-4">Date d'expiration</th>
+                                            <th className="p-4">Statut</th>
+                                            {/* <th className="p-4 text-center">Action</th> */}
+                                        </tr>
+                                    </thead>
 
-                                        <tbody>
-                                            {userSanctions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
-                                                <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
-                                                <td className="p-4"><span className="text-white/70">{v?.type}</span></td>
-                                                <td onClick={() => { setSanction(v); v?.type === "ban" ? setShowModal("displayReasonBan") : setShowModal("displayReasonWarn") }} className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{v?.duration}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{v?.user_id}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{v.duration === 0 ? "Jamais" : new Date(v.expires_at).toLocaleString()}</span></td>
-                                                <td className="p-4"><span className={`px-3 py-1 ${v?.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
-                                                {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
-                                            </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    <tbody>
+                                        {userSanctions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
+                                            <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
+                                            <td className="p-4"><span className="text-white/70">{v?.type}</span></td>
+                                            <td onClick={() => { setSanction(v); v?.type === "ban" ? setShowModal("displayReasonBan") : setShowModal("displayReasonWarn") }} className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason}</span></td>
+                                            <td className="p-4"><span className="text-white/70">{v?.duration}</span></td>
+                                            <td className="p-4"><span className="text-white/70">{v?.user_id}</span></td>
+                                            <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
+                                            <td className="p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
+                                            <td className="p-4"><span className="text-white/70">{v.duration === 0 ? "Jamais" : new Date(v.expires_at).toLocaleString()}</span></td>
+                                            <td className="p-4"><span className={`px-3 py-1 ${v?.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
+                                            {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
+                                        </tr>
+                                        )}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    )}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.coins) ) && userTab === "Gestion des coins" && (
-                        <div className="flex flex-col gap-4">
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-white/40 text-[20px] font-bold w-fit">Ajout / Retrait de coins : </h2>
-                                <div className="flex items-center gap-3 w-auto">
-                                    {coinManagement.map((v, k) => <button key={k} onClick={() => updateCoin(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>)}
+                    )
+                    }
+                    {
+                        Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.coins)) && userTab === "Gestion des coins" && (
+                            <div className="flex flex-col gap-5">
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <h2 className="text-white/40 text-[18px] sm:text-[20px] font-bold">Ajout / Retrait de coins : </h2>
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                                        {coinManagement.map((v, k) => <button key={k} onClick={() => updateCoin(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>)}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="w-full flex items-center">
-                                <button onClick={() => setShowModal("set")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Modifier le nombre de coins</button>
-                                <button onClick={() => setShowModal("reset")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset le nombre de coins</button>
-                            </div>
-                            {userTransactions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
-                            <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
-                                <div className="overflow-x-auto rounded-xl border border-white/10">
-                                    <table className="w-full text-left border-collapse">
+                                <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                    <button onClick={() => setShowModal("set")} className="w-full sm:w-fit Flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Modifier le nombre de coins</button>
+                                    <button onClick={() => setShowModal("reset")} className="w-full sm:w-fit flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset le nombre de coins</button>
+                                </div>
+                                {userTransactions.length === 0 && <h2 className="text-white/70">Aucune transaction pour le moment !</h2>}
+                                <div className="max-h-[calc(100vh-370px)] overflow-y-auto overflow-x-auto rounded-xl border border-white/10">
+                                    <table className="min-w-[900px] w-full text-left border-collapse">
                                         <thead className="bg-black/40 sticky top-0">
                                             <tr className="text-white/40 text-sm font-semibold">
                                                 <th className="p-4">Id</th>
@@ -469,13 +471,13 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         </thead>
                                         <tbody>
                                             {userTransactions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
-                                                <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
-                                                <td className="p-4"><span className={`${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && "Ajout"}{v?.type === "remove_coins" && "Retrait"}{v?.type === "set_coins" && "Set"}{v?.type === "reset_coins" && "Reset"}</span></td>
-                                                <td className="p-4"><span className={`p-2 ${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && `+${v?.amount}`}{v?.type === "remove_coins" && `-${v?.amount}`}{v?.type === "set_coins" && `${v?.amount}`}{v?.type === "reset_coins" && `${v?.amount}`}</span></td>
-                                                <td className="p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason ? v?.reason : "Aucune"}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{v?.staff_id}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{v?.reference_id ? v?.reference_id : "Aucune"}</span></td>
-                                                <td className="p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
+                                                <td className="p-2 sm:p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
+                                                <td className="p-2 sm:p-4"><span className={`${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && "Ajout"}{v?.type === "remove_coins" && "Retrait"}{v?.type === "set_coins" && "Set"}{v?.type === "reset_coins" && "Reset"}</span></td>
+                                                <td className="p-2 sm:p-4"><span className={`p-2 ${v?.type === "add_coins" && "text-green-500"} ${v?.type === "remove_coins" && "text-red-500"} ${v?.type === "set_coins" && "text-orange-500"} ${v?.type === "reset_coins" && "text-blue-500"}`}>{v?.type === "add_coins" && `+${v?.amount}`}{v?.type === "remove_coins" && `-${v?.amount}`}{v?.type === "set_coins" && `${v?.amount}`}{v?.type === "reset_coins" && `${v?.amount}`}</span></td>
+                                                <td className="p-2 sm:p-4 max-w-50"><span className="block text-white/70 cursor-pointer transition duration-500 hover:text-white/40 truncate">{v?.reason ? v?.reason : "Aucune"}</span></td>
+                                                <td className="p-2 sm:p-4"><span className="text-white/70">{v?.staff_id}</span></td>
+                                                <td className="p-2 sm:p-4"><span className="text-white/70">{v?.reference_id ? v?.reference_id : "Aucune"}</span></td>
+                                                <td className="p-2 sm:p-4"><span className="text-white/70">{new Date(v?.created_at).toLocaleString()}</span></td>
                                                 {/* <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td> */}
                                             </tr>
                                             )}
@@ -483,22 +485,24 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                    )}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.role) ) && roles && userTab === "Gestion des rôles" && (
-                        <div className="flex items-center gap-2">
-                            <div className="bg-[#232336] rounded-lg p-2 w-fit">
-                                <DropDown isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id }))} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => prev.some(role => role.value === v.value) ? prev.filter(role => role.value !== v.value) : [...prev, v])} />
+                        )
+                    }
+                    {
+                        Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.role)) && roles && userTab === "Gestion des rôles" && (
+                            <div className="flex items-center gap-2">
+                                <div className="bg-[#232336] rounded-lg p-2 w-fit">
+                                    <DropDown isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id }))} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => prev.some(role => role.value === v.value) ? prev.filter(role => role.value !== v.value) : [...prev, v])} />
+                                </div>
+                                <button onClick={handleSetRoles}>Enregistrer</button>
                             </div>
-                            <button onClick={handleSetRoles}>Enregistrer</button>
-                        </div>
-                    )}
+                        )
+                    }
                     {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }} input2={{ display: false, placeholder: "" }} />}
                     {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée ( en minute )", type: "number" }} />}
                     {showModal === "displayReasonBan" && <DisplayBan id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} duration={sanction?.duration || -1} expires_at={sanction?.expires_at || ""} onSelect={() => setShowModal(null)} />}
                     {showModal === "displayReasonWarn" && <DisplayWarn id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} onSelect={() => setShowModal(null)} />}
-                </div>
+                </div >
             )}
-        </div>
+        </div >
     )
 }

@@ -14,8 +14,6 @@ export async function PATCH(req: Request) {
         const { inMaintenance } = await req.json()
         const cookieStore = await cookies()
         const staff_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
-
-        console.log();
         
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.bypass.maintenance, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 

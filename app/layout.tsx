@@ -9,7 +9,7 @@ import NavbarNotConnected from "@/components/NavBar/NavbarNotConnected"
 import Footer from "@/components/Footer"
 import { NotifProvider } from "@/components/NotifProvider"
 import { Status, User } from "@/lib/types"
-import { default_user, Permissions } from "@/lib/config"
+import { default_user, Permissions, public_routes } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
 import ResetPassword from "@/components/ResetPassword"
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const [user, setUser] = useState<User | null>(null)
     const [guest, setGuest] = useState(false)
 
-    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, reset_password, warn, updateWarn, updatePermissions, permissions } = useNavData()
+    const { updateIsGuest, isGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, reset_password, warn, updateWarn, updatePermissions, permissions } = useNavData()
 
     useEffect(() => {
         if (pathname.startsWith("/accounts")) return;
@@ -33,10 +33,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }, [])
 
     useEffect(() => {
-        // if (pathname.startsWith("/accounts") || pathname === "/") return;
+        if (public_routes.some(v => v === pathname)) return;
         const getSession = async () => {
             try {
                 const res = await fetch("/api/auth/session")
+                if (!res.ok) return;
                 const data = await res.json()
                 updateUserId(data.user_id)
                 if (data.isGuest) {
@@ -45,20 +46,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     return
                 }
                 setGuest(false)
-                setUser(data)
-                console.log(data.reset_password);
-                
+                setUser(data)                
                 updateResetPassword(data.reset_password)
             } catch {
                 setUser(null)
             }
-        }
-        inMaintenance && Array.isArray(permissions) && ((!permissions.includes(Permissions.advanced.administrator) && !permissions.includes(Permissions.bypass.maintenance))) && handleLogout();
+        }       
         getSession();
     }, [pathname])
 
+    // useEffect(() => {
+    //     inMaintenance && permissions && Array.isArray(permissions) && ((!permissions.includes(Permissions.advanced.administrator) && !permissions.includes(Permissions.bypass.maintenance))) && handleLogout();
+    // }, [permissions])
+
     useEffect(() => {
-        if (pathname.startsWith("/accounts") || pathname === "/") return;
+        if (public_routes.some(v => v === pathname)) return;
         const getRoles = async () => {
             const roles = await fetch(`/api/user/${user_id}/role`)
             const dataRoles = await roles.json()
@@ -74,9 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             const data = await warn.json()
             if (data) updateWarn(data)
         }
-        getWarn();
-        getRoles();
-        user_id !== -1 && getPermissions();
+        if (user_id !== -1 && !isGuest) { getPermissions(); getRoles(); getWarn();}
     }, [user_id])
 
     const handleLogout = async () => {
@@ -86,7 +86,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
 
     useEffect(() => {
-        if (pathname.startsWith("/accounts") || pathname === "/") return;
+        if (public_routes.some(v => v === pathname)) return;
+        
         updateIsGuest(guest);
         updateUsername(user?.username ?? "");
         updateEmail(user?.email ?? "");
@@ -101,13 +102,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
     const handleChangePassword = async (value: string) => {
         await fetch(`/api/admin/${user_id}/resetPassword`, { method: "PATCH", body: JSON.stringify({ password: value })})   
-    }
+    }    
     
     return (
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
-                    {pathname !== "/" && !pathname.startsWith("/accounts") && ( user_id > 0 || guest ) && <Navbar/>}
+                    {(!public_routes.some(v => v === pathname)) && ( user_id > 0 || isGuest ) && <Navbar/>}
                     {/* {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={(value) => handleChangePassword(value)} />} */}
                     {( pathname === "/" || pathname === "/dev/maintenance" ) && <NavbarNotConnected/>}
                     <main className="flex-1 relative">{children}</main>

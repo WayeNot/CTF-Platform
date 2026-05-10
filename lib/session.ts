@@ -28,8 +28,6 @@ export async function hasRole(role: any, user_id: any) {
 
 export async function hasPermission(permission: string, user_id: number) {
     const result = await sql`SELECT DISTINCT rr.alias FROM user_roles ur JOIN roles r ON ur.role_id = r.id LEFT JOIN roles_relation rr ON rr.id_role = r.id WHERE ur.user_id = ${user_id} AND rr.alias IS NOT NULL`;
-    const aliases = result.map(r => r.alias);
-    console.log(aliases);
-    
+    const aliases = result.map(r => r.alias);    
     return aliases.includes(permission)
 }

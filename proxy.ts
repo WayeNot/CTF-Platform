@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
         const isAllowedRole = await hasPermission(Permissions.advanced.administrator, user_id) || await hasPermission(Permissions.bypass.maintenance, user_id);
 
         if (path !== maintenance_route && !isAllowedRole) return NextResponse.redirect(new URL(maintenance_route, request.url));
-        if (path === maintenance_route) return NextResponse.next();
+        // if (path === maintenance_route) return NextResponse.next();
     }
 
     if (isPublicRoute) return NextResponse.next();
