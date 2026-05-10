@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { useNavData } from "@/stores/store"
 
 import AdminPanel from "../AdminPanel"
-import { default_pp, Permissions, staff_role, statusColor, } from "@/lib/config"
+import { default_pp, Permissions, statusColor, } from "@/lib/config"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
