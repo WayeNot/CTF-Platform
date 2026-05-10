@@ -35,11 +35,14 @@ export default function NavbarNotConnected() {
 
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
-                <div className="hidden sm:flex items-center gap-5 text-white/40">
+                <div className="hidden sm:flex items-center gap-5 text-white/40 font-mono">
                     {inMaintenance ? (
-                        <button onClick={() => setDisplayLogin(true)}>Connexion</button>
+                        <button onClick={() => setDisplayLogin(true)}>Login</button>
                     ) : (
-                        <Link href={"/accounts/login"} className="w-full text-left px-4 py-3 rounded-lg text-white/70 hover:bg-[#3a3a4d] transition duration-500">Connexion</Link>
+                        <div>
+                            <Link href={"/accounts/login"} className="hover:text-white/70 hover:text-underline border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 text-[20px]">Login</Link>
+                            <Link href={"/accounts/register"} className="hover:text-white/70 hover:text-underline border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 text-[20px] mr-8 ml-10">Register</Link>
+                        </div>
                     )}
                 </div>
             </nav>

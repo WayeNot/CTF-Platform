@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { useNavData } from "@/stores/store";
 import { FaHelmetSafety } from "react-icons/fa6";
 import Link from "next/link";
+import Typewriter from 'typewriter-effect';
+
 
 export default function Home() {
     const { username } = useNavData()
@@ -11,15 +13,18 @@ export default function Home() {
     let date = new Date();
 
     return (
+
+
+
         <div>
-            <motion.div animate={{ rotate: [0, 180, 360] }} transition={{ duration: 3, repeat: Infinity }} className="w-fit m-auto">
-                <FaHelmetSafety className="text-center text-orange-500/40 size-20 mt-40" />
-            </motion.div>
-            <h2 className="w-full text-center text-white/40 font-mono text-[45px] pt-20">Page currently under developement !</h2>
-            <div className="border-t border-white/40 ml-100 mr-100 mt-10"></div>
-            <div className="flex flex-col items-center gap-3 w-full text-center text-white/40 font-mono">
-                <h2 className="w text-[45px]">We will be back soon</h2>
-                <Link href={"/home"} className="text-[25px] italic underline cursor-pointer transition duration-500 hover:text-white/60">Go back</Link>
+            <h2 className="text-white/50 font-mono text-[50px] text-center mt-30 font-bold border-t-2 border-b-2">Create an account {">"} Log in {">"} Start exploring</h2>
+            <div className="text-white/70 font-mono text-[40px] ml-60 mt-23">
+                <Typewriter onInit={(tw) => tw.typeString('What is flagcore ?').stop().start()} />
+            </div>
+            <p className="text-white/50 font-mono text-[30px] mx-60 mt-5">FlagCore is a free CTF platform dedicated to cybersecurity enthusiasts wishing to develop their skills in a fun and concrete way. Through a series of immersive and progressive challenges, users are immersed in realistic scenarios where they play real cybersecurity investigators.</p>
+        
+            <div className="flex items-center justify-center mb-20 mt-20">
+                 <Link href="/login" className="text-white/70 p-3 text-center text-xl text-[30px] font-mono border-t-2 border-b-2 border-white/40 font-bold transition duration-500 hover:bg-white/70 hover:text-[#1e1e2f]">Enter on Flagcore</Link>   
             </div>
         </div>
     )
