@@ -12,6 +12,7 @@ import { Status, User } from "@/lib/types"
 import { default_user, Permissions } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
+import ResetPassword from "@/components/ResetPassword"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -19,11 +20,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const [user, setUser] = useState<User | null>(null)
     const [guest, setGuest] = useState(false)
 
-    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, warn, updateWarn, updatePermissions, permissions } = useNavData()
+    const { updateIsGuest, user_id, updateUserId, updateUsername, updatePublicUsername, updateEmail, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, reset_password, warn, updateWarn, updatePermissions, permissions } = useNavData()
 
     useEffect(() => {
+        if (pathname.startsWith("/accounts") || pathname !== "/") return;
         const getSettings = async () => {
-            if (pathname.startsWith("/accounts")) return;
             const req = await fetch("/api/admin/maintenance")
             const data = await req.json()
             updateInMaintenance(data)
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }, [])
 
     useEffect(() => {
-        if (pathname.startsWith("/accounts")) return;
+        if (pathname.startsWith("/accounts") || pathname === "/") return;
         const getSession = async () => {
             try {
                 const res = await fetch("/api/auth/session")
@@ -45,6 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 }
                 setGuest(false)
                 setUser(data)
+                console.log(data.reset_password);
+                
+                updateResetPassword(data.reset_password)
             } catch {
                 setUser(null)
             }
@@ -54,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }, [pathname])
 
     useEffect(() => {
-        if (pathname.startsWith("/accounts")) return;
+        if (pathname.startsWith("/accounts") || pathname === "/") return;
         const getRoles = async () => {
             const roles = await fetch(`/api/user/${user_id}/role`)
             const dataRoles = await roles.json()
@@ -82,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
 
     useEffect(() => {
+        if (pathname.startsWith("/accounts") || pathname === "/") return;
         updateIsGuest(guest);
         updateUsername(user?.username ?? "");
         updateEmail(user?.email ?? "");
@@ -94,12 +99,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updateWarn(warn || null)
     }, [user]);
 
+    const handleChangePassword = async (value: string) => {
+        await fetch(`/api/admin/${user_id}/resetPassword`, { method: "PATCH", body: JSON.stringify({ password: value })})   
+    }
+    
     return (
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
                     {pathname !== "/" && !pathname.startsWith("/accounts") && ( user_id > 0 || guest ) && <Navbar />}
-                    {pathname === "/" || pathname === "/dev/maintenance" && <NavbarNotConnected />}
+                    {/* {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={(value) => handleChangePassword(value)} />} */}
+                    {( pathname === "/" || pathname === "/dev/maintenance" ) && <NavbarNotConnected/>}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}
                 </NotifProvider>

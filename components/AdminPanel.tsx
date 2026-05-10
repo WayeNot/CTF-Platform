@@ -145,6 +145,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         showNotif("Toutes les sessions ont bien été désactivées !", "success")
     }
 
+    const resetPassword = async () => {
+        await call(`/api/admin/${editUser}/session/resetPassword`, { method: "POST" })
+        showNotif("Reset de mot de passe bien envoyé !", "success")
+    }
+
     // Sanction sur l'utilisateur ↓
 
     const warnUser = async (reason: string) => {
@@ -359,6 +364,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                     {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session) ) && userTab === "Sessions" && (
                         <div className="flex flex-col gap-5">
                             <button onClick={closeAllSession} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Fermer toutes les sessions de l'utilisateur</button>
+                            <button onClick={resetPassword} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Réinitialiser le mot de passe</button>
                             {userSessions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
                             <div className="flex flex-col gap-3 max-h-100 overflow-y-auto">
                                 <div className="overflow-x-auto rounded-xl border border-white/10">
