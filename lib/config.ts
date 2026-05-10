@@ -1,4 +1,4 @@
-import { Role, Status } from "./types";
+import { Status } from "./types";
 
 export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
