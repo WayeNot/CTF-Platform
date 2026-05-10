@@ -7,7 +7,7 @@ export type transactions = "flag" | "geoint" | "daily" | "admin" | "penalty" | "
 export type difficulty = "Facile" | "Intermédiaire" | "Avancé" | "Expert"
 export type category = "Web" | "Crypto" | "Pwn" | "Reverse" | "Forensic" | "OSINT" | "Misc"
 
-export type Option = {
+export interface Option {
     label: string;
     value: string | number;
     color?: string;
@@ -51,6 +51,7 @@ export type User = {
 export type UserSessions = {
     session_id: string;
     user_id: number;
+    connected_at: string;
     is_active: boolean;
 }
 

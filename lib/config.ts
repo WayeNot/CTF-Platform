@@ -17,10 +17,10 @@ export const Permissions = {
         },
     },
 
-    paneladmin: {
+    panelAdmin: {
         canOpen: "panelAdmin.canOpen",
-        dashboard: "paneladmin.dashboard",
-        manageUser: "paneladmin.manageUser",
+        dashboard: "panelAdmin.dashboard",
+        manageUser: "panelAdmin.manageUser",
         role: "panelAdmin.role",
         challenges: "panelAdmin.challenges",
         flags: "panelAdmin.flags",
@@ -46,13 +46,6 @@ export const Permissions = {
         maintenance: "bypass.maintenance",
     },
 } as const
-
-export const has = (userPerms: string[], perm: string) => userPerms.includes(perm)
-
-export const staff_role = ["owner", "admin", "dev"];
-export const maintenance_role: Role[] = ["owner", "admin", "dev", "contributor"];
-
-export const maintenance_alias = "bypass.maintenance";
 
 export const maintenance_route = "/dev/maintenance"
 

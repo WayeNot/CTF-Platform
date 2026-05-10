@@ -1,4 +1,7 @@
+import { Permissions } from "@/lib/config";
 import { sql } from "@/lib/db";
+import { getUserIdBySessionId, hasPermission } from "@/lib/session";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server"
 
 export async function GET() {
@@ -13,6 +16,10 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const { role } = await req.json()
+        const cookieStore = await cookies()
+        const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
+        
+        if (!await hasPermission(Permissions.advanced.administrator, user_id) && !await hasPermission(Permissions.panelAdmin.role, user_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         if (!role || !role.label || !role.description || !role.color) return NextResponse.json({ success: false, error: "Champs manquants !" }, { status: 400 });
 
@@ -20,7 +27,7 @@ export async function POST(req: Request) {
         for (const perm of role.allPerms) {
             await sql`INSERT INTO roles_relation (id_role, alias) VALUES (${id[0].id}, ${perm})`;
         }
-        
+
         const allRoles = await sql`SELECT * FROM roles`
         return NextResponse.json({ success: true, data: allRoles })
     } catch (err: any) {

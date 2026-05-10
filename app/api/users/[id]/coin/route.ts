@@ -1,5 +1,6 @@
+import { Permissions } from "@/lib/config";
 import { sql } from "@/lib/db";
-import { getUserIdBySessionId } from "@/lib/session";
+import { getUserIdBySessionId, hasPermission } from "@/lib/session";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -8,8 +9,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         const { id } = await params;
         const { operation, value, reason } = await req.json()
         const cookieStore = await cookies()
-        const session_id = cookieStore.get('session_id')?.value
-        let staff_id = await getUserIdBySessionId(session_id)
+        const staff_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
+
+        if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.coins, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         if (!staff_id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

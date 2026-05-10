@@ -26,12 +26,12 @@ export default function GeointBuilder({ onClose }: any) {
     const [displayFlags, setDisplayFlags] = useState(false)
 
     const handleBuild = async () => {
-        if (!canCreate) { showNotif("Vous n'avez pas rempli tout les champs !"); return; }
+        if (!canCreate) { showNotif("Vous n'avez pas rempli tout les champs !"); return; }        
 
         await fetch("/api/challenges?type=geoint", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ challenge: builder, flags: flags, files: [] })
+            body: JSON.stringify({ challenge: { ...builder, difficulty: builder.difficulty?.value }, flags, files: [] })
         });
         onClose()
     }
@@ -182,9 +182,7 @@ export default function GeointBuilder({ onClose }: any) {
                             ))}
                         </div>
                     ) : <h2 className="text-orange-400 text-center bg-[#363a3f] border border-white/10 py-5 flex items-center justify-center gap-3 font-mono"><TiWarning size={25}/>No flags available at the moment<TiWarning size={25}/></h2>}
-                    {displayFlags && (
-                        <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => { setFlags(prev => [...prev, flag]); }} />
-                    )}
+                    {displayFlags && <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => setFlags(prev => [...prev, flag])} />}
                 </div>
             </div>
         </div>

@@ -10,7 +10,7 @@ type CreateFlagType = {
     onSubmit: (flag: NewCtfFlag) => void;
 }
 
-export default function CreateFlag({ onClose, onSubmit } : CreateFlagType ) {
+export default function CreateFlag({ onClose, onSubmit }: CreateFlagType) {
     const { showNotif } = useNotif()
 
     const [newFlag, setNewFlag] = useState<NewCtfFlag>({ title: "", difficulty: null, description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
@@ -19,7 +19,7 @@ export default function CreateFlag({ onClose, onSubmit } : CreateFlagType ) {
     const canSubmit = newFlag.title && newFlag.difficulty && newFlag.description && newFlag.flag && newFlag.flag_format
 
     const resetForms = () => {
-        setNewFlag({ title: "", difficulty: null, description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined }); 
+        setNewFlag({ title: "", difficulty: null, description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
         setSettingsNewFlag(prev => ({ ...prev, difficulty: false }));
     }
 
@@ -33,7 +33,7 @@ export default function CreateFlag({ onClose, onSubmit } : CreateFlagType ) {
                 <div className="bg-[#363a3f] px-3 py-2 text-xs text-white/60">Expected flag format : <span className="text-orange-400 font-semibold">FirstName_LastName</span></div>
                 <div className="space-y-2">
                     <div className="grid grid-cols-2 gap-2">
-                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Title" value={newFlag.title} onChange={e => setNewFlag({ ...newFlag, title: e.target.value })} />                        
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Title" value={newFlag.title} onChange={e => setNewFlag({ ...newFlag, title: e.target.value })} />
                         <DropDown isOnce label="Difficulty" value={newFlag.difficulty} isOpen={settingsNewFlag.difficulty} options={difficultyBtn} onToggle={() => setSettingsNewFlag(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setNewFlag({ ...newFlag, difficulty: v }); setSettingsNewFlag({ ...settingsNewFlag, difficulty: false }) }} />
                     </div>
                     <textarea className="w-full p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20 font-mono" placeholder="Description" value={newFlag.description} onChange={e => setNewFlag({ ...newFlag, description: e.target.value })} />

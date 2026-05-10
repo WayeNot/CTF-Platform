@@ -98,7 +98,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
-                    {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && <Navbar />}
+                    {pathname !== "/" && !pathname.startsWith("/accounts") && ( user_id > 0 || guest ) && <Navbar />}
                     {pathname === "/" || pathname === "/dev/maintenance" && <NavbarNotConnected />}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}

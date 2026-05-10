@@ -60,7 +60,7 @@ export default function CtfBuilder({ onClose }: any) {
 
         await fetch("/api/challenges?type=ctf", {
             method: "POST",
-            body: JSON.stringify({ challenge: builder, flags: flags, files: data.files })
+            body: JSON.stringify({ challenge: { ...builder, difficulty: builder.difficulty?.value, category: builder.category.map(cat => cat.value) }, flags, files: data.files })
         })
 
         resetBuilder();
@@ -136,11 +136,11 @@ export default function CtfBuilder({ onClose }: any) {
                         </div>
                         <div className="bg-[#363a3f] p-3 border border-white/5">
                             <div className="flex items-center gap-2 text-white/50 font-mono"><span>Difficulty</span></div>
-                            <p className="text-white font-mono">{builder.difficulty?.label || "N/A"}</p>
+                            <p className="text-white font-mono">{builder.difficulty ? builder.difficulty.label : "N/A"}</p>
                         </div>
-                        <div className="bg-[#363a3f] p-3 rounded-xl border border-white/5 flex flex-col gap-2">
+                        <div className="bg-[#363a3f] p-3 border border-white/5 flex flex-col gap-2">
                             <div className="flex items-center gap-2 text-white/50 font-mono"><span>Categories</span></div>
-                            <p className="text-white font-mono flex items-center gap-2 flex-wrap">{builder.category?.length ? builder.category.map((v, k) => <span key={k} className={`text-[12px] px-2 py-0.5 rounded-full bg-green-500/10 ${v.color}`}>{v.value}</span>) : "N/A"}</p>
+                            <p className="text-white font-mono flex items-center gap-2 flex-wrap">{builder.category?.length ? builder.category.map((v, k) => <span key={k} className={`text-[12px] px-2 py-0.5 bg-green-500/10 ${v.color}`}>{v.value}</span>) : "N/A"}</p>
                         </div>
                         <div className="bg-[#363a3f] p-3 border border-white/5">
                             <div className="flex items-center gap-2 text-white/50 font-mono"><span>Reward ( coins )</span></div>

@@ -48,24 +48,24 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const [allPermissions, setAllPermissions] = useState([
         { label: "Permissions générales", isSelected: false, canBeSelected: false },
-        { label: "Accès au panel admin", description: "Les membres avec ce rôle auront accès au panel admin", alias: Permissions.paneladmin.canOpen, isSelected: false, canBeSelected: true },
+        { label: "Accès au panel admin", description: "Les membres avec ce rôle auront accès au panel admin", alias: Permissions.panelAdmin.canOpen, isSelected: false, canBeSelected: true },
 
         { label: "Permissions de création", isSelected: false, canBeSelected: false },
         { label: "Création de CTF", description: "Peut créer des CTF à sa guise", alias: Permissions.contributor.canCreate.ctf, isSelected: false, canBeSelected: true },
         { label: "Création de Géoint", description: "Peut créer des Géoint à sa guise", alias: Permissions.contributor.canCreate.geoint, isSelected: false, canBeSelected: true },
 
-        { label: "Permissions panel admin", isSelected: false, canBeSelected: false, onlyIf: "panel.canOpen" },
-        { label: "Dashboard", description: "Les membres avec ce rôle auront accès au dashboard", alias: Permissions.paneladmin.dashboard, isSelected: false, canBeSelected: true, onlyIf: "panel.canOpen" },
-        { label: "Gestion des utilisateurs", description: "Les membres avec ce rôle auront accès à la gestion des utilisateurs", alias: Permissions.paneladmin.manageUser, isSelected: false, canBeSelected: true, onlyIf: "panel.canOpen" },
-        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: Permissions.paneladmin.role, isSelected: false, canBeSelected: true, onlyIf: "panel.canOpen" },
+        { label: "Permissions panel admin", isSelected: false, canBeSelected: false, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Dashboard", description: "Les membres avec ce rôle auront accès au dashboard", alias: Permissions.panelAdmin.dashboard, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Gestion des utilisateurs", description: "Les membres avec ce rôle auront accès à la gestion des utilisateurs", alias: Permissions.panelAdmin.manageUser, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: Permissions.panelAdmin.role, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
 
-        { label: "Permissions Gestion des utilisateurs", isSelected: false, canBeSelected: false, onlyIf: "paneladmin.manageUser" },
-        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir les sessions, les activer / désactiver et supprimer toutes les sessions.", alias: "paneladmin.user.session", isSelected: false, canBeSelected: true, onlyIf: "paneladmin.manageUser" },
-        { label: "Gestion des sanctions", description: "Les membres avec ce rôle pourront voir les sanctions, avertir et bannir l'utilisateur.", alias: "paneladmin.user.sanctions", isSelected: false, canBeSelected: true, onlyIf: "paneladmin.manageUser" },
-        { label: "Gestion des coins", description: "Les membres avec ce rôle pourront voir les transactions, ajouter / retirer des coins et les reset.", alias: "paneladmin.user.coins", isSelected: false, canBeSelected: true, onlyIf: "paneladmin.manageUser" },
-        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir les rôles de l'utilisateur, lui en ajouter / retirer.", alias: "paneladmin.user.role", isSelected: false, canBeSelected: true, onlyIf: "paneladmin.manageUser" },
-        // { label: "Gestion de la progression", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "paneladmin.user.session", isSelected: false, canBeSelected: true },
-        // { label: "Gestion du monitoring / débug", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "paneladmin.user.session", isSelected: false, canBeSelected: true },
+        { label: "Permissions Gestion des utilisateurs", isSelected: false, canBeSelected: false, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir les sessions, les activer / désactiver et supprimer toutes les sessions.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        { label: "Gestion des sanctions", description: "Les membres avec ce rôle pourront voir les sanctions, avertir et bannir l'utilisateur.", alias: "panelAdmin.user.sanctions", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        { label: "Gestion des coins", description: "Les membres avec ce rôle pourront voir les transactions, ajouter / retirer des coins et les reset.", alias: "panelAdmin.user.coins", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir les rôles de l'utilisateur, lui en ajouter / retirer.", alias: "panelAdmin.user.role", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
+        // { label: "Gestion de la progression", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true },
+        // { label: "Gestion du monitoring / débug", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true },
 
         { label: "Permissions avancées", isSelected: false, canBeSelected: false },
         { label: "Administrateur", description: "Les membres ayant cette permission auront toutes les permissions et pourront passer outre les restrictions.", alias: "advanced.administrator", isSelected: false, canBeSelected: true },
@@ -232,12 +232,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 <div className="flex items-center justify-center w-full gap-3 mb-4">
                     {panelTabLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
                 </div>
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.dashboard) ) && panelTab === "Dashboard" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.dashboard) ) && panelTab === "Dashboard" && (
                     <div className="flex flex-col gap-5 mt-5">
                         {/* Dashboard à dèv */}
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.manageUser) ) && panelTab === "Gestion des utilisateurs" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser) ) && panelTab === "Gestion des utilisateurs" && (
                     <div className="w-full">
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
@@ -248,7 +248,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.role) ) && panelTab === "Gestion des rôles" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role) ) && panelTab === "Gestion des rôles" && (
                     <div className="flex flex-col gap-5 mt-5">
                         <div className="flex items-center gap-3">
                             <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
@@ -264,7 +264,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.logs) ) && panelTab === "Logs & Sécurité" && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.logs) ) && panelTab === "Logs & Sécurité" && (
                     <div>
                         {inMaintenance ? (
                             <button onClick={() => setMaintenance()} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center"><IoMdCheckboxOutline />Terminer la maintenance</button>
@@ -273,7 +273,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         )}
                     </div>
                 )}
-                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.role) ) && displayCreation === 1 && (
+                {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role) ) && displayCreation === 1 && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
                         <div className="flex w-full max-w-6xl gap-4">
                             <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
@@ -336,7 +336,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
                 {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
             </div>
-            {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.manageUser) ) && editUser !== -1 && (
+            {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser) ) && editUser !== -1 && (
                 <div className="w-7/8 absolute h-3/4 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
                     <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
                         <h2 className="font-bold italic text-[25px]">FlagCore</h2>
@@ -356,7 +356,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             <p className="flex items-center gap-3 text-[20px] w-fit">Inscrit depuis le : {new Date(el.created_at).toLocaleString()}</p>
                         </div>
                     ))}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.user.session) ) && userTab === "Sessions" && (
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session) ) && userTab === "Sessions" && (
                         <div className="flex flex-col gap-5">
                             <button onClick={closeAllSession} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Fermer toutes les sessions de l'utilisateur</button>
                             {userSessions.length === 0 && <h2 className="text-white/70">Aucune session pour le moment !</h2>}
@@ -367,6 +367,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             <tr className="text-white/40 text-sm font-semibold">
                                                 <th className="p-4">Id</th>
                                                 <th className="p-4">Session ID</th>
+                                                <th className="p-4">Date</th>
                                                 <th className="p-4">Statut</th>
                                                 <th className="p-4 text-center">Action</th>
                                             </tr>
@@ -376,6 +377,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             {userSessions.map((v, k) => <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300">
                                                 <td className="p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{k}</span></div></td>
                                                 <td className="p-4"><span className="text-white/70">{v.session_id}</span></td>
+                                                <td className="p-4"><span className={`px-3 py-1 text-white/70`}>{new Date(v.connected_at).toLocaleString()}</span></td>
                                                 <td className="p-4"><span className={`px-3 py-1 ${v.is_active ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{v.is_active ? "Active" : "Inactive"}</span></td>
                                                 <td className="p-4"><button onClick={() => handleChangeSession(v.user_id, v.session_id, v.is_active)} className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"}`}>{v.is_active ? "Désactiver" : "Activer"}</button></td>
                                             </tr>
@@ -386,7 +388,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             </div>
                         </div>
                     )}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.user.sanctions) ) && userTab === "Sanctions" && (
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.sanctions) ) && userTab === "Sanctions" && (
                         <div className="flex flex-col gap-5">
                             <div className="flex items-center gap-3">
                                 <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
@@ -431,7 +433,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             </div>
                         </div>
                     )}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.user.coins) ) && userTab === "Gestion des coins" && (
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.coins) ) && userTab === "Gestion des coins" && (
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-white/40 text-[20px] font-bold w-fit">Ajout / Retrait de coins : </h2>
@@ -477,7 +479,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             </div>
                         </div>
                     )}
-                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.paneladmin.user.role) ) && roles && userTab === "Gestion des rôles" && (
+                    {Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.role) ) && roles && userTab === "Gestion des rôles" && (
                         <div className="flex items-center gap-2">
                             <div className="bg-[#232336] rounded-lg p-2 w-fit">
                                 <DropDown isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id }))} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => prev.some(role => role.value === v.value) ? prev.filter(role => role.value !== v.value) : [...prev, v])} />

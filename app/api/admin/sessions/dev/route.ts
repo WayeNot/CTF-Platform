@@ -1,4 +1,4 @@
-import { maintenance_role, Permissions } from "@/lib/config";
+import { Permissions } from "@/lib/config";
 import { sql } from "@/lib/db";
 import { generateSessionId, hasPermission } from "@/lib/session";
 import bcrypt from "bcryptjs";

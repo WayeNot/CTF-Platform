@@ -6,7 +6,7 @@ import { useNavData } from "@/stores/store";
 
 export default function Home() {
 
-    const { role } = useNavData()
+    const { isGuest } = useNavData()
 
     const tools = [
         { name: "Open Source Intelligence - Renseignement d’Origine Sources Ouvertes" },
@@ -63,7 +63,7 @@ export default function Home() {
 
             <div className="hidden lg:block"></div>
 
-                {role && "guest".includes(role as any) ? (
+                {isGuest ? (
                     <div>
                         {tools.map((v, k) => (
                             <div key={k} className="blur-[6px] pointer-events-none select-none">
