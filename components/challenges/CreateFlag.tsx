@@ -43,11 +43,11 @@ export default function CreateFlag({ onClose, onSubmit }: CreateFlagType) {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Hint" value={newFlag.hint} onChange={e => setNewFlag({ ...newFlag, hint: e.target.value })} />
-                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Cost hint" value={newFlag.hint_cost ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, hint_cost: Number(e.target.value) })} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Cost hint" value={newFlag.hint_cost ?? ""} type="number" onChange={e => {if(Number(e.target.value) > 9999) return; setNewFlag({ ...newFlag, hint_cost: Number(e.target.value) })}} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Coins" value={newFlag.coins ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, coins: Number(e.target.value) })} />
-                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Points" value={newFlag.points ?? ""} type="number" onChange={e => setNewFlag({ ...newFlag, points: Number(e.target.value) })} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Coins" value={newFlag.coins ?? ""} type="number" onChange={e => {if(Number(e.target.value) > 9999) return; setNewFlag({ ...newFlag, coins: Number(e.target.value) })}} />
+                        <input className="p-2 bg-[#363a3f] text-sm outline-none focus:ring-1 focus:ring-orange-500 font-mono" placeholder="Points" value={newFlag.points ?? ""} type="number" onChange={e => {if(Number(e.target.value) > 9999) return; setNewFlag({ ...newFlag, points: Number(e.target.value) })}} />
                     </div>
                 </div>
                 <div className="flex gap-2 pt-1">

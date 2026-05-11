@@ -5,8 +5,8 @@ export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 export const default_user = { username: "Invité", status: "online", user_id: Date.now(), role: ["guest"], pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 0, points: 0, created_at: "" }
 
 export const owners = [
-    { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
-    { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
+    { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux/" },
+    { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune/" },
 ];
 
 export const Permissions = {
@@ -30,6 +30,7 @@ export const Permissions = {
         logs: "panelAdmin.logs",
         user: {
             session: "panelAdmin.user.session",
+            dashboard: "panelAdmin.user.dashboard",
             sanctions: "panelAdmin.user.sanctions",
             coins: "panelAdmin.user.coins",
             role: "panelAdmin.user.role",

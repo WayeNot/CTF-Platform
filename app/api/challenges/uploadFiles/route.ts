@@ -21,6 +21,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, files: file_to_download });
     } catch (err) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }
@@ -34,6 +35,7 @@ export async function uploadFile(file: File) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     const fileName = `${randomUUID()}-${file.name.replace(/\s/g, "_")}`;
+    console.log(process.env.R2_BUCKET, fileName, buffer, file.type)
 
     await r2.send(
         new PutObjectCommand({
@@ -44,5 +46,6 @@ export async function uploadFile(file: File) {
         })
     );
 
+    console.log(process.env.R2_PUBLIC_URL)
     return new URL(fileName, process.env.R2_PUBLIC_URL!).toString();
 }

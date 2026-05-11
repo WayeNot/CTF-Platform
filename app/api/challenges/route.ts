@@ -33,6 +33,7 @@ export async function POST(req: Request) {
 
         const { challenge, flags, files } = await req.json()
         
+        console.log(challenge, flags)
         const result = await sql`INSERT INTO challenges (title, description, difficulty, category, flag_format, files, creator_id, coins, points, images, type) VALUES (${challenge.title || ""}, ${challenge.description || ""}, ${challenge.difficulty || ""}, ${challenge.category || []}, ${challenge.flag_format || ""}, ${files || []}, ${user_id}, ${challenge.coins || 0}, ${challenge.points || 0}, ${challenge.images || null}, ${challenge_type}) RETURNING id`;
         for (const flag of flags) {
             await sql`INSERT INTO flags (challenge_id, challenge_type, title, flag, flag_format, description, hint, hint_cost, coins, points, difficulty) VALUES (${result[0].id}, ${challenge_type}, ${flag.title}, ${flag.flag}, ${flag.flag_format || "x"}, ${flag.description}, ${flag.hint}, ${flag.hint_cost || 0}, ${Number(flag.coins) || 0}, ${Number(flag.points) || 0}, ${flag.difficulty} )`
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, id: result[0].id });
     } catch (err) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
