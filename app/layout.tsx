@@ -55,10 +55,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         getSession();
     }, [pathname])
 
-    // useEffect(() => {
-    //     inMaintenance && permissions && Array.isArray(permissions) && ((!permissions.includes(Permissions.advanced.administrator) && !permissions.includes(Permissions.bypass.maintenance))) && handleLogout();
-    // }, [permissions])
-
     useEffect(() => {
         if (public_routes.some(v => v === pathname)) return;
         const getRoles = async () => {
@@ -79,12 +75,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         if (user_id !== -1 && !isGuest) { getPermissions(); getRoles(); getWarn();}
     }, [user_id])
 
-    const handleLogout = async () => {
-        await fetch("/api/auth/logout", { method: "POST" })
-        setUser(null)
-        updateIsGuest(false)
-    }
-
     useEffect(() => {
         if (public_routes.some(v => v === pathname)) return;
         
@@ -100,16 +90,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updateWarn(warn || null)
     }, [user]);
 
-    const handleChangePassword = async (value: string) => {
-        await fetch(`/api/admin/${user_id}/resetPassword`, { method: "PATCH", body: JSON.stringify({ password: value })})   
-    }    
+    const handleChangePassword = async (value: any) => {
+        const data = await fetch(`/api/admin/${user_id}/session/resetPassword`, { method: "PATCH", body: JSON.stringify({ password: value })}) 
+        if (!data.ok) return;
+        updateResetPassword(false);
+    }
     
     return (
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
                     {(!public_routes.some(v => v === pathname)) && ( user_id > 0 || isGuest ) && <Navbar/>}
-                    {/* {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={(value) => handleChangePassword(value)} />} */}
+                    {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={({ input1 }) => { handleChangePassword(input1)} } />}
                     {( pathname === "/" || pathname === "/dev/maintenance" ) && <NavbarNotConnected/>}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}
