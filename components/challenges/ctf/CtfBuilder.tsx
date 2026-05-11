@@ -102,8 +102,8 @@ export default function CtfBuilder({ onClose }: any) {
                         <div className="bg-[#363a3f] border border-white/5 p-3 space-y-2">
                             <div className="text-[11px] text-white/40 font-mono">Challenge reward ( Coins / Points )</div>
                             <div className="grid grid-cols-2 gap-2 font-mono">
-                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Overall points reward" type="number" value={builder.coins} onChange={e => setBuilder({ ...builder, coins: Number(e.target.value) })} />
-                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Coin reward" type="number" value={builder.points} onChange={e => setBuilder({ ...builder, points: Number(e.target.value) })} />
+                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Overall points reward" type="number" value={builder.coins} onChange={e => {if(Number(e.target.value) > 9999) return; setBuilder({ ...builder, coins: Number(e.target.value)})}}/>
+                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Coin reward" type="number" value={builder.points} onChange={e  => {if(Number(e.target.value) > 9999) return; setBuilder({ ...builder, points: Number(e.target.value)})}} />
                             </div>
                         </div>
                     </div>
@@ -156,7 +156,7 @@ export default function CtfBuilder({ onClose }: any) {
                         <div className="max-h-32 overflow-y-auto space-y-2 pr-1">
                             {!Array.isArray(files) || files.length === 0 ? <p className="text-white/30 text-sm">No files</p> : (
                                 files.map((f, i) => (
-                                    <div key={i} className="flex items-center justify-between bg-[#1a1a28] p-2 rounded-lg text-sm border border-white/5 hover:border-white/20 transition duration-500">
+                                    <div key={i} className="flex items-center justify-between p-2 font-mono text-sm border-2 bg-[#363a3f] border-white/5 hover:border-white/20 transition duration-500">
                                         <span className="truncate text-white/70">📄 {f.name}</span>
                                         <button onClick={() => removeFile(i)} className="text-red-400 hover:text-red-300 transition duration-500 cursor-pointer">✕</button>
                                     </div>
@@ -169,7 +169,7 @@ export default function CtfBuilder({ onClose }: any) {
                         <div className="max-h-32 overflow-y-auto space-y-2 pr-1">
                             {flags.length === 0 && <p className="text-white/30 text-sm">No flags</p>}
                             {flags.map((f, i) => (
-                                <div key={i} className="flex justify-between items-center gap-2 bg-[#1a1a28] p-2 rounded-lg border border-white/5 text-sm hover:border-white/20 transition duration-500">
+                                <div key={i} className="flex justify-between items-center gap-2 bg-[#363a3f] font-mono p-2 border-2 border-white/5 text-sm hover:border-white/20 transition duration-500">
                                     <div className="w-full flex items-center gap-2">
                                         <span className="text-orange-400"><FaFlag /></span>
                                         <span className="text-white/70 truncate">{f.title}</span>

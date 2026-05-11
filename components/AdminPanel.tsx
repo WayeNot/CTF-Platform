@@ -35,6 +35,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [userRoles, setUserRoles] = useState<UserRoles[]>([])
     const [tempUserRoles, setTempUserRoles] = useState<Option[]>([])
     const [displayUserRoles, setDisplayUserRoles] = useState(false)
+    const [userProgression, setUserProgression] = useState([])
 
     const [sanction, setSanction] = useState<UserSanctions>()
 
@@ -96,6 +97,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setRoles(data.data)
     }
 
+    const getUserProgression = async () => {
+        const data = await call(`/api/admin/${editUser}/progression`)
+        setUserProgression(data.data)
+    }
+
     useEffect(() => {
         if (panelTab === "Gestion des utilisateurs") getAllUser()
         if (panelTab === "Gestion des rôles") getAllRoles()
@@ -103,6 +109,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         if (userTab === "Sanctions") getUserSanctions()
         if (userTab === "Gestion des coins") getUserTransactions();
         if (userTab === "Gestion des rôles") { getAllRoles(); getUserRoles(); }
+        if (userTab === "Dashboard") { getUserProgression() }
     }, [panelTab, userTab])
 
     const setMaintenance = async () => {
@@ -228,8 +235,19 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         showNotif(`Les rôles de l'utilisateur avec l'id ${editUser} ont bien changé !`, "success")
     }
 
-    const panelTabLabel = ["Dashboard", "Gestion des utilisateurs", "Gestion des rôles", "Gestion des CTF", "Gestion des challenges", "Soumission des flags", "ScoreBoard", "Gestion des annonces", "Paramètres", "Logs & Sécurité"]
-    const panelUserLabel = ["Informations", "Sessions", "Sanctions", "Gestion des coins", "Gestion des rôles", "Gestion de la progression", "Monitoring / débug"]
+    const panelTabLabel = [
+        { label: "Dashboard", perm: Permissions.panelAdmin.canOpen },
+        { label: "Gestion des utilisateurs", perm: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des rôles", perm: Permissions.panelAdmin.role },
+        { label: "Gestion des challenges", perm: Permissions.panelAdmin.challenges },
+        { label: "Soumission des flags", perm: Permissions.panelAdmin.flags },
+        { label: "ScoreBoard", perm: Permissions.panelAdmin.scoreboard },
+        { label: "Gestion des annonces", perm: Permissions.panelAdmin.announcement },
+        { label: "Paramètres", perm: Permissions.panelAdmin.settings },
+        { label: "Logs & Sécurité", perm: Permissions.panelAdmin.logs },
+    ]    
+
+    const panelUserLabel = ["Informations", "Dashboard", "Sessions", "Sanctions", "Gestion des coins", "Gestion des rôles", "Gestion de la progression", "Monitoring / débug"]
 
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
@@ -241,7 +259,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 </div>
                 <hr className="my-5 border-white/30" />
                 <div className="flex items-center justify-center w-full gap-3 mb-4">
-                    {panelTabLabel.map((v, k) => <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
+                    {panelTabLabel.map((v, k) => Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(v.perm)) && <button key={k} onClick={() => setPanelTab(v.label)} className={`${panelTab === v.label ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v.label}</button>)}
                 </div>
                 {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.dashboard)) && panelTab === "Dashboard" && (
                     <div className="flex flex-col gap-5 mt-5">
@@ -365,6 +383,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             </div>
                             <p className="flex items-center gap-3 text-[20px] w-fit">{el.email}<Link href={`mailto:${el.email}`}><RiMailSendLine className="cursor-pointer transition duration-500 hover:text-white/70 text-white/40" /></Link></p>
                             <p className="flex items-center gap-3 text-[20px] w-fit">Inscrit depuis le : {new Date(el.created_at).toLocaleString()}</p>
+                        </div>
+                    ))}
+                    {userTab === "Dashboard" && Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.dashboard)) && users.filter(el => el.user_id === editUser).map(el => (
+                        <div key={el.user_id} className="flex flex-col gap-5 text-white">
+                            <h2>CTF :</h2>
+
                         </div>
                     ))}
                     {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session)) && userTab === "Sessions" && (

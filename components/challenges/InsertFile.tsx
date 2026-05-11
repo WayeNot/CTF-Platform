@@ -37,7 +37,7 @@ export default function InsertFile({ onClose, onSubmit }: InsertFileType) {
                 <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
                     {files.length === 0 && <div className="text-center text-white/30 text-sm">No file</div>}
                     {files.map((f, i) => (
-                        <div key={i} className="flex items-center justify-between bg-[#1a1a28] p-2 rounded-lg text-sm hover:bg-[#232336] transition duration-500">
+                        <div key={i} className="flex items-center justify-between bg-[#363a3f] p-2 font-mono text-sm hover:brightness-150 transition duration-500">
                             <div className="truncate max-w-[70%] flex items-center gap-2">📄 {f.name}</div>
                             <div className="flex items-center gap-2">
                                 <div className="text-white/40 text-xs">{(f.size / 1024).toFixed(1)} KB</div>
