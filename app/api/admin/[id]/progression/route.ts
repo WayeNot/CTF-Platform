@@ -13,9 +13,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.sanctions, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
-        const challenges = await sql`SELECT ff.user_id, c.id, c.title, COUNT(*) as flags_par_user,  (SELECT COUNT(*) FROM flags WHERE challenge_id = c.id) as flags_totaux_challenge FROM challenges as c JOIN flags as fl ON c.id = fl.challenge_id JOIN flag_find as ff ON ff.challenge_id = c.id GROUP BY c.id, c.title, ff.user_id ORDER BY ff.user_id, c.title; `
-        console.log(challenges)
-        return Response.json({ success: true, data: challenges || null })
+        const r1 = await sql`SELECT title, difficulty, category FROM challenges`
+        const r2 = await sql`SELECT COUNT(challenge_id) FROM flag_find WHERE user_id = ${id} GROUP BY challenge_id`
+        const r3 = await sql`SELECT COUNT(challenge_id) FROM flags GROUP BY challenge_id`
+
+        //const infoFlags = new Set(r1.map((f: any) => f.flag_id));
+        //const foundFlags = new Set(r2.map((h: any) => h.flag_id));
+        //const countFlags = flags.map((flag: any) => ({ ...flag, found: infoFlags.has(flag.id), hint_show: countFlags.has(flag.id) }));
+        
+        return Response.json({ success: true })
     } catch (err: any) {
         console.error(err)
         return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
