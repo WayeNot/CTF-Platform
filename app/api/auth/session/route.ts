@@ -2,7 +2,6 @@
 import { cookies } from 'next/headers'
 import { sql } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 
 export async function GET(req: Request) {
     const cookieStore = await cookies()
