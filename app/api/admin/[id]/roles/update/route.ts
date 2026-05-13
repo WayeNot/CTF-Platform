@@ -20,6 +20,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         }
         return NextResponse.json({ success: true })
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

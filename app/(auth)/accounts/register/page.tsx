@@ -21,7 +21,7 @@ export default function Home() {
     }
 
     const handleRegister = async () => {
-        if (!validateEmail()) { showNotif("Mauvais format d'adresse mail !", "error"); return; }
+        if (!validateEmail()) { showNotif("Incorrect email address format !", "error"); return; }
 
         const res = await fetch("/api/auth/register", {
             method: "POST",

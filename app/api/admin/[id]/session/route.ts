@@ -16,7 +16,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         const result = await sql`SELECT * FROM user_session WHERE user_id = ${id} ORDER BY connected_at DESC`
         return NextResponse.json({ success: true, data: result })
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }
 
@@ -27,6 +27,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         await sql`UPDATE user_session SET is_active = ${!is_active} WHERE session_id = ${session_id} AND user_id = ${id}`;
         return NextResponse.json({ success: true })
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

@@ -18,6 +18,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         return NextResponse.json({ success: true, data: challenges || null })
     } catch (err: any) {
         console.error(err)
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

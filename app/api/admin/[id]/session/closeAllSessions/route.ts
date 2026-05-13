@@ -15,6 +15,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         await sql`UPDATE user_session SET is_active = FALSE WHERE user_id = ${id}`;
         return NextResponse.json({ success: true })
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

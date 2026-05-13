@@ -49,7 +49,7 @@ export default function Page() {
             if (!data.challenge) {
                 router.refresh()
                 router.push("/challenges")
-                showNotif("Ce challenge n'existe pas / plus !")
+                showNotif("This challenge does not exist / no longer exists !")
                 return
             }
             setCtf(data.challenge)
@@ -78,7 +78,7 @@ export default function Page() {
         const input = currentFlags[id] || "";
 
         if (!input || input === "") {
-            showNotif("Veuillez saisir un flag !")
+            showNotif("Please enter a flag !")
             return
         }
 
@@ -102,11 +102,11 @@ export default function Page() {
             if (data.challengeEnd) {
                 updateCoins(Number(data?.currentCoins))
                 updatePoints(Number(data?.currentPoint))
-                showNotif("GG, vous venez de terminer le challenge !", "success")
+                showNotif("GG, you have just completed the challenge !", "success")
                 showNotif(`+${ctf?.coins} coins | +${ctf?.points} points !`, "success")
             }
         } else {
-            showNotif("Eh non, pas pour cette fois !")
+            showNotif("No, not this time !")
         }
     };
 
@@ -167,12 +167,12 @@ export default function Page() {
                                                 )}
                                             </div>
                                         ) : (
-                                            <button onClick={() => showNotif("Aucun indice pour ce flag !")} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
+                                            <button onClick={() => showNotif("No clues for this flag !")} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
                                         )}
                                     </div>
                                     <div className="flex gap-2">
                                         {v.found ? (
-                                            <button onClick={() => showNotif("Vous avez déjà résolu ce flag !", "success")} className="flex-1 bg-[#212529] hover:bg-[#51565c] text-white/70 py-2.5 border-2 border-white/30 font-medium transition duration-500 cursor-pointer active:scale-95 font-mono">SEND</button>
+                                            <button onClick={() => showNotif("You've already solved this flag !", "success")} className="flex-1 bg-[#212529] hover:bg-[#51565c] text-white/70 py-2.5 border-2 border-white/30 font-medium transition duration-500 cursor-pointer active:scale-95 font-mono">SEND</button>
                                         ) : (
                                             <button onClick={() => handleValidate(v.id)} className="flex-1 bg-[#212529] hover:bg-[#51565c] text-white/70 py-2.5 border-2 border-white/30 font-medium transition duration-500 cursor-pointer active:scale-95 font-mono">SEND</button>
                                         )}
@@ -181,7 +181,7 @@ export default function Page() {
                             </div>
                         ))}
                         {showModalBool && selectedFlag && isGuest && (
-                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="Vous devez être connecté pour acheter les indices !" onSelect={(value) => { value === "Payer" ? showNotif("Vous devez être connecté pour acheter les indices !") : setShowModalBool(false) }} />
+                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="Vous devez être connecté pour acheter les indices !" onSelect={(value) => { value === "Payer" ? showNotif("You must be logged in to purchase the clues !") : setShowModalBool(false) }} />
                         )}
                         {showModalBool && selectedFlag && !isGuest && (
                             <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="" onSelect={(value) => { if (value === "Payer") handleHint(selectedFlag.id); setShowModalBool(false) }} />

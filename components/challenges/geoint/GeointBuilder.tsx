@@ -26,7 +26,7 @@ export default function GeointBuilder({ onClose }: any) {
     const [displayFlags, setDisplayFlags] = useState(false)
 
     const handleBuild = async () => {
-        if (!canCreate) { showNotif("Vous n'avez pas rempli tout les champs !"); return; }        
+        if (!canCreate) { showNotif("You have not filled in all the fields !"); return; }        
 
         await fetch("/api/challenges?type=geoint", {
             method: "POST",
@@ -39,13 +39,13 @@ export default function GeointBuilder({ onClose }: any) {
     const handleRemoveImage = (index: number) => {
         const updatedImages = builder.images.filter((_, i) => i !== index)
         setBuilder(prev => ({ ...prev, images: updatedImages }))
-        showNotif("Image bien supprimé !", "success")
+        showNotif("Image successfully deleted !", "success")
     }
 
     const handleRemoveFlag = (index: number) => {
         const updatedFlags = flags.filter((_, i) => i !== index)
         setFlags(updatedFlags)
-        showNotif("Flag bien supprimé !", "success")
+        showNotif("Flag successfully removed !", "success")
     }
 
     return (

@@ -16,7 +16,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         await sql`UPDATE users SET reset_password = TRUE WHERE user_id = ${id}`;
         return NextResponse.json({ success: true })
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }
 
@@ -36,6 +36,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         return NextResponse.json({ success: true })
     } catch (err: any) {
         console.error(err)
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

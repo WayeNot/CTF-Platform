@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     try {
         const { username, password } = await req.json()
 
-        if (!username || !password || typeof username !== "string" || typeof password !== "string") return NextResponse.json({ success: false, error: "Champ(s) manquant(s) !" }, { status: 400 })
+        if (!username || !password || typeof username !== "string" || typeof password !== "string") return NextResponse.json({ success: false, error: "Missing field(s) !" }, { status: 400 })
 
         const user = await sql`SELECT user_id, password, role FROM users WHERE username = ${username} LIMIT 1`
 
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
         const isAllowedRole = await hasPermission(Permissions.advanced.administrator, user_id) || await hasPermission(Permissions.bypass.maintenance, user_id);
         
-        if (!user[0] || !isGoodPassword || !isAllowedRole) return NextResponse.json({ success: false, error: "Erreur d'identification / rôle non autorisé" }, { status: 401 })
+        if (!user[0] || !isGoodPassword || !isAllowedRole) return NextResponse.json({ success: false, error: "Identification error / unauthorized role." }, { status: 401 })
 
         const sessionId = generateSessionId()
 
@@ -37,6 +37,6 @@ export async function POST(req: Request) {
 
         return res
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

@@ -41,7 +41,7 @@ export default function Navbar() {
         setShowWarn(false)
         await fetch(`/api/users/${user_id}/sanctions/warn`, { method: "PATCH", body: JSON.stringify({ warn_id: warn?.id }) })
         if (warn) updateWarn({ ...warn, show_notif: false })
-        showNotif("Vous avez pris connaissance du warn !", "success")
+        showNotif("You have been informed of the warning!", "success")
     }
 
     return (

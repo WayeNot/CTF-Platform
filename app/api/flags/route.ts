@@ -16,10 +16,10 @@ export async function POST(req: Request) {
         let coins = 0;
         let points = 0;
 
-        if (isGuest || !session) return NextResponse.json({ success: false, error: "Vous devez connecté pour faire ceci !" }, { status: 403 })
+        if (isGuest || !session) return NextResponse.json({ success: false, error: "You must be logged in to do this !" }, { status: 403 })
 
         const isGoodResult = await sql`SELECT coins, points FROM flags WHERE challenge_id = ${challenge_id} AND id = ${flag_id} AND challenge_type = ${type}`
-        if (isGoodResult.length === 0) return NextResponse.json({ success: false, error: "Mauvais flag !" })
+        if (isGoodResult.length === 0) return NextResponse.json({ success: false, error: "Wrong flag !" })
         const user_id = await getUserIdBySessionId(session);
 
         await sql`INSERT INTO flag_find (user_id, challenge_id, flag_id, type) VALUES (${user_id}, ${challenge_id}, ${flag_id}, ${type})`

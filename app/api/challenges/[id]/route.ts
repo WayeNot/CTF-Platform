@@ -15,9 +15,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         
         const challenge = await sql`SELECT * FROM challenges WHERE type = ${challengeType} AND id = ${id} LIMIT 1`;        
 
-        if (!challenge.length) return NextResponse.json({ success: false, error: "Challenge introuvable" }, { status: 404 });
+        if (!challenge.length) return NextResponse.json({ success: false, error: "Challenge not found !" }, { status: 404 });
 
-        if (challenge[0].status !== "active" && ( await hasPermission(Permissions.advanced.administrator, user_id) || !await hasPermission(Permissions.panelAdmin.challenges, user_id)) ) return NextResponse.json({ success: false, error: "Vous n'avez pas les autorisations !" }, { status: 401 })
+        if (challenge[0].status !== "active" && ( await hasPermission(Permissions.advanced.administrator, user_id) || !await hasPermission(Permissions.panelAdmin.challenges, user_id)) ) return NextResponse.json({ success: false, error: "You do not have the necessary permissions !" }, { status: 401 })
         const flags = await sql`SELECT * FROM flags WHERE challenge_type = ${challengeType} AND challenge_id = ${id} ORDER BY id ASC`;
         const flag_find = await sql`SELECT * FROM flag_find WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`
         const hint_show = await sql`SELECT * FROM hint_show WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`

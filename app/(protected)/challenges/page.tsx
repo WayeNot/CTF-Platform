@@ -89,11 +89,11 @@ export default function Home() {
                                     <ChallengeGroups data={groupedGeoint} open={open} type="geoint" />
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="bg-[#1e1e2f]/90 border border-white/10 rounded-2xl p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
+                                    <div className="bg-[#1e1e2f]/90 border border-white/10  p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
                                         <div className="text-4xl mb-3">🔒</div>
                                         <h2 className="text-white text-xl font-bold mb-2">GEOINT verrouillé</h2>
                                         <p className="text-white/60 text-sm mb-6">Connectez-vous pour accéder aux missions et suivre votre progression.</p>
-                                        <Link href="/accounts/login" className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</Link>
+                                        <Link href="/accounts/login" className="inline-flex items-center justify-center px-5 py-2 bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</Link>
                                         <p className="text-white/30 text-xs mt-4"> Aperçu disponible — accès complet après connexion</p>
                                     </div>
                                 </div>

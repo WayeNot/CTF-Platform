@@ -61,7 +61,7 @@ export default function Home() {
 
     const handleForgotPassword = (value: string) => {
         setDisplayForgotPassword(false)
-        showNotif("Une demande de réinitialisation de mot de passe a été effectué !", "success")
+        showNotif("A password reset request has been made !", "success")
     }
 
     return (

@@ -15,6 +15,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         const result = await sql`SELECT * FROM transactions WHERE user_id = ${id} ORDER BY id DESC`
         return NextResponse.json({ success: true, data: result })
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

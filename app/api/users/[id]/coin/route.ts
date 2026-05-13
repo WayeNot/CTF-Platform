@@ -24,7 +24,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             newSold = currentCoins[0].coins;
         } else if (operation === "remove_coins") {
             const getCoins = await sql`SELECT coins FROM users WHERE user_id = ${id}`;
-            if (getCoins[0].coins - value < 0) return NextResponse.json({ success: false, error: "Impossible de retirer plus que ce qu'il possède déjà !" }, { status: 500 })
+            if (getCoins[0].coins - value < 0) return NextResponse.json({ success: false, error: "It's impossible to take away more than what he already has !" }, { status: 500 })
             const currentCoins = await sql`UPDATE users SET coins = ${getCoins[0].coins - value} WHERE user_id = ${id} RETURNING coins`;
             newSold = currentCoins[0].coins
         } else if (operation === "reset_coins") {

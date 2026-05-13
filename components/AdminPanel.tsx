@@ -167,32 +167,32 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const closeAllSession = async () => {
         await call(`/api/admin/${editUser}/session/closeAllSessions`, { method: "PATCH" })
         setUserSessions(prev => prev.map(session => session.is_active ? { ...session, is_active: false } : session))
-        showNotif("Toutes les sessions ont bien été désactivées !", "success")
+        showNotif("All sessions have been successfully deactivated !", "success")
     }
 
     const resetPassword = async () => {
         await call(`/api/admin/${editUser}/session/resetPassword`, { method: "POST" })
-        showNotif("Reset de mot de passe bien envoyé !", "success")
+        showNotif("Password reset successfully sent !", "success")
     }
 
     // Sanction sur l'utilisateur ↓
 
     const warnUser = async (reason: string) => {
         await call(`/api/admin/${editUser}/sanctions/warn`, { method: "POST", body: JSON.stringify({ reason: reason }) })
-        showNotif(`L'utilisateur avec l'id ${editUser} a bien été averti !`, "success")
+        showNotif(`The user with the ID ${editUser} has been notified !`, "success")
         setShowModal(null)
     }
 
     const banUser = async (reason: string, duration: number) => {
         await call(`/api/admin/${editUser}/sanctions/ban`, { method: "POST", body: JSON.stringify({ reason: reason, duration: duration }) })
-        showNotif(`L'utilisateur avec l'id ${editUser} a bien été banni ${duration === 0 ? "définitivement" : "temporairement"} !`, "success")
+        showNotif(`The user with the ID ${editUser} has been successfully banned. ${duration === 0 ? "definitely" : "temporarily"} !`, "success")
         closeAllSession()
         setShowModal(null)
     }
 
     const deleteUserAccount = async (reason: string) => {
         await call(`/api/admin/${editUser}/sanctions/deleteAccount`, { method: "DELETE", body: JSON.stringify({ reason: reason }) })
-        showNotif(`Le compte de l'utilisateur avec l'id ${editUser} a bien été supprimé !`);
+        showNotif(`The user account with the id ${editUser} has been successfully deleted !`);
         closeEditUser
         setShowModal(null)
         setPanelTab("Dashboard")
@@ -210,14 +210,14 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         if (typeof value === "string") value = value.trim()
 
         if (value === "" || value === "+" || value === "-") {
-            showNotif("Veuillez saisir un nombre valide !")
+            showNotif("Please enter a valid number !")
             return
         }
 
         const num = Number(value)
 
         if (isNaN(num)) {
-            showNotif("Veuillez saisir un nombre valide !")
+            showNotif("Please enter a valid number !")
             return
         }
         setShowModal(null)
@@ -235,7 +235,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const handleCreateRole = async () => {
         if (!newRole || !newRole.label || !newRole.description) {
-            showNotif("Veuillez remplir tout les champs !")
+            showNotif("Please fill in all fields !")
             return
         }
 
@@ -246,13 +246,13 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setRoles(data.data)
         setDisplayCreation(-1)
         setNewRole({ label: "", description: "", color: "", allPerms: [] })
-        showNotif("Rôle bien créé !", "success")
+        showNotif("Well-created role !", "success")
     }
 
     const handleSetRoles = async () => {
         await call(`/api/admin/${editUser}/roles/update`, { method: "POST", body: JSON.stringify({ roles: tempUserRoles }) })
         getUserRoles();
-        showNotif(`Les rôles de l'utilisateur avec l'id ${editUser} ont bien changé !`, "success")
+        showNotif(`The roles of the user with the id ${editUser} have indeed changed !`, "success")
     }
 
     const setMaintenance = async () => {
