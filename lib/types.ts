@@ -86,6 +86,16 @@ export type UserRoles = {
     role_id: number;
 }
 
+export type UserProgression = {
+    id: number;
+    title: string;
+    difficulty: string;
+    category: string[];
+    type: string;
+    total_flags: number;
+    total_flags_found: number;
+}
+
 export type Roles = {
     id: number;
     label: string;

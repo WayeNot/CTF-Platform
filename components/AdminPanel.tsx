@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
-import { Option, Roles, User, UserRoles, UserSanctions, UserSessions, UserTransactions } from "@/lib/types"
+import { Option, Roles, User, UserProgression, UserRoles, UserSanctions, UserSessions, UserTransactions } from "@/lib/types"
 import { IoIosArrowDroprightCircle, IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
 import { MdCheckBoxOutlineBlank } from "react-icons/md"
 import InputNumber from "./ModalInput"
@@ -24,7 +24,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { inMaintenance, updateInMaintenance, permissions } = useNavData()
 
     const [panelTab, setPanelTab] = useState("")
-    const [userTab, setUserTab] = useState("Informations")
+    const [userTab, setUserTab] = useState("")
 
     const [users, setUsers] = useState<User[]>([])
     const [editUser, setEditUser] = useState(-1)
@@ -35,7 +35,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [userRoles, setUserRoles] = useState<UserRoles[]>([])
     const [tempUserRoles, setTempUserRoles] = useState<Option[]>([])
     const [displayUserRoles, setDisplayUserRoles] = useState(false)
-    const [userProgression, setUserProgression] = useState([])
+    const [userProgression, setUserProgression] = useState<UserProgression[]>([])
 
     const [sanction, setSanction] = useState<UserSanctions>()
 
@@ -45,9 +45,9 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const [newRole, setNewRole] = useState<{ label: string; description: string; color: string; allPerms: string[]; }>({ label: "", description: "", color: "", allPerms: [] })
 
-    const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser" | "displayReasonBan" | "displayReasonWarn">(null)
+    const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser" | "deleteAccount" | "displayReasonBan" | "displayReasonWarn">(null)
 
-    const [allPermissions, setAllPermissions] = useState([
+    const allPermissions = [
         { label: "Permissions générales", isSelected: false, canBeSelected: false },
         { label: "Accès au panel admin", description: "Les membres avec ce rôle auront accès au panel admin", alias: Permissions.panelAdmin.canOpen, isSelected: false, canBeSelected: true },
 
@@ -61,16 +61,42 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: Permissions.panelAdmin.role, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
 
         { label: "Permissions Gestion des utilisateurs", isSelected: false, canBeSelected: false, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir les sessions, les activer / désactiver et supprimer toutes les sessions.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
-        { label: "Gestion des sanctions", description: "Les membres avec ce rôle pourront voir les sanctions, avertir et bannir l'utilisateur.", alias: "panelAdmin.user.sanctions", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
-        { label: "Gestion des coins", description: "Les membres avec ce rôle pourront voir les transactions, ajouter / retirer des coins et les reset.", alias: "panelAdmin.user.coins", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
-        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir les rôles de l'utilisateur, lui en ajouter / retirer.", alias: "panelAdmin.user.role", isSelected: false, canBeSelected: true, onlyIf: "panelAdmin.manageUser" },
-        // { label: "Gestion de la progression", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true },
-        // { label: "Gestion du monitoring / débug", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: "panelAdmin.user.session", isSelected: false, canBeSelected: true },
+
+        { label: "Informations", description: "Les membres avec ce rôle aurront accès aux informations de l'utilisateur.", alias: Permissions.panelAdmin.user.informations, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Dashboard utilisateur", description: "Les membres avec ce rôle aurront accès au dashboard de l'utilisateur.", alias: Permissions.panelAdmin.user.dashboard, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir les sessions, les activer / désactiver et supprimer toutes les sessions.", alias: Permissions.panelAdmin.user.session, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des sanctions", description: "Les membres avec ce rôle pourront voir les sanctions, avertir et bannir l'utilisateur.", alias: Permissions.panelAdmin.user.sanctions, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des coins", description: "Les membres avec ce rôle pourront voir les transactions, ajouter / retirer des coins et les reset.", alias: Permissions.panelAdmin.user.coins, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir les rôles de l'utilisateur, lui en ajouter / retirer.", alias: Permissions.panelAdmin.user.role, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Gestion de la progression", description: "Les membres avec ce rôle pourront contrôler la progression de l'utilisateur.", alias: Permissions.panelAdmin.user.progression, isSelected: false, canBeSelected: true },
+        { label: "Gestion du monitoring / débug", description: "Les membres avec ce rôle pourront débug / aider l'utilisateur.", alias: Permissions.panelAdmin.user.monitoring, isSelected: false, canBeSelected: true },
 
         { label: "Permissions avancées", isSelected: false, canBeSelected: false },
         { label: "Administrateur", description: "Les membres ayant cette permission auront toutes les permissions et pourront passer outre les restrictions.", alias: "advanced.administrator", isSelected: false, canBeSelected: true },
-    ])
+    ]
+
+    const panelTabLabel = [
+        { label: "Dashboard", perm: Permissions.panelAdmin.canOpen },
+        { label: "Gestion des utilisateurs", perm: Permissions.panelAdmin.manageUser },
+        { label: "Gestion des rôles", perm: Permissions.panelAdmin.role },
+        { label: "Gestion des challenges", perm: Permissions.panelAdmin.challenges },
+        { label: "Soumission des flags", perm: Permissions.panelAdmin.flags },
+        { label: "ScoreBoard", perm: Permissions.panelAdmin.scoreboard },
+        { label: "Gestion des annonces", perm: Permissions.panelAdmin.announcement },
+        { label: "Paramètres", perm: Permissions.panelAdmin.settings },
+        { label: "Logs & Sécurité", perm: Permissions.panelAdmin.logs },
+    ]
+
+    const panelUserLabel = [
+        { label: "Informations", perm: Permissions.panelAdmin.user.informations },
+        { label: "Dashboard", perm: Permissions.panelAdmin.user.dashboard },
+        { label: "Sessions", perm: Permissions.panelAdmin.user.session },
+        { label: "Sanctions", perm: Permissions.panelAdmin.user.sanctions },
+        { label: "Gestion des coins", perm: Permissions.panelAdmin.user.coins },
+        { label: "Gestion des rôles", perm: Permissions.panelAdmin.user.role },
+        { label: "Gestion de la progression", perm: Permissions.panelAdmin.user.progression },
+        { label: "Monitoring / débug", perm: Permissions.panelAdmin.user.monitoring },
+    ]
 
     const colorClasses = {
         red: "bg-red-500/40",
@@ -97,11 +123,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setRoles(data.data)
     }
 
-    const getUserProgression = async () => {
-        const data = await call(`/api/admin/${editUser}/progression`)
-        setUserProgression(data.data)
-    }
-
     useEffect(() => {
         if (panelTab === "Gestion des utilisateurs") getAllUser()
         if (panelTab === "Gestion des rôles") getAllRoles()
@@ -109,7 +130,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         if (userTab === "Sanctions") getUserSanctions()
         if (userTab === "Gestion des coins") getUserTransactions();
         if (userTab === "Gestion des rôles") { getAllRoles(); getUserRoles(); }
-        if (userTab === "Dashboard") { getUserProgression() }
+        if (userTab === "Gestion de la progression") { getUserProgression() }
     }, [panelTab, userTab])
 
     const setMaintenance = async () => {
@@ -121,6 +142,13 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setEditUser(-1)
         setUserTab("Informations")
         setDisplayUserRoles(false)
+    }
+
+    // Dashboard utilisateur ↓
+
+    const getUserProgression = async () => {
+        const data = await call(`/api/admin/${editUser}/progression`)
+        setUserProgression(data.data)
     }
 
     // Administration des sessions de l'utilisateur ↓
@@ -172,10 +200,18 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     }
 
     const banUser = async (reason: string, duration: number) => {
-        setShowModal(null)
         await call(`/api/admin/${editUser}/sanctions/ban`, { method: "POST", body: JSON.stringify({ reason: reason, duration: duration }) })
         showNotif(`L'utilisateur avec l'id ${editUser} a bien été banni ${duration === 0 ? "définitivement" : "temporairement"} !`, "success")
         closeAllSession()
+        setShowModal(null)
+    }
+
+    const deleteUserAccount = async (reason: string) => {
+        await call(`/api/admin/${editUser}/sanctions/deleteAccount`, { method: "DELETE", body: JSON.stringify({ reason: reason }) })
+        showNotif(`Le compte de l'utilisateur avec l'id ${editUser} a bien été supprimé !`);
+        setEditUser(-1)
+        setShowModal(null)
+        setPanelTab("Dashboard")
     }
 
     // Administration des coins de l'utilisateur ↓
@@ -234,20 +270,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         getUserRoles();
         showNotif(`Les rôles de l'utilisateur avec l'id ${editUser} ont bien changé !`, "success")
     }
-
-    const panelTabLabel = [
-        { label: "Dashboard", perm: Permissions.panelAdmin.canOpen },
-        { label: "Gestion des utilisateurs", perm: Permissions.panelAdmin.manageUser },
-        { label: "Gestion des rôles", perm: Permissions.panelAdmin.role },
-        { label: "Gestion des challenges", perm: Permissions.panelAdmin.challenges },
-        { label: "Soumission des flags", perm: Permissions.panelAdmin.flags },
-        { label: "ScoreBoard", perm: Permissions.panelAdmin.scoreboard },
-        { label: "Gestion des annonces", perm: Permissions.panelAdmin.announcement },
-        { label: "Paramètres", perm: Permissions.panelAdmin.settings },
-        { label: "Logs & Sécurité", perm: Permissions.panelAdmin.logs },
-    ]    
-
-    const panelUserLabel = ["Informations", "Dashboard", "Sessions", "Sanctions", "Gestion des coins", "Gestion des rôles", "Gestion de la progression", "Monitoring / débug"]
 
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
@@ -374,7 +396,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                     </div>
                     <hr className="my-5 border-white/30" />
                     <div className="flex items-center justify-center w-full gap-3 mb-4">
-                        {panelUserLabel.map((v, k) => <button key={k} onClick={() => setUserTab(v)} className={`${userTab === v ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v}</button>)}
+                        {panelUserLabel.map((v, k) => Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(v.perm)) && <button key={k} onClick={() => setUserTab(v.label)} className={`${userTab === v.label ? "text-red-500" : "text-white/40"} font-mono px-2 text-[15px] py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#212529]`}>{v.label}</button>)}
                     </div>
                     {userTab === "Informations" && users.filter(el => el.user_id === editUser).map(el => (
                         <div key={el.user_id} className="flex flex-col gap-5 text-white">
@@ -386,10 +408,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     ))}
                     {userTab === "Dashboard" && Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.dashboard)) && users.filter(el => el.user_id === editUser).map(el => (
-                        <div key={el.user_id} className="flex flex-col gap-5 text-white">
-                            <h2>CTF :</h2>
-
-                        </div>
+                        <p>Dashboard</p>
                     ))}
                     {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session)) && userTab === "Sessions" && (
                         <div className="flex flex-col gap-5">
@@ -426,6 +445,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             <div className="flex items-center gap-3">
                                 <button onClick={() => setShowModal("warnUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Avertir l'utilisateur</button>
                                 <button onClick={() => setShowModal("banUser")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Bannir l'utilisateur</button>
+                                <button onClick={() => setShowModal("deleteAccount")} className="w-fit text-center text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer flex items-center gap-3">Supprimer le compte de l'utilisateur</button>
                             </div>
                             {userSanctions.length === 0 && <h2 className="text-white/70">Aucune sanction pour le moment !</h2>}
                             <div className="max-h-[calc(100vh-370px)] overflow-y-auto overflow-x-auto rounded-xl border border-white/10">
@@ -521,8 +541,20 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             </div>
                         )
                     }
+                    {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.progression)) && userTab === "Gestion de la progression" && (
+                        <div className="flex items-center gap-2">
+                            {userProgression.map((v, k) => (
+                                <div key={k} className={`w-fit flex flex-col items-center gap-4 px-4 py-2 text-sm text-[20px] border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40`}>
+                                    <p>{v.title} | {v.difficulty}</p>
+                                    <div className="flex items-center gap-2 text-[12px] font-semibold"><p>{v.type}</p> | {v.category.map((vd, kd) => (<span key={kd} className={`px-2 py-0.5 bg-green-500/10`}>{vd}</span>))}</div>
+                                    <p><span className={`font-semibold ${v.total_flags_found === v.total_flags ? "text-green-600" : v.total_flags_found >= v.total_flags / 2 ? "text-orange-500" : "text-red-600"}`}>{v.total_flags_found}</span> / {v.total_flags}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }} input2={{ display: false, placeholder: "" }} />}
                     {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée ( en minute )", type: "number" }} />}
+                    {showModal === "deleteAccount" && <InputNumber title="Supprimer un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { deleteUserAccount(String(input1)) }} input1={{ display: true, placeholder: "Raison de la suppression", type: "text" }} />}
                     {showModal === "displayReasonBan" && <DisplayBan id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} duration={sanction?.duration || -1} expires_at={sanction?.expires_at || ""} onSelect={() => setShowModal(null)} />}
                     {showModal === "displayReasonWarn" && <DisplayWarn id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} onSelect={() => setShowModal(null)} />}
                 </div >

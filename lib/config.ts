@@ -29,8 +29,9 @@ export const Permissions = {
         settings: "panelAdmin.settings",
         logs: "panelAdmin.logs",
         user: {
-            session: "panelAdmin.user.session",
+            informations: "panelAdmin.user.informations",
             dashboard: "panelAdmin.user.dashboard",
+            session: "panelAdmin.user.session",
             sanctions: "panelAdmin.user.sanctions",
             coins: "panelAdmin.user.coins",
             role: "panelAdmin.user.role",
