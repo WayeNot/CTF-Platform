@@ -11,11 +11,11 @@ export async function GET(req: Request) {
 
     if (!session && !isGuest) return NextResponse.json({ success: false }, { status: 401 })
 
-    if (!session) return Response.json({ isGuest })
+    if (!session) return NextResponse.json({ isGuest })
 
     const result = await sql`SELECT u.* FROM user_session s JOIN users u ON u.user_id = s.user_id WHERE s.session_id = ${session} LIMIT 1`
     
     if (!result[0]) return NextResponse.json({ success: false, error: "Aucune session trouvée !" }, { status: 401 })
     
-    return Response.json(result[0])
+    return NextResponse.json(result[0])
 }

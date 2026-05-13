@@ -13,7 +13,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.session, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         await sql`UPDATE user_session SET is_active = FALSE WHERE user_id = ${id}`;
-        return Response.json({ success: true })
+        return NextResponse.json({ success: true })
     } catch (err: any) {
         return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
     }

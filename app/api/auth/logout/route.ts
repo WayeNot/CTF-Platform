@@ -7,5 +7,5 @@ export async function POST() {
     sql`UPDATE user_session SET is_active = FALSE WHERE session_id = ${session_id}`
     cookieStore.delete('session_id')
     cookieStore.delete('isGuest')
-    return Response.json({ success: true })
+    return NextResponse.json({ success: true })
 }

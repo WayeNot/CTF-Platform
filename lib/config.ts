@@ -5,8 +5,8 @@ export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 export const default_user = { username: "Invité", status: "online", user_id: Date.now(), role: ["guest"], pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 0, points: 0, created_at: "" }
 
 export const owners = [
-    { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux/" },
-    { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune/" },
+    { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
+    { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
 ];
 
 export const Permissions = {
@@ -48,6 +48,21 @@ export const Permissions = {
         maintenance: "bypass.maintenance",
     },
 } as const
+
+export const colorClasses = {
+    red: "bg-red-500/40",
+    orange: "bg-orange-500/40",
+    amber: "bg-amber-500/40",
+    yellow: "bg-yellow-300/40",
+    lime: "bg-lime-500/40",
+    green: "bg-green-500/40",
+    emerald: "bg-emerald-500/40",
+    teal: "bg-teal-500/40"
+}
+
+export const colorRole: (keyof typeof colorClasses)[] = [
+    "red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal"
+]
 
 export const maintenance_route = "/dev/maintenance"
 

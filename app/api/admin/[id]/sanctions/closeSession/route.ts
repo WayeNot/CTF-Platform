@@ -12,5 +12,5 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     if (!await hasPermission(Permissions.advanced.administrator, user_id) && !await hasPermission(Permissions.panelAdmin.user.sanctions, user_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
     sql`UPDATE user_session SET is_active = FALSE WHERE user_id = ${id}`
-    return Response.json({ success: true })
+    return NextResponse.json({ success: true })
 }
