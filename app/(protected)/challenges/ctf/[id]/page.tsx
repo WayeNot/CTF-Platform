@@ -120,14 +120,13 @@ export default function Page() {
 
             <div className="hidden lg:block"></div>
             <div className="flex flex-col bg-[#212529]">
-                
                 <div className="py-5 px-4 bg-[#212529] flex flex-col items-center justify-center gap-5">
                     {foundCount === flagsLen && (
                         <p className="w-fit px-4 py-2 bg-[#212529] border-2 border-white/30 text-white/70 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-3"><span className="text-green-600"><CiCircleCheck /></span>Vous avez terminé {ctf?.title} !</p>
                     )}
                     <div className='w-fit border-2 border-white/30 pl-50 pr-50 pt-10'>
                         <h2 className="text-white/60 font-mono text-[40px] text-center">CTF - {ctf?.title} | Difficulty : {ctf?.difficulty}</h2>
-                        <p className='text-center my-2 text-white/40 font-mono mb-5'>Created by : {creatorName !== "Inconnu" && creatorName !== "Anonyme" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${creatorName}`}>{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {ctf?.created_at && new Date(ctf?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                        <p className='text-center my-2 text-white/40 font-mono mb-5'>Created by : {creatorName !== "Inconnu" && creatorName !== "Anonyme" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/@${creatorName}`}>@{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {ctf?.created_at && new Date(ctf?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                     </div>
                     <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed mt-10">{ctf?.description}</p>
                     <div className='text-center mt-10 border-2 border-white/30 pt-10 pl-110 pr-110'>

@@ -35,16 +35,12 @@ export default function Home() {
                     <div className="pl-45 bg-white/30 text-[#212529] w-full p-5 flex items-center justify-between">
                         <div>
                             <p className="font-semibold italic text-white/40 text-[22px]">@{userData?.username}</p>
-                            <p className="font-semibold italic text-white/20 text-[14px] whitespace-pre-line">{userData?.bio ? userData?.bio : "Aucune bio pour le moment !"}</p>
+                            <p className="font-semibold italic text-white/30 text-[14px] whitespace-pre-line">{userData?.bio ? userData?.bio : "Aucune bio pour le moment !"}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            {socialMedias.map(social => {
-                                const Icon = social.icon
-
-                                return (
-                                    <Link key={social.key} className="flex items-center gap-2 w-full" href={userData?.social_media[social.key] || ""}><Icon className="text-white/30 hover:text-white/70 transition duration-500 text-[19px]"/></Link>
-                                )
-                            })}
+                            {socialMedias.map(social => (
+                                <Link key={social.key} className="flex items-center gap-2 w-full" href={userData?.social_media[social.key] || ""}><social.icon className="text-white/30 hover:text-white/70 transition duration-500 text-[19px]" /></Link>
+                            ))}
                         </div>
                     </div>
                 </div>

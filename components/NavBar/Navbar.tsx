@@ -86,7 +86,7 @@ export default function Navbar() {
                         <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
                         <div className="hidden sm:flex items-center text-white/40">
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
-                                <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
+                                <Link href={`/user/@${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
                             </div>
                             <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 ml-5"><RiCoinsFill />{coins}</p>
                             <p className="text-white/70 text-[20px] mx-5"> | </p>
