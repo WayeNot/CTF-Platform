@@ -15,8 +15,9 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
         await sql`INSERT INTO sanctions (type, reason, duration, user_id, staff_id) VALUES ('Account deleted', ${reason}, 0, ${id}, ${staff_id})`
         await sql`DELETE FROM users WHERE user_id = ${id}`
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true }, { status: 200 })
     } catch (err: any) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

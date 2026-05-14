@@ -4,7 +4,7 @@ import { getUserIdBySessionId, hasPermission } from "@/lib/session";
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server";
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH({ params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const cookieStore = await cookies()
@@ -13,8 +13,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.session, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         await sql`UPDATE user_session SET is_active = FALSE WHERE user_id = ${id}`;
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true }, { status: 200 })
     } catch (err: any) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
@@ -13,15 +13,16 @@ import { useApi } from "@/hooks/useApi"
 import { FaFire } from "react-icons/fa"
 import { SiOpslevel } from "react-icons/si"
 import { RiCoinsFill } from "react-icons/ri";
-import { IoWarning } from "react-icons/io5";
+import { IoSettingsSharp, IoWarning } from "react-icons/io5";
 import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
+import { FaUserGear } from "react-icons/fa6";
 
 
 export default function Navbar() {
     const { showNotif } = useNotif()
     const { call } = useApi()
-    const { updateIsGuest, isGuest, user_id, username, status, role, pp_url, coins, points, inMaintenance, warn, updateWarn, permissions } = useNavData()
+    const { updateIsGuest, isGuest, user_id, username, public_username, status, role, pp_url, coins, points, inMaintenance, warn, updateWarn, permissions } = useNavData()
 
     const router = useRouter()
 
@@ -61,7 +62,7 @@ export default function Navbar() {
                         <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
                         <div className="hidden sm:flex items-center text-white/40">
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-10">
-                                <Link href={`/user/${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
+                                <p className="flex items-center gap-3 text-[18px] transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</p>
                             </div>
                             <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
                         </div>
@@ -90,15 +91,17 @@ export default function Navbar() {
                             <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 ml-5"><RiCoinsFill />{coins}</p>
                             <p className="text-white/70 text-[20px] mx-5"> | </p>
                             <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 mr-15"><SiOpslevel />{points}</p>
-                            <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
+                            <div className="flex items-center gap-4">
+                                <Link href={`/settings`}><FaUserGear className="hover:text-white/60 cursor-pointer text-2xl transition duration-500" /></Link>
+                                <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
+                            </div>
                             <div className="flex ml-3 items-center gap-5 text-white/40">
                                 {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.canOpen)) && <div className="flex items-center gap-3"><MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="font-bold text-[30px] hover:text-red-800 transition duration-500 cursor-pointer ml-7" /></div>}
                             </div>
                         </div>
                     </nav>
                 </div >
-            )
-            }
+            )}
             <hr className="text-white/40 m-auto mb-10" />
             {menuOpen && (
                 <div className="sm:hidden px-4 pb-4 animate-fadeIn">
@@ -110,10 +113,10 @@ export default function Navbar() {
                         <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition duration-500"><MdExitToApp />Déconnexion</button>
                     </div>
                 </div>
-            )
-            }
+            )}
             {showWarn && warn && warn?.reason && <ModalWarn id={warn.id} staff_id={warn?.staff_id} reason={warn?.reason} onSelect={handleWarn} />}
             {showAdminPanel && <AdminPanel closePanel={() => setShowAdminPanel(false)} />}
+                
         </div >
     )
 }

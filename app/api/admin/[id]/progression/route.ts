@@ -15,7 +15,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
         const challenges = await sql`SELECT challenges.id, challenges.title, challenges.difficulty, challenges.category, challenges.type, COUNT(DISTINCT flags.id) AS total_flags, COUNT(DISTINCT flag_find.id) AS total_flags_found FROM challenges LEFT JOIN flags ON flags.challenge_id = challenges.id LEFT JOIN flag_find ON flag_find.challenge_id = challenges.id AND flag_find.user_id = ${id} GROUP BY challenges.id;`
 
-        return NextResponse.json({ success: true, data: challenges || null })
+        return NextResponse.json({ success: true, data: challenges || null }, { status: 200 })
     } catch (err: any) {
         console.error(err)
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })

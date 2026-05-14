@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DropDown from "../ui/DropDown";
-import { difficulty, difficultyBtn, NewCtfFlag } from "@/lib/types";
+import { difficultyBtn, NewCtfFlag } from "@/lib/types";
 import { useNotif } from "../NotifProvider";
 
 type CreateFlagType = {

@@ -4,17 +4,21 @@ import { sql } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
-    const cookieStore = await cookies()
-    const session = cookieStore.get('session_id')?.value
-    const isGuest = cookieStore.get('isGuest')?.value
+    try {
+        const cookieStore = await cookies()
+        const session = cookieStore.get('session_id')?.value
+        const isGuest = cookieStore.get('isGuest')?.value
 
-    if (!session && !isGuest) return NextResponse.json({ success: false }, { status: 401 })
+        if (!session && !isGuest) return NextResponse.json({ success: false }, { status: 401 })
 
-    if (!session) return NextResponse.json({ isGuest })
+        if (!session) return NextResponse.json({ isGuest })
 
-    const result = await sql`SELECT u.* FROM user_session s JOIN users u ON u.user_id = s.user_id WHERE s.session_id = ${session} LIMIT 1`
-    
-    if (!result[0]) return NextResponse.json({ success: false, error: "No sessions found !" }, { status: 401 })
-    
-    return NextResponse.json(result[0])
+        const result = await sql`SELECT u.* FROM user_session s JOIN users u ON u.user_id = s.user_id WHERE s.session_id = ${session} LIMIT 1`
+
+        if (!result[0]) return NextResponse.json({ success: false, error: "No sessions found !" }, { status: 401 })
+
+        return NextResponse.json({ success: true, data: result[0] }, { status: 200 })
+    } catch (err) {
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+    }
 }

@@ -13,9 +13,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.coins, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
-        if (!staff_id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-        }
+        if (!staff_id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
         let newSold = 0;
 
@@ -37,7 +35,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
         await sql`INSERT INTO transactions (user_id, staff_id, amount, type, reason) VALUES (${Number(id)}, ${Number(staff_id)}, ${Number(value)}, ${operation}, ${reason || ""})`;
 
-        return NextResponse.json({ newSold })
+        return NextResponse.json({ success: true, data: newSold }, { status: 200 })
     } catch (err) {
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }

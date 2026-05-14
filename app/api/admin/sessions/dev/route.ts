@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
         await sql`WITH disabled AS (UPDATE user_session SET is_active = FALSE WHERE user_id = ${user_id}) INSERT INTO user_session (session_id, user_id) VALUES (${sessionId}, ${user_id})`
         
-        const res = NextResponse.json({ success: true })
+        const res = NextResponse.json({ success: true }, { status: 200 })
 
         res.cookies.set('session_id', sessionId, {
             httpOnly: true,
@@ -37,6 +37,7 @@ export async function POST(req: Request) {
 
         return res
     } catch (err: any) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

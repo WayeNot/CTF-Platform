@@ -21,7 +21,7 @@ export async function POST(req: Request) {
         if (has_buy_hint.length > 0) return NextResponse.json({ success: false, error: "You have already unlocked this clue !" }, { status: 406 })
         const currentCoins = await sql`UPDATE users SET coins = coins - ${hint_cost[0].hint_cost} WHERE user_id = ${user_id} RETURNING coins`;
         await sql`INSERT INTO hint_show (user_id, challenge_id, flag_id, type) VALUES (${user_id}, ${challenge_id}, ${flag_id}, ${type})`
-        return NextResponse.json({ success: true, currentCoins: currentCoins[0].coins })
+        return NextResponse.json({ success: true, currentCoins: currentCoins[0].coins }, { status: 200 })
     } catch (err) {
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }

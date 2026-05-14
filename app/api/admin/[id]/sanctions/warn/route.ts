@@ -14,8 +14,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.sanctions, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         await sql`INSERT INTO sanctions (type, reason, duration, user_id, staff_id) VALUES ('warn', ${reason}, 0, ${id}, ${staff_id})`
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true }, { status: 200 })
     } catch (err: any) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

@@ -4,7 +4,7 @@ import { FaFlag } from "react-icons/fa";
 import { useState } from "react";
 
 import DropDown from "@/components/ui/DropDown";
-import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category, CtfBuilderState, ctf } from "@/lib/types";
+import { categoryBtn, difficultyBtn, NewCtfFlag, category, CtfBuilderState, ctf } from "@/lib/types";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription } from "react-icons/md";
 import { useNotif } from "@/components/NotifProvider";
@@ -183,9 +183,8 @@ export default function CtfBuilder({ onClose }: any) {
                     </div>
                 </div >
             </div >
-            {displayFiles && <InsertFile onClose={() => setDisplayFiles(false)} onSubmit={(files) => setFiles(prev => [...prev, ...files])} />
-            }
-            {displayFlags && <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => setFlags(prev => [...prev, flag])} />}
+            {displayFiles && <InsertFile onClose={() => setDisplayFiles(false)} onSubmit={(files) => setFiles(prev => [...prev, ...files])}/>}
+            {displayFlags && <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => setFlags(prev => [...prev, flag])}/>}
         </div >
     );
 }

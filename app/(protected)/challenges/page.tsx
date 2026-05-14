@@ -82,9 +82,9 @@ export default function Home() {
 
                 {tab === 1 && (
                     <div className="px-6 space-y-10">
-                        {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint)) && <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />}
+                        {permissions && Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint)) && <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />}
                         {isGuest ? (
-                            <div className="relative">
+                            <div className="relative mt-10">
                                 <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">
                                     <ChallengeGroups data={groupedGeoint} open={open} type="geoint" />
                                 </div>
@@ -103,8 +103,8 @@ export default function Home() {
                         )}
                     </div>
                 )}
-                {openCtf && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf) ) && <CtfBuilder onClose={() => setOpenCtf(false)} />}
-                {openGeo && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint) ) && <GeointBuilder onClose={() => setOpenGeo(false)} />}
+                {openCtf && permissions && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf) ) && <CtfBuilder onClose={() => setOpenCtf(false)} />}
+                {openGeo && permissions && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint) ) && <GeointBuilder onClose={() => setOpenGeo(false)} />}
             </div>
         </div>
     );

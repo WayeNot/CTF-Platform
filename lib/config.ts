@@ -1,8 +1,24 @@
-import { Status } from "./types";
+import { Status, User } from "./types";
 
 export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
-export const default_user = { username: "Invité", status: "online", user_id: Date.now(), role: ["guest"], pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 0, points: 0, created_at: "" }
+export const default_user: User = {
+    user_id: -1,
+    username: "",
+    bio: "",
+    password: "",
+    mail: "",
+    role: [],
+    created_at: "",
+    coins: 0,
+    points: 0,
+    pp_url: "",
+    status: "offline",
+    is_online: false,
+    is_anonymous: false,
+    reset_password: false,
+    banner: ""
+}
 
 export const owners = [
     { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
@@ -78,10 +94,10 @@ export const noGuestRoute = [
 ];
 
 export const statusColor: Record<Status, string> = {
-    online: "border-green-500 border-3",
-    donotdisturb: "border-red-500 border-3",
-    inactive: "border-yellow-500 border-3",
-    offline: "border-gray-500 border-3"
+    online: "border-green-500 border",
+    donotdisturb: "border-red-500 border",
+    inactive: "border-yellow-500 border",
+    offline: "border-gray-500 border"
 }
 
 export const statusColorHover: Record<Status, string> = {

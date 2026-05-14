@@ -7,9 +7,9 @@ import { NextResponse } from "next/server"
 export async function GET() {
     try {
         const req = await sql`SELECT * FROM roles`
-        return NextResponse.json({ success: true, data: req })
+        return NextResponse.json({ success: true, data: req }, { status: 200 })
     } catch (err) {
-        return new Response("DB Error", { status: 500 })
+        return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }
 
@@ -29,8 +29,9 @@ export async function POST(req: Request) {
         }
 
         const allRoles = await sql`SELECT * FROM roles`
-        return NextResponse.json({ success: true, data: allRoles })
+        return NextResponse.json({ success: true, data: allRoles }, { status: 200 })
     } catch (err: any) {
+        console.error(err)
         if (err.code === '23505') return NextResponse.json({ error: "Role label already used !" }, { status: 400 });
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

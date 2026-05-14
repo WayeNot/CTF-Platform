@@ -4,7 +4,7 @@ import { BsLightningChargeFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription, MdSend } from "react-icons/md";
 import DropDown from "@/components/ui/DropDown";
-import { difficultyBtn, difficulty, GeointBuilderState, NewCtfFlag } from "@/lib/types";
+import { difficultyBtn, GeointBuilderState, NewCtfFlag } from "@/lib/types";
 import { useState } from "react";
 import { useNotif } from "@/components/NotifProvider";
 import { CiCircleRemove } from "react-icons/ci";

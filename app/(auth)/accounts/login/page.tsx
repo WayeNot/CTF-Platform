@@ -7,11 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider"
 import { FaHatCowboy } from "react-icons/fa";
 import Typewriter from 'typewriter-effect';
-import { GiThink } from "react-icons/gi";
-import ModalInput from "@/components/ModalInput";
-import ModalText from "@/components/ui/ModalText";
 import { UserSanctions } from "@/lib/types";
-import ModalSanction from "@/components/ui/sanction/ModalBan";
 import ModalBan from "@/components/ui/sanction/ModalBan";
 
 

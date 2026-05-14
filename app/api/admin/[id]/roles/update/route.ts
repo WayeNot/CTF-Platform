@@ -18,8 +18,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         for (const role of roles) {
             await sql`INSERT INTO user_roles (user_id, role_id) VALUES (${id}, ${role.value}) ON CONFLICT (user_id, role_id) DO NOTHING;`
         }
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true }, { status: 200 })
     } catch (err: any) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

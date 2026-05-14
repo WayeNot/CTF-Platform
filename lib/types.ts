@@ -1,22 +1,29 @@
 export type Status = "online" | "donotdisturb" | "inactive" | "offline"
 
-export type Role = "owner" | "admin" | "dev" | "contributor" | "user" | "guest"
+export type RoleLabel = "owner" | "admin" | "dev" | "contributor" | "user" | "guest"
 
 export type transactions = "flag" | "geoint" | "daily" | "admin" | "penalty" | "shop"
 
-export type difficulty = "Facile" | "Intermédiaire" | "Avancé" | "Expert"
+export type Difficulty = "Easy" | "intermediate" | "Advance" | "Expert"
 export type category = "Web" | "Crypto" | "Pwn" | "Reverse" | "Forensic" | "OSINT" | "Misc"
 
-export interface Option {
+export interface Option<T = string> {
     label: string;
-    value: string | number;
+    value: T;
     color?: string;
 };
 
-export const difficultyBtn: Option[] = [
-    { label: "Facile", value: "Facile", color: "text-green-400" },
-    { label: "Intermédiaire", value: "Intermédiaire", color: "text-yellow-400" },
-    { label: "Avancé", value: "Avancé", color: "text-yellow-600" },
+export const statusBtn: Option<Status>[] = [
+    { label: "Online", value: "online" as Status, color: "text-green-400" },
+    { label: "Do Not Disturb", value: "donotdisturb" as Status, color: "text-red-400" },
+    { label: "Inactive", value: "inactive" as Status, color: "text-yellow-600" },
+    { label: "Offline", value: "offline" as Status, color: "text-gray-400" },
+];
+
+export const difficultyBtn: Option<Difficulty>[] = [
+    { label: "Facile", value: "Easy", color: "text-green-400" },
+    { label: "Intermédiaire", value: "intermediate", color: "text-yellow-400" },
+    { label: "Avancé", value: "Advance", color: "text-yellow-600" },
     { label: "Expert", value: "Expert", color: "text-red-400" },
 ];
 
@@ -34,9 +41,9 @@ export type User = {
     user_id: number;
     username: string;
     bio: string;
-    email: string;
     password: string;
-    role: Role[];
+    mail: string;
+    role: Roles[];
     created_at: string;
     coins: number;
     points: number;
@@ -113,7 +120,7 @@ export type geoint = {
     id: number;
     title: string;
     description: string;
-    difficulty: difficulty | "";
+    difficulty: Difficulty | "";
     flag_format: string;
     images: string[];
     status: string;
@@ -127,7 +134,7 @@ export type ctf = {
     id: number;
     title: string;
     description: string;
-    difficulty: difficulty;
+    difficulty: Difficulty;
     category: category[];
     flag_format: string;
     files: string[];

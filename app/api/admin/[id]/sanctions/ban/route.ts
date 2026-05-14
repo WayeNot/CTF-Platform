@@ -20,8 +20,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             const expiresAt = new Date(Date.now() + duration * 60 * 1000);
             await sql`INSERT INTO sanctions (type, reason, duration, user_id, staff_id, expires_at) VALUES ('ban', ${reason}, ${duration}, ${id}, ${user_id}, ${expiresAt})`
         }
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true }, { status: 200 })
     } catch (err: any) {
+        console.error(err)
         return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

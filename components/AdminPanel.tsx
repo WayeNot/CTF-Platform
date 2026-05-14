@@ -16,6 +16,7 @@ import { CiDatabase } from "react-icons/ci";
 import DisplayBan from "./ui/sanction/DisplayBan";
 import DisplayWarn from "./ui/sanction/DisplayWarn";
 import DropDown from "./ui/DropDown";
+import CtfBuilder from "./challenges/ctf/CtfBuilder";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
@@ -33,7 +34,8 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [userSanctions, setUserSanctions] = useState<UserSanctions[]>([])
     const [userTransactions, setUserTransactions] = useState<UserTransactions[]>([])
     const [userRoles, setUserRoles] = useState<UserRoles[]>([])
-    const [tempUserRoles, setTempUserRoles] = useState<Option[]>([])
+    type RoleOption = Option<number>;
+    const [tempUserRoles, setTempUserRoles] = useState<RoleOption[]>([]);
     const [displayUserRoles, setDisplayUserRoles] = useState(false)
     const [userProgression, setUserProgression] = useState<UserProgression[]>([])
 
@@ -171,28 +173,24 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     }
 
     const resetPassword = async () => {
-        await call(`/api/admin/${editUser}/session/resetPassword`, { method: "POST" })
-        showNotif("Password reset successfully sent !", "success")
+        await call(`/api/admin/${editUser}/session/resetPassword`, { method: "POST" }, ["Password reset successfully sent !"])
     }
 
     // Sanction sur l'utilisateur ↓
 
     const warnUser = async (reason: string) => {
-        await call(`/api/admin/${editUser}/sanctions/warn`, { method: "POST", body: JSON.stringify({ reason: reason }) })
-        showNotif(`The user with the ID ${editUser} has been notified !`, "success")
+        await call(`/api/admin/${editUser}/sanctions/warn`, { method: "POST", body: JSON.stringify({ reason: reason }) }, [`The user with the ID ${editUser} has been notified !`])
         setShowModal(null)
     }
 
     const banUser = async (reason: string, duration: number) => {
-        await call(`/api/admin/${editUser}/sanctions/ban`, { method: "POST", body: JSON.stringify({ reason: reason, duration: duration }) })
-        showNotif(`The user with the ID ${editUser} has been successfully banned. ${duration === 0 ? "definitely" : "temporarily"} !`, "success")
+        await call(`/api/admin/${editUser}/sanctions/ban`, { method: "POST", body: JSON.stringify({ reason: reason, duration: duration }) }, [`The user with the ID ${editUser} has been successfully banned. ${duration === 0 ? "definitely" : "temporarily"} !`])
         closeAllSession()
         setShowModal(null)
     }
 
     const deleteUserAccount = async (reason: string) => {
-        await call(`/api/admin/${editUser}/sanctions/deleteAccount`, { method: "DELETE", body: JSON.stringify({ reason: reason }) })
-        showNotif(`The user account with the id ${editUser} has been successfully deleted !`);
+        await call(`/api/admin/${editUser}/sanctions/deleteAccount`, { method: "DELETE", body: JSON.stringify({ reason: reason }) }, [`The user account with the id ${editUser} has been successfully deleted !`])
         closeEditUser
         setShowModal(null)
         setPanelTab("Dashboard")
@@ -242,17 +240,15 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         const perms = allPermissions.filter((v): v is typeof v & { alias: string } => v.canBeSelected && v.isSelected && typeof v.alias === "string").map(p => p.alias);
 
         setNewRole(prev => ({ ...prev, allPerms: perms }));
-        const data = await call(`/api/roles`, { method: "POST", body: JSON.stringify({ role: newRole }) })
+        const data = await call(`/api/roles`, { method: "POST", body: JSON.stringify({ role: newRole }) }, ["Well-created role !"])
         setRoles(data.data)
         setDisplayCreation(-1)
         setNewRole({ label: "", description: "", color: "", allPerms: [] })
-        showNotif("Well-created role !", "success")
     }
 
     const handleSetRoles = async () => {
-        await call(`/api/admin/${editUser}/roles/update`, { method: "POST", body: JSON.stringify({ roles: tempUserRoles }) })
+        await call(`/api/admin/${editUser}/roles/update`, { method: "POST", body: JSON.stringify({ roles: tempUserRoles }) }, [`The roles of the user with the id ${editUser} have indeed changed !`])
         getUserRoles();
-        showNotif(`The roles of the user with the id ${editUser} have indeed changed !`, "success")
     }
 
     const setMaintenance = async () => {
@@ -399,7 +395,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
                                 <Link href={`/user/${el.username}`} className="flex items-center gap-3 text-[25px] hover:text-white/70 transition font-mono duration-500"><img src={el.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-20 bg-center bg-cover bg-no-repeat ${`${statusColor[el.status] || ""}`}`} /><span className="mx-2">-</span>{el.username} ( Session : {el.is_online ? <span className="text-green-700">Active</span> : <span className="text-red-700">Inactive</span>} )</Link>
                             </div>
-                            <p className="flex items-center gap-3 text-[20px] w-fit">{el.email}<Link href={`mailto:${el.email}`}><RiMailSendLine className="cursor-pointer transition duration-500 hover:text-white/70 text-white/40" /></Link></p>
+                            <p className="flex items-center gap-3 text-[20px] w-fit">{el.mail}<Link href={`mailto:${el.mail}`}><RiMailSendLine className="cursor-pointer transition duration-500 hover:text-white/70 text-white/40" /></Link></p>
                             <p className="flex items-center gap-3 text-[20px] w-fit">Inscrit depuis le : {new Date(el.created_at).toLocaleString()}</p>
                         </div>
                     ))}
@@ -534,7 +530,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.role)) && roles && userTab === "Gestion des rôles" && (
                             <div className="flex items-center gap-2">
                                 <div className="bg-[#232336] rounded-lg p-2 w-fit">
-                                    <DropDown isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id }))} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => prev.some(role => role.value === v.value) ? prev.filter(role => role.value !== v.value) : [...prev, v])} />
+                                    <DropDown<number> isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id })) as RoleOption[]} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => { const exists = prev.some(r => r.value === v.value); return exists ? prev.filter(role => role.value !== v.value) :  [...prev, v] })} />
                                 </div>
                                 <button onClick={handleSetRoles}>Enregistrer</button>
                             </div>
@@ -551,8 +547,8 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             ))}
                         </div>
                     )}
-                    {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }} input2={{ display: false, placeholder: "" }} />}
-                    {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée ( en minute )", type: "number" }} />}
+                    {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }}/>}
+                    {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée ( en minute )", type: "number" }}/>}
                     {showModal === "deleteAccount" && <InputNumber title="Supprimer un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { deleteUserAccount(String(input1)) }} input1={{ display: true, placeholder: "Raison de la suppression", type: "text" }} />}
                     {showModal === "displayReasonBan" && <DisplayBan id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} duration={sanction?.duration || -1} expires_at={sanction?.expires_at || ""} onSelect={() => setShowModal(null)} />}
                     {showModal === "displayReasonWarn" && <DisplayWarn id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} onSelect={() => setShowModal(null)} />}
