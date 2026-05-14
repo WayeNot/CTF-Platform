@@ -38,9 +38,13 @@ export default function Home() {
                             <p className="font-semibold italic text-white/30 text-[14px] whitespace-pre-line">{userData?.bio ? userData?.bio : "Aucune bio pour le moment !"}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            {socialMedias.map(social => (
-                                <Link key={social.key} className="flex items-center gap-2 w-full" href={userData?.social_media[social.key] || ""}><social.icon className="text-white/30 hover:text-white/70 transition duration-500 text-[19px]" /></Link>
-                            ))}
+                            {socialMedias.map(social => {
+                                if (!userData?.social_media[social.key]) return;
+
+                                return (
+                                    <Link key={social.key} className="flex items-center gap-2 w-full" href={userData?.social_media[social.key] || ""}><social.icon className="text-white/30 hover:text-white/70 transition duration-500 text-[19px]" /></Link>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>

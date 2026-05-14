@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
 import { Option, Roles, User, UserProgression, UserRoles, UserSanctions, UserSessions, UserTransactions } from "@/lib/types"
-import { IoIosArrowDroprightCircle, IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
+import { IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
 import { MdCheckBoxOutlineBlank } from "react-icons/md"
 import InputNumber from "./ModalInput"
 import { coinManagement, colorClasses, colorRole, default_pp, Permissions, statusColor } from "@/lib/config"
@@ -16,7 +16,6 @@ import { CiDatabase } from "react-icons/ci";
 import DisplayBan from "./ui/sanction/DisplayBan";
 import DisplayWarn from "./ui/sanction/DisplayWarn";
 import DropDown from "./ui/DropDown";
-import CtfBuilder from "./challenges/ctf/CtfBuilder";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
@@ -43,9 +42,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const [roles, setRoles] = useState<Roles[]>([])
 
-    const [displayCreation, setDisplayCreation] = useState(-1)
+    const [roleCreation, setRoleCreation] = useState(-1) // -2 : Création de rôle | -1 : État initial | >= 0 : Modification du rôle avec cet id.
+    const [editRole, setEditRole] = useState<Roles | null>(null)
 
     const [newRole, setNewRole] = useState<{ label: string; description: string; color: string; allPerms: string[]; }>({ label: "", description: "", color: "", allPerms: [] })
+    const [selectedPerms, setSelectedPerms] = useState<string[]>([])
 
     const [showModal, setShowModal] = useState<null | "set" | "reset" | "warnUser" | "banUser" | "deleteAccount" | "displayReasonBan" | "displayReasonWarn">(null)
 
@@ -59,34 +60,45 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         if (userTab === "Gestion de la progression") { getUserProgression() }
     }, [panelTab, userTab])
 
+    useEffect(() => {
+        if (roleCreation < 0) return;
+        getSpecificRole()
+    }, [roleCreation])
+
+    const getSpecificRole = async () => {
+        const data = await call(`/api/role/${roleCreation}`)
+        setEditRole({ id: data.data.id, label: data.data.label, color: data.data.color, description: data.data.description });
+        setSelectedPerms(data.data.relations.filter((r: any) => r && r.alias).map((r: any) => r.alias))
+    }
+
     const allPermissions = [
-        { label: "Permissions générales", isSelected: false, canBeSelected: false },
-        { label: "Accès au panel admin", description: "Les membres avec ce rôle auront accès au panel admin", alias: Permissions.panelAdmin.canOpen, isSelected: false, canBeSelected: true },
+        { label: "General permissions", canBeSelected: false },
+        { label: "Admin panel access", description: "Members with this role will have access to the admin panel", alias: Permissions.panelAdmin.canOpen, canBeSelected: true },
 
-        { label: "Permissions de création", isSelected: false, canBeSelected: false },
-        { label: "Création de CTF", description: "Peut créer des CTF à sa guise", alias: Permissions.contributor.canCreate.ctf, isSelected: false, canBeSelected: true },
-        { label: "Création de Géoint", description: "Peut créer des Géoint à sa guise", alias: Permissions.contributor.canCreate.geoint, isSelected: false, canBeSelected: true },
+        { label: "Creation permissions", canBeSelected: false },
+        { label: "CTF creation", description: "Can create CTFs freely", alias: Permissions.contributor.canCreate.ctf, canBeSelected: true },
+        { label: "Geoint creation", description: "Can create Geoint freely", alias: Permissions.contributor.canCreate.geoint, canBeSelected: true },
 
-        { label: "Permissions panel admin", isSelected: false, canBeSelected: false, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Admin panel permissions", canBeSelected: false, onlyIf: Permissions.panelAdmin.canOpen },
 
-        { label: "Dashboard", description: "Les membres avec ce rôle auront accès au dashboard", alias: Permissions.panelAdmin.dashboard, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
-        { label: "Gestion des utilisateurs", description: "Les membres avec ce rôle auront accès à la gestion des utilisateurs", alias: Permissions.panelAdmin.manageUser, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
-        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir, créer, supprimer des rôles.", alias: Permissions.panelAdmin.role, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
-        { label: "Logs & Sécurité", description: "Les membres avec ce rôle pourront gérer les logs et la sécurité du serveur.", alias: Permissions.panelAdmin.logs, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Dashboard", description: "Members with this role will have access to the dashboard", alias: Permissions.panelAdmin.dashboard, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "User management", description: "Members with this role will have access to user management", alias: Permissions.panelAdmin.manageUser, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Role management", description: "Members with this role can view, create, and delete roles.", alias: Permissions.panelAdmin.role, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
+        { label: "Logs & Security", description: "Members with this role can manage logs and server security.", alias: Permissions.panelAdmin.logs, canBeSelected: true, onlyIf: Permissions.panelAdmin.canOpen },
 
-        { label: "Permissions Gestion des utilisateurs", isSelected: false, canBeSelected: false, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "User management permissions", canBeSelected: false, onlyIf: Permissions.panelAdmin.manageUser },
 
-        { label: "Informations", description: "Les membres avec ce rôle aurront accès aux informations de l'utilisateur.", alias: Permissions.panelAdmin.user.informations, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Dashboard utilisateur", description: "Les membres avec ce rôle aurront accès au dashboard de l'utilisateur.", alias: Permissions.panelAdmin.user.dashboard, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Gestion des sessions", description: "Les membres avec ce rôle pourront voir les sessions, les activer / désactiver et supprimer toutes les sessions.", alias: Permissions.panelAdmin.user.session, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Gestion des sanctions", description: "Les membres avec ce rôle pourront voir les sanctions, avertir et bannir l'utilisateur.", alias: Permissions.panelAdmin.user.sanctions, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Gestion des coins", description: "Les membres avec ce rôle pourront voir les transactions, ajouter / retirer des coins et les reset.", alias: Permissions.panelAdmin.user.coins, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Gestion des rôles", description: "Les membres avec ce rôle pourront voir les rôles de l'utilisateur, lui en ajouter / retirer.", alias: Permissions.panelAdmin.user.role, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Gestion de la progression", description: "Les membres avec ce rôle pourront contrôler la progression de l'utilisateur.", alias: Permissions.panelAdmin.user.progression, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
-        { label: "Gestion du monitoring / débug", description: "Les membres avec ce rôle pourront débug / aider l'utilisateur.", alias: Permissions.panelAdmin.user.monitoring, isSelected: false, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Information", description: "Members with this role will have access to user information.", alias: Permissions.panelAdmin.user.informations, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "User dashboard", description: "Members with this role will have access to the user's dashboard.", alias: Permissions.panelAdmin.user.dashboard, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Session management", description: "Members with this role can view sessions, activate/deactivate them, and delete all sessions.", alias: Permissions.panelAdmin.user.session, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Sanctions management", description: "Members with this role can view sanctions, warn and ban the user.", alias: Permissions.panelAdmin.user.sanctions, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Coins management", description: "Members with this role can view transactions, add/remove coins and reset them.", alias: Permissions.panelAdmin.user.coins, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "User roles management", description: "Members with this role can view user roles and assign/remove them.", alias: Permissions.panelAdmin.user.role, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Progression management", description: "Members with this role can control user progression.", alias: Permissions.panelAdmin.user.progression, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+        { label: "Monitoring / debug", description: "Members with this role can debug / assist the user.", alias: Permissions.panelAdmin.user.monitoring, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
 
-        { label: "Permissions avancées", isSelected: false, canBeSelected: false },
-        { label: "Administrateur", description: "Les membres ayant cette permission auront toutes les permissions et pourront passer outre les restrictions.", alias: "advanced.administrator", isSelected: false, canBeSelected: true },
+        { label: "Advanced permissions", canBeSelected: false },
+        { label: "Administrator", description: "Members with this permission have all permissions and can bypass restrictions.", alias: "advanced.administrator", canBeSelected: true },
     ]
 
     const panelTabLabel = [
@@ -191,7 +203,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const deleteUserAccount = async (reason: string) => {
         await call(`/api/admin/${editUser}/sanctions/deleteAccount`, { method: "DELETE", body: JSON.stringify({ reason: reason }) }, [`The user account with the id ${editUser} has been successfully deleted !`])
-        closeEditUser
+        closeEditUser()
         setShowModal(null)
         setPanelTab("Dashboard")
     }
@@ -237,13 +249,34 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
             return
         }
 
-        const perms = allPermissions.filter((v): v is typeof v & { alias: string } => v.canBeSelected && v.isSelected && typeof v.alias === "string").map(p => p.alias);
+        const perms = allPermissions.filter((v): v is typeof v & { alias: string } => v.canBeSelected && newRole.allPerms.includes(v.alias || "") && typeof v.alias === "string").map(p => p.alias);
 
-        setNewRole(prev => ({ ...prev, allPerms: perms }));
-        const data = await call(`/api/roles`, { method: "POST", body: JSON.stringify({ role: newRole }) }, ["Well-created role !"])
-        setRoles(data.data)
-        setDisplayCreation(-1)
+        const updatedRole = { ...newRole, allPerms: perms }
+
+        const data = await call(`/api/roles`, { method: "POST", body: JSON.stringify({ role: updatedRole }) }, ["Well-created role !"])
+        setRoles(prev => [...prev, data.data])
+        setRoleCreation(-1)
         setNewRole({ label: "", description: "", color: "", allPerms: [] })
+    }
+
+    const handleEditRole = async () => {
+        if (!editRole || !editRole.label || !editRole.description) {
+            showNotif("Please fill in all fields !")
+            return
+        }
+
+        const perms = allPermissions.filter((v): v is typeof v & { alias: string } => v.canBeSelected && selectedPerms.includes(v.alias || "") && typeof v.alias === "string").map(p => p.alias);
+
+        const updatedRole = { ...editRole, allPerms: perms }
+        const data = await call(`/api/role/${editRole.id}`, { method: "PATCH", body: JSON.stringify({ role: updatedRole }) })
+        setRoles(data.data)
+        closeEditUser()
+    }
+
+    const handleDeleteRole = async () => {
+        await call(`/api/role/${editRole?.id}`, { method: "DELETE" })
+        setRoles(roles.filter(r => r.id !== editRole?.id))
+        closeEditUser()
     }
 
     const handleSetRoles = async () => {
@@ -258,9 +291,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const closeEditUser = () => {
         setEditUser(-1)
+        setRoleCreation(-1)
         setShowModal(null)
         setUserTab("Informations")
         setDisplayUserRoles(false)
+        setNewRole({ label: "", description: "", color: "", allPerms: [] })
     }
 
     return (
@@ -293,18 +328,14 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 )}
                 {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role)) && panelTab === "Gestion des rôles" && (
                     <div className="flex flex-col gap-5 mt-5">
-                        <div className="flex items-center gap-3">
-                            <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
-                            <button className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer une permission</button>
-                        </div>
+                        <button onClick={() => setRoleCreation(-2)} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Create role</button>
                         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Rôles ↓<span className="h-px flex-1 bg-white/10" /></div>
                         <div className="my-2">
-                            <div>
+                            <div className="flex items-center gap-3">
                                 {roles.length === 0 && "Aucun rôle pour le moment !"}
-                                {roles.map((v, k) => <button key={k} className="border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center flex items-center flex-col gap-2"><p>{v?.label}</p></button>)}
+                                {roles.map((v, k) => <button key={k} onClick={() => setRoleCreation(v.id)} className={`${v.color} border border-gray-600 text-white/40 w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center flex items-center flex-col gap-2`}><p>{v?.label}</p></button>)}
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
                     </div>
                 )}
                 {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.logs)) && panelTab === "Logs & Sécurité" && (
@@ -316,31 +347,30 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         )}
                     </div>
                 )}
-                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role)) && displayCreation === 1 && (
+                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role)) && roleCreation === -2 && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
                         <div className="flex w-full max-w-6xl gap-4">
                             <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
                                 <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
                                     <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><LiaCriticalRole /></div>
                                     <div className="flex items-center flex-col gap-2">
-                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Création d'un rôle</h2>
-                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Créer n'importe quel rôle grâce à notre configurateur !</p>
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Creating a role</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Create any role using our configurator !</p>
                                     </div>
                                     <div className="w-2/3 flex flex-col gap-2 mt-5">
                                         <div className="flex flex-col items-center gap-3">
-                                            <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Intitulé du rôle" value={newRole.label} onChange={e => setNewRole(prev => ({ ...prev, label: e.target.value }))} />
-                                            <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description du rôle" value={newRole.description} onChange={e => setNewRole(prev => ({ ...prev, description: e.target.value }))} />
+                                            <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Role Title" value={newRole.label} onChange={e => setNewRole(prev => ({ ...prev, label: e.target.value }))} />
+                                            <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Role Description" value={newRole.description} onChange={e => setNewRole(prev => ({ ...prev, description: e.target.value }))} />
                                             <div className="w-full flex flex-col">
-                                                <button>Couleur du rôle</button>
                                                 <hr className="my-5 border-gray-600 w-full" />
                                                 <div className="flex items-center justify-center flex-wrap w-full gap-3">
-                                                    {colorRole.map((v, k) => <button onClick={() => setNewRole(prev => ({ ...prev, color: colorClasses[v] }))} key={k} className={`${newRole.color === v && "border-2 border-green-800 w-10 h-10"} w-7.5 h-7.5 rounded-full ${colorClasses[v]} cursor-pointer transition duration-500 hover:border-2 hover:border-white/40`}></button>)}
+                                                    {colorRole.map((v, k) => <button onClick={() => setNewRole(prev => ({ ...prev, color: colorClasses[v] }))} key={k} className={`${newRole.color === colorClasses[v] && "border-2 border-green-800 w-10 h-10"} w-7.5 h-7.5 rounded-full ${colorClasses[v]} cursor-pointer transition duration-500 hover:border-2 hover:border-white/40`}></button>)}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="flex w-full gap-3 mt-3">
-                                            <button onClick={() => setDisplayCreation(0)} className="flex-1 py-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Annuler</button>
-                                            <button onClick={handleCreateRole} className="flex-1 py-2.5 rounded-xl bg-linear-to-r from-yellow-400 to-yellow-500 text-black font-semibold shadow-[0_15px_35px_rgba(250,204,21,0.4)] hover:brightness-110 transition duration-500 cursor-pointer active:scale-95 flex items-center justify-center gap-3 hover:text-black/70">Créer<IoIosArrowDroprightCircle /></button>
+                                            <button onClick={() => setRoleCreation(-1)} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Cancel</button>
+                                            <button onClick={handleCreateRole} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Create</button>
                                         </div>
                                     </div>
                                 </div>
@@ -349,14 +379,14 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                 <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
                                     <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><IoMdPersonAdd /></div>
                                     <div className="flex items-center flex-col gap-2">
-                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Gestion des permissions</h2>
-                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Permissions management</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Add all the permissions you need !</p>
                                     </div>
                                     <div className="flex flex-col gap-2 mt-5 bg-[#2a2a3d] w-full p-2 max-h-75 overflow-y-scroll">
-                                        {allPermissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>}
+                                        {allPermissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">No permission granted at this time !</button>}
                                         {allPermissions.map((v, k) => {
                                             const hasPermission = newRole.allPerms.includes(v.alias || "");
-                                            const canDisplay = !v.onlyIf || newRole.allPerms.includes(v.onlyIf);
+                                            const canDisplay = !v.onlyIf || newRole.allPerms.includes(v.onlyIf || "");
 
                                             if (!v.canBeSelected) {
                                                 return (
@@ -367,7 +397,13 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             if (!v.alias || !canDisplay) return null
 
                                             return (
-                                                <button key={k} onClick={() => setNewRole(prev => ({ ...prev, allPerms: hasPermission ? prev.allPerms.filter(p => p !== v.alias) : [...prev.allPerms, v.alias] }))} className={`rounded-lg w-full p-2 text-sm outline-none cursor-pointer transition duration-500 flex items-start justify-start text-start flex-col gap-2 ${hasPermission ? "bg-green-500/40 hover:bg-green-700/40" : "bg-[#151522] hover:bg-[#151522]/80"}`}><p className="font-bold">{v.label}</p><p className="italic text-[12px]">{v.description}</p></button>
+                                                <button key={k} onClick={() => setNewRole(prev => ({ ...prev, allPerms: hasPermission ? prev.allPerms.filter(p => p !== v.alias) : [...prev.allPerms, v.alias] }))} className={`rounded-lg w-full p-2 text-sm outline-none cursor-pointer transition duration-500 flex items-start justify-start text-start flex-col gap-2 ${hasPermission ? "bg-green-500/40 hover:bg-green-700/40" : "bg-[#151522] hover:bg-[#151522]/80"}`}>
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <p className="font-bold">{v.label}</p>
+                                                        <p className="font-semibold text-[10px] italic">( {v.alias} )</p>
+                                                    </div>
+                                                    <p className="italic text-[12px]">{v.description}</p>
+                                                </button>
                                             )
                                         })}
                                     </div>
@@ -376,8 +412,72 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     </div>
                 )}
-                {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
-                {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
+                {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.role)) && roleCreation >= 0 && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
+                        <div className="flex w-full max-w-6xl gap-4">
+                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
+                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
+                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><LiaCriticalRole /></div>
+                                    <div className="flex items-center flex-col gap-2">
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Edit role</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Change this role using our configurator !</p>
+                                    </div>
+                                    <div className="w-full flex flex-col gap-2 mt-5">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Role Title" value={editRole?.label || ""} onChange={(e) => setEditRole(prev => prev ? { ...prev, label: e.target.value } : null)} />
+                                            <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Role Description" value={editRole?.description || ""} onChange={(e) => setEditRole(prev => prev ? { ...prev, description: e.target.value } : null)} />
+                                            <div className="w-full flex flex-col">
+                                                <hr className="my-5 border-gray-600 w-full" />
+                                                <div className="flex items-center justify-center flex-wrap w-full gap-3">
+                                                    {colorRole.map((v, k) => <button key={k} onClick={() => setEditRole(prev => prev ? { ...prev, color: colorClasses[v] } : null)} className={`${editRole?.color === colorClasses[v] && "border-2 border-green-800 w-10 h-10"} w-7.5 h-7.5 rounded-full ${colorClasses[v]} cursor-pointer transition duration-500 hover:border-2 hover:border-white/40`}></button>)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex w-full gap-3 mt-3">
+                                            <button onClick={() => setRoleCreation(-1)} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Cancel</button>
+                                            <button onClick={handleDeleteRole} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-red-500/30 hover:text-white transition duration-500 cursor-pointer active:scale-95">Delete</button>
+                                            <button onClick={handleEditRole} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
+                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
+                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><IoMdPersonAdd /></div>
+                                    <div className="flex items-center flex-col gap-2">
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Permissions management</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Add all the permissions you need!</p>
+                                    </div>
+                                    <div className="flex flex-col gap-2 mt-5 bg-[#2a2a3d] w-full p-2 max-h-75 overflow-y-scroll">
+                                        {allPermissions.map((v, k) => {
+                                            const hasPermission = selectedPerms.includes(v.alias || "")
+                                            const canDisplay = !v.onlyIf || selectedPerms.includes(v.onlyIf || "");
+
+                                            if (!v.canBeSelected) {
+                                                return (
+                                                    <div key={k} className={`flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30 mb-2 ${k !== 0 && "mt-3"}`}><span className="h-px w-6 bg-white/20" />{v.label}<span className="h-px flex-1 bg-white/10" /></div>
+                                                )
+                                            }
+
+                                            if (!v.alias || !canDisplay) return null
+
+                                            return (
+                                                <button key={k} onClick={() => setSelectedPerms(prev => hasPermission ? prev.filter(p => p !== v.alias) : [...prev, v.alias])} className={`rounded-lg w-full p-2 text-sm outline-none cursor-pointer transition duration-500 flex items-start justify-start text-start flex-col gap-2 ${hasPermission ? "bg-green-500/40 hover:bg-green-700/40" : "bg-[#151522] hover:bg-[#151522]/80"}`}>
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <p className="font-bold">{v.label}</p>
+                                                        <p className="font-semibold text-[10px] italic">( {v.alias} )</p>
+                                                    </div>
+                                                    <p className="italic text-[12px]">{v.description}</p>
+                                                </button>
+                                            )
+                                        })}
+                                        {allPermissions.length === 0 && <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
             {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.manageUser)) && editUser !== -1 && (
                 <div className="w-7/8  min-h-0 absolute h-9/10 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
@@ -400,7 +500,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     ))}
                     {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.dashboard)) && userTab === "Dashboard" && users.filter(el => el.user_id === editUser).map(el => (
-                        <p>Dashboard</p>
+                        <p key={el.user_id}>Dashboard</p>
                     ))}
                     {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.session)) && userTab === "Sessions" && (
                         <div className="flex flex-col gap-5">
@@ -527,10 +627,10 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         )
                     }
                     {
-                        Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.role)) && roles && userTab === "Gestion des rôles" && (
+                        Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.role)) && userTab === "Gestion des rôles" && (
                             <div className="flex items-center gap-2">
                                 <div className="bg-[#232336] rounded-lg p-2 w-fit">
-                                    <DropDown<number> isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id })) as RoleOption[]} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => { const exists = prev.some(r => r.value === v.value); return exists ? prev.filter(role => role.value !== v.value) :  [...prev, v] })} />
+                                    <DropDown<number> isOnce={false} label="Rôles de l'utilisateur" value={tempUserRoles} isOpen={displayUserRoles} options={roles.map(r => ({ color: r.color, label: r.label, value: r.id })) as RoleOption[]} onToggle={() => setDisplayUserRoles(!displayUserRoles)} onSelect={(v) => setTempUserRoles(prev => { const exists = prev.some(r => r.value === v.value); return exists ? prev.filter(role => role.value !== v.value) : [...prev, v] })} />
                                 </div>
                                 <button onClick={handleSetRoles}>Enregistrer</button>
                             </div>
@@ -547,9 +647,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             ))}
                         </div>
                     )}
-                    {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Raison de l'avertissement", type: "text" }}/>}
-                    {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Raison du bannissement", type: "text" }} input2={{ display: true, placeholder: "Durée ( en minute )", type: "number" }}/>}
-                    {showModal === "deleteAccount" && <InputNumber title="Supprimer un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { deleteUserAccount(String(input1)) }} input1={{ display: true, placeholder: "Raison de la suppression", type: "text" }} />}
+                    {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Number of coins", type: "number" }} input2={{ display: true, placeholder: "Reason" }} />}
+                    {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Reason" }} />}
+                    {showModal === "warnUser" && <InputNumber title="Avertir un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { warnUser(String(input1)) }} input1={{ display: true, placeholder: "Reason for the warn", type: "text" }} />}
+                    {showModal === "banUser" && <InputNumber title="Bannir un utilisateur ( 0 pour ban définitif )" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { banUser(String(input1), Number(input2)) }} input1={{ display: true, placeholder: "Reason for the ban", type: "text" }} input2={{ display: true, placeholder: "Duration ( in minute )", type: "number" }} />}
+                    {showModal === "deleteAccount" && <InputNumber title="Supprimer un utilisateur" onClose={() => setShowModal(null)} onValidate={({ input1 }) => { deleteUserAccount(String(input1)) }} input1={{ display: true, placeholder: "Reason for removal", type: "text" }} />}
                     {showModal === "displayReasonBan" && <DisplayBan id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} duration={sanction?.duration || -1} expires_at={sanction?.expires_at || ""} onSelect={() => setShowModal(null)} />}
                     {showModal === "displayReasonWarn" && <DisplayWarn id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} onSelect={() => setShowModal(null)} />}
                 </div >

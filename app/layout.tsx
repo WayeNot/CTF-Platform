@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         const [roles, permissions, warn] = await Promise.all([
             await fetch(`/api/user/${id}/role`).then(r => r.json()),
             await fetch(`/api/user/${id}/permissions`).then(r => r.json()),
-            await fetch(`/api/users/${id}/sanctions/warn`).then(r => r.json()),
+            await fetch(`/api/user/${id}/sanctions/warn`).then(r => r.json()),
         ])
 
         if (roles?.data) updateRole(roles.data)
@@ -87,8 +87,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         setSocialMedia(user.social_media)
     }, [user, isGuest])
 
-    const handleChangePassword = async (value: any) => {
-        const data = await fetch(`/api/admin/${user_id}/session/resetPassword`, { method: "PATCH", body: JSON.stringify({ password: value }) })
+    const handleChangePassword = async (p1: any, p2: any ) => {
+        const data = await fetch(`/api/user/${user_id}/Account/resetPassword`, { method: "PATCH", body: JSON.stringify({ password: { newPassword1: p1, newPassword2: p2 } }) })
         if (!data.ok) return;
         updateResetPassword(false);
     }
@@ -101,7 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     {(pathname === "/" || pathname === "/dev/maintenance") && <NavbarNotConnected />}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}
-                    {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={({ input1 }) => { handleChangePassword(input1) }} />}
+                    {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={({ input1, input2 }) => { handleChangePassword(input1, input2) }} />}
                 </NotifProvider>
             </body>
         </html>

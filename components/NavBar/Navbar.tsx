@@ -17,6 +17,7 @@ import { IoSettingsSharp, IoWarning } from "react-icons/io5";
 import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
 import { FaUserGear } from "react-icons/fa6";
+import { GiTeamIdea } from "react-icons/gi";
 
 
 export default function Navbar() {
@@ -84,6 +85,11 @@ export default function Navbar() {
                             </div>
                         </div>
                         <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
+                        {Array.isArray(permissions) && permissions.includes(Permissions.advanced.administrator) && (
+                            <div>
+                                <Link href="/team"><GiTeamIdea className="hover:text-white/60 text-white/40 cursor-pointer text-2xl transition duration-500" /></Link>
+                            </div>
+                        )}
                         <div className="hidden sm:flex items-center text-white/40">
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
                                 <Link href={`/user/@${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
@@ -116,7 +122,6 @@ export default function Navbar() {
             )}
             {showWarn && warn && warn?.reason && <ModalWarn id={warn.id} staff_id={warn?.staff_id} reason={warn?.reason} onSelect={handleWarn} />}
             {showAdminPanel && <AdminPanel closePanel={() => setShowAdminPanel(false)} />}
-                
         </div >
     )
 }

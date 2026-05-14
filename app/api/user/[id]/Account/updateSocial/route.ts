@@ -5,9 +5,9 @@ import { NextResponse } from "next/server";
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
-        const { username, mail, bio, pp_url, status, social_media } = await req.json();
+        const { social } = await req.json();        
 
-        await sql`UPDATE users SET username = ${username}, mail = ${mail}, bio = ${bio}, pp_url = ${pp_url || default_pp}, status = ${status}, social_media = ${JSON.stringify(social_media || {})} WHERE user_id = ${id}`;
+        await sql`UPDATE users SET social_media = ${JSON.stringify(social || {})} WHERE user_id = ${id}`;
 
         return NextResponse.json({ success: true }, { status: 200 })
     } catch (err) {
