@@ -1,6 +1,6 @@
 import { sql } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { getUserIdBySessionId, hasPermission, hasRole } from "@/lib/session";
+import { getUserIdBySessionId, hasPermission } from "@/lib/session";
 import { cookies } from 'next/headers'
 import { Permissions } from "@/lib/config";
 
