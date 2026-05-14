@@ -16,7 +16,7 @@ import ResetPassword from "@/components/ResetPassword"
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
 
-    const { updateIsGuest, isGuest, user_id, updateMail, updateUserId, updateBio, updateUsername, updatePublicUsername, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, reset_password, warn, updateWarn, updatePermissions, permissions } = useNavData()
+    const { updateIsGuest, isGuest, user_id, updateMail, updateUserId, updateBio, updateUsername, updatePublicUsername, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, reset_password, warn, updateWarn, updatePermissions, permissions, setSocialMedia } = useNavData()
 
     const [user, setUser] = useState<User | null>(null)
 
@@ -43,34 +43,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
 
     useEffect(() => {
-        if (public_routes.some(v => v === pathname)) return;
+        if (public_routes.some(v => v === pathname)) return;        
         const getSession = async () => {
             const res = await fetch("/api/auth/session")
             if (!res.ok) return;
 
             const data = await res.json()
 
-            updateUserId(data.user_id)
+            const result = data.data
+            
+            updateUserId(result.user_id)            
 
-            if (data.isGuest) {
+            if (result.isGuest) {
                 updateIsGuest(true)
                 setUser(default_user)
                 return
             }
             updateIsGuest(false)
-            setUser(data)
-            updateResetPassword(data.reset_password)
+            setUser(result)
+            updateResetPassword(result.reset_password)
         }
         getSession();
     }, [pathname])
 
     useEffect(() => {
-        if (!user_id || user_id < 0 || isGuest) return
+        if (!user_id || user_id < 0 || isGuest) return        
         loadUserData(user_id)
     }, [user_id, isGuest])
 
     useEffect(() => {
-        if (public_routes.includes(pathname) || isGuest || !user) return
+        if (public_routes.includes(pathname) || isGuest || !user) return               
 
         updateIsGuest(isGuest)
         updateUsername(user.username ?? "")
@@ -82,6 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updateCoins(user.coins ?? 0)
         updatePoints(user.points ?? 0)
         updateResetPassword(user.reset_password ?? false)
+        setSocialMedia(user.social_media)
     }, [user, isGuest])
 
     const handleChangePassword = async (value: any) => {
@@ -94,11 +97,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
-                    {(!public_routes.some(v => v === pathname)) && (user_id > 0 || isGuest) && <Navbar />}
-                    {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={({ input1 }) => { handleChangePassword(input1) }} />}
+                    {(!public_routes.some(v => v === pathname)) && (user_id >= 0 || isGuest) && <Navbar />}
                     {(pathname === "/" || pathname === "/dev/maintenance") && <NavbarNotConnected />}
                     <main className="flex-1 relative">{children}</main>
                     {!pathname.startsWith("/accounts") && <Footer />}
+                    {pathname !== "/" && !pathname.startsWith("/accounts") && user_id > 0 && reset_password && <ResetPassword onValidate={({ input1 }) => { handleChangePassword(input1) }} />}
                 </NotifProvider>
             </body>
         </html>

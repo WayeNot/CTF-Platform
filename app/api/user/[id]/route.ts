@@ -1,11 +1,11 @@
 import { sql } from "@/lib/db";
-import { NextResponse } from "next/dist/api/server";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {    
     try {
         const { id } = await params;
         
-        const result = await sql`SELECT user_id, username, bio, role, created_at, coins, points, pp_url, status, is_anonymous, banner FROM users WHERE username = ${id} LIMIT 1`;
+        const result = await sql`SELECT user_id, username, bio, role, mail, created_at, coins, points, pp_url, status, is_anonymous, banner, social_media FROM users WHERE username = ${id} LIMIT 1`;
         
         return NextResponse.json({ success: true, data: result[0] }, { status: 200 })
     } catch (err) {

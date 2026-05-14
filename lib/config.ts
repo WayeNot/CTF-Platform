@@ -1,4 +1,4 @@
-import { Status, User } from "./types";
+import { socialMedias, Status, User } from "./types";
 
 export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
@@ -17,7 +17,14 @@ export const default_user: User = {
     is_online: false,
     is_anonymous: false,
     reset_password: false,
-    banner: ""
+    banner: "",
+    social_media: {
+        discord: "",
+        linkedin: "",
+        github: "",
+        website: "",
+        x: ""
+    },
 }
 
 export const owners = [

@@ -1,5 +1,5 @@
 import { sql } from "@/lib/db";
-import { NextResponse } from "next/dist/api/server";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {    
     try {        

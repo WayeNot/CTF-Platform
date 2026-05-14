@@ -1,5 +1,5 @@
 import { sql } from "@/lib/db";
-import { NextResponse } from "next/dist/api/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {

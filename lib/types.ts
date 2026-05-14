@@ -1,4 +1,34 @@
 export type Status = "online" | "donotdisturb" | "inactive" | "offline"
+import { IconType } from "react-icons";
+import { BsDiscord } from "react-icons/bs";
+import { CgWebsite } from "react-icons/cg";
+import { FaGithubSquare } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { RxLinkedinLogo } from "react-icons/rx";
+
+export type SocialMediaKey  = "discord" | "linkedin" | "github" | "x" | "website"
+
+export type SocialMediaConfig = {
+    key: SocialMediaKey;
+    label: string;
+    icon: IconType;
+};
+
+export type SocialMediaValues = {
+    discord: string;
+    linkedin: string;
+    github: string;
+    x: string;
+    website: string;
+};
+
+export const socialMedias: SocialMediaConfig[] = [
+    { key: "discord", label: "Discord", icon: BsDiscord },
+    { key: "linkedin", label: "LinkedIn", icon: RxLinkedinLogo },
+    { key: "github", label: "GitHub", icon: FaGithubSquare },
+    { key: "x", label: "X", icon: FaXTwitter },
+    { key: "website", label: "Personal website", icon: CgWebsite },
+];
 
 export type RoleLabel = "owner" | "admin" | "dev" | "contributor" | "user" | "guest"
 
@@ -53,6 +83,7 @@ export type User = {
     is_anonymous: boolean;
     reset_password: boolean;
     banner: string;
+    social_media: SocialMediaValues;
 }
 
 export type UserSessions = {

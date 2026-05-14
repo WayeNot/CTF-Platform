@@ -12,6 +12,8 @@ export async function POST(req: Request) {
 
         const user = await sql`SELECT user_id, password, role FROM users WHERE username = ${username} LIMIT 1`
 
+        if (!user[0]) return NextResponse.json({ success: false, error: "Identification error / unauthorized role." }, { status: 401 })
+
         const hash = user[0]?.password ?? "$2a$10$invalidhashinvalidhashinvalidhashinv"
         const isGoodPassword = await bcrypt.compare(password, hash)
 
@@ -19,7 +21,7 @@ export async function POST(req: Request) {
 
         const isAllowedRole = await hasPermission(Permissions.advanced.administrator, user_id) || await hasPermission(Permissions.bypass.maintenance, user_id);
         
-        if (!user[0] || !isGoodPassword || !isAllowedRole) return NextResponse.json({ success: false, error: "Identification error / unauthorized role." }, { status: 401 })
+        if (!isGoodPassword || !isAllowedRole) return NextResponse.json({ success: false, error: "Identification error / unauthorized role." }, { status: 401 })
 
         const sessionId = generateSessionId()
 

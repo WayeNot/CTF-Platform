@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Roles, Status, UserRoles } from "@/lib/types";
+import { Roles, SocialMediaKey, socialMedias, SocialMediaValues, Status } from "@/lib/types";
 
 interface Warn {
     id: number;
@@ -28,6 +28,7 @@ type NavState = {
     reset_password: boolean;
     warn: Warn | null;
     permissions: string[];
+    socialMedia: SocialMediaValues;
 
     updateIsGuest: (v: boolean) => void;
     updateUserId: (v: number) => void;
@@ -44,6 +45,8 @@ type NavState = {
     updateResetPassword: (v: boolean) => void;
     updateWarn: (v: Warn | null) => void;
     updatePermissions: (v: string[]) => void;
+    updateSocialMedia: (k: SocialMediaKey, v: string) => void;
+    setSocialMedia: (v: SocialMediaValues) => void;
 };
 
 export const useNavData = create<NavState>((set) => ({
@@ -62,6 +65,13 @@ export const useNavData = create<NavState>((set) => ({
     reset_password: false,
     warn: null,
     permissions: [],
+    socialMedia: {
+        discord: "",
+        linkedin: "",
+        github: "",
+        x: "",
+        website: "",
+    },
 
     updateIsGuest: (v) => set({ isGuest: v }),
     updateUserId: (v) => set({ user_id: v }),
@@ -78,4 +88,6 @@ export const useNavData = create<NavState>((set) => ({
     updateResetPassword: (v) => set({ reset_password: v }),
     updateWarn: (v) => set({ warn: v }),
     updatePermissions: (v) => set({ permissions: v }),
+    updateSocialMedia: (k, v) => set(s => ({ socialMedia: { ...s.socialMedia, [k]: v } })),
+    setSocialMedia: (v) => set({ socialMedia: v }),
 }));
