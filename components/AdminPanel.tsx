@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
-import { Option, Roles, User, UserProgression, UserRoles, UserSanctions, UserSessions, UserTransactions } from "@/lib/types"
+import { Flags, Option, Roles, User, UserProgression, UserRoles, UserSanctions, UserSessions, UserTransactions } from "@/lib/types"
 import { IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
 import { MdCheckBoxOutlineBlank } from "react-icons/md"
 import InputNumber from "./ModalInput"
@@ -16,6 +16,8 @@ import { CiDatabase } from "react-icons/ci";
 import DisplayBan from "./ui/sanction/DisplayBan";
 import DisplayWarn from "./ui/sanction/DisplayWarn";
 import DropDown from "./ui/DropDown";
+import ModalBool from "./ui/ModalBool";
+import { strong } from "framer-motion/client";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
@@ -37,6 +39,8 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [tempUserRoles, setTempUserRoles] = useState<RoleOption[]>([]);
     const [displayUserRoles, setDisplayUserRoles] = useState(false)
     const [userProgression, setUserProgression] = useState<UserProgression[]>([])
+    const [displayChallenge, setDisplayChallenge] = useState<UserProgression | null>(null)
+    const [modalRewards, setModalRewards] = useState<{ challengeId: number, flagId: number, flags: Flags[], isFind: boolean | null, challengeType: string, }>({ challengeId: -1, flagId: -1, flags: [], isFind: false, challengeType: "" })
 
     const [sanction, setSanction] = useState<UserSanctions>()
 
@@ -64,6 +68,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         if (roleCreation < 0) return;
         getSpecificRole()
     }, [roleCreation])
+
+    useEffect(() => {
+        userProgression.map((v, k) => {
+            console.log(v);
+        })
+    }, [userProgression])
 
     const getSpecificRole = async () => {
         const data = await call(`/api/role/${roleCreation}`)
@@ -146,6 +156,10 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const getUserProgression = async () => {
         const data = await call(`/api/admin/${editUser}/progression`)
+        // data.data.map((v, k) => {
+        //     console.log("Len flags : ", v.flags.length);
+        // })
+
         setUserProgression(data.data)
     }
 
@@ -283,6 +297,77 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         await call(`/api/admin/${editUser}/roles/update`, { method: "POST", body: JSON.stringify({ roles: tempUserRoles }) }, [`The roles of the user with the id ${editUser} have indeed changed !`])
         getUserRoles();
     }
+
+    // Gestion de la progression de l'utilisateur ↓
+
+    const handleEditFlag = async (challengeId: number, flagId: number, isFind: boolean, challengeType: string, reward: boolean) => {
+        setModalRewards({ challengeId: -1, flagId: -1, flags: [], isFind: false, challengeType: "" })
+        await call(`/api/admin/${editUser}/progression/updateFlag`, { method: "PATCH", body: JSON.stringify({ challengeId: challengeId, flagId: flagId, isFind: isFind, challengeType: challengeType, reward: reward }) }, [`${isFind ? "Remove Flag successfully !" : "Mark as Found successfully !"}`])
+
+        setUserProgression(prev => prev.map(challenge => {
+            if (challenge.id !== challengeId) return challenge;
+
+            return {
+                ...challenge, flags: challenge.flags.map(flag => {
+                    if (flag.id !== flagId) return flag;
+
+                    return {
+                        ...flag, is_find: !isFind, flag_found_date: !isFind ? new Date().toISOString() : ""
+                    }
+                })
+            }
+        }))
+
+        setDisplayChallenge(prev => {
+            if (!prev || prev.id !== challengeId) return prev;
+
+            return {
+                ...prev,
+                flags: prev.flags.map(flag => {
+                    if (flag.id !== flagId) return flag;
+
+                    return {
+                        ...flag,
+                        is_find: !isFind,
+                        flag_found_date: !isFind ? new Date().toISOString() : ""
+                    };
+                })
+            };
+        });
+    };
+
+    const updateChallengeProgress = async (challengeId: number, flags: Flags[], challengeType: string, markAsFound: boolean, reward: boolean) => {
+        setModalRewards({ challengeId: -1, flagId: -1, flags: [], isFind: false, challengeType: "" })
+        await call(`/api/admin/${editUser}/progression/updateChallengeProgress`, { method: "PATCH", body: JSON.stringify({ challengeId: challengeId, flags: flags, challengeType: challengeType, markAsFound: markAsFound, reward: reward }) }, [`${markAsFound ? "Mark as Found successfully !" : "Reset Progress successfully !"}`])
+
+        setUserProgression(prev => prev.map(challenge => {
+            if (challenge.id !== challengeId) return challenge;
+
+            return {
+                ...challenge, flags: challenge.flags.map(flag => {
+                    return {
+                        ...flag, is_find: markAsFound
+                    }
+                })
+            }
+        }))
+
+        setDisplayChallenge(prev => {
+            if (!prev || prev.id !== challengeId) return prev;
+
+            return {
+                ...prev,
+                flags: prev.flags.map(flag => {
+                    return {
+                        ...flag,
+                        is_find: markAsFound
+                    };
+                })
+            };
+        });
+    }
+
+    // 
 
     const setMaintenance = async () => {
         await call("/api/admin/maintenance", { method: "PATCH", body: JSON.stringify({ inMaintenance: !inMaintenance }) }, [inMaintenance ? "Maintenance terminée avec succès !" : "Maintenance activée avec succès !"])
@@ -639,10 +724,10 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                     {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.progression)) && userTab === "Gestion de la progression" && (
                         <div className="flex items-center gap-2">
                             {userProgression.map((v, k) => (
-                                <div key={k} className={`w-fit flex flex-col items-center gap-4 px-4 py-2 text-sm text-[20px] border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40`}>
-                                    <p>{v.title} | {v.difficulty}</p>
+                                <div key={k} onClick={() => setDisplayChallenge(v)} className={`w-fit flex flex-col items-center gap-4 px-4 py-2 text-sm text-[20px] border border-white/10 hover:border-white/40 transition duration-500 cursor-pointer font-mono text-white/40`}>
+                                    <p>{v?.title} | {v?.difficulty}</p>
                                     <div className="flex items-center gap-2 text-[12px] font-semibold"><p>{v.type}</p> | {v.category.map((vd, kd) => (<span key={kd} className={`px-2 py-0.5 bg-green-500/10`}>{vd}</span>))}</div>
-                                    <p><span className={`font-semibold ${v.total_flags_found === v.total_flags ? "text-green-600" : v.total_flags_found >= v.total_flags / 2 ? "text-orange-500" : "text-red-600"}`}>{v.total_flags_found}</span> / {v.total_flags}</p>
+                                    <p><span className={`font-semibold ${v.flags.filter(f => f.is_find).length === v.flags.length ? "text-green-600" : v.flags.filter(f => f.is_find).length >= v.flags?.length / 2 ? "text-orange-500" : "text-red-600"}`}>{v.flags.filter(f => f.is_find).length || 0}</span> / {v.flags?.length || 0}</p>
                                 </div>
                             ))}
                         </div>
@@ -656,6 +741,47 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                     {showModal === "displayReasonWarn" && <DisplayWarn id={sanction?.id || -1} staff_id={sanction?.staff_id || -1} reason={sanction?.reason || ""} onSelect={() => setShowModal(null)} />}
                 </div >
             )}
+            {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.panelAdmin.user.progression)) && displayChallenge && (
+                <div className="w-7/8 min-h-0 absolute h-9/10 bg-[#212529] border border-red-500/60 shadow-2xl p-6 animate-fadeIn">
+                    <div className="flex justify-between gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70 mb-8">
+                        <h2 className="font-bold italic text-[25px]">FlagCore</h2>
+                        <h2 className="text-white/70 text-[25px] font-mono font-bold">ADMIN PANEL - {`Gestion du challenge | ${displayChallenge.title}`}</h2>
+                        <button onClick={() => setDisplayChallenge(null)} className="text-gray-400 hover:text-white text-[25px] cursor-pointer transition duration-500">✕</button>
+                    </div>
+                    <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3 my-5">
+                        <button onClick={() => setModalRewards({ challengeId: displayChallenge.id, flagId: -1, flags: displayChallenge.flags, isFind: false, challengeType: displayChallenge.type })}  className="w-full sm:w-fit Flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset Challenge Progress</button>
+                        <button onClick={() => setModalRewards({ challengeId: displayChallenge.id, flagId: -1, flags: displayChallenge.flags, isFind: true, challengeType: displayChallenge.type })} className="w-full sm:w-fit flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Complete Challenge</button>
+                    </div>
+                    <div className="max-h-[calc(100vh-370px)] overflow-y-auto overflow-x-auto rounded-xl border border-white/10">
+                        <table className="min-w-225 w-full text-left border-collapse">
+                            <thead className="bg-black/40 sticky top-0">
+                                <tr className="text-white/40 text-sm font-semibold">
+                                    <th className="p-4">Id</th>
+                                    <th className="p-4">Flag</th>
+                                    <th className="p-4">Is Find</th>
+                                    <th className="p-4">Date Find</th>
+                                    <th className="p-4 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {displayChallenge.flags.map((v, k) =>
+                                    <tr key={k} className="border-t border-white/10 hover:bg-white/5 transition duration-300 w-full">
+                                        <td className="p-2 sm:p-4"><div className="flex items-center gap-2 text-white/40"><CiDatabase /><span>{v.id}</span></div></td>
+                                        <td className="p-2 sm:p-4"><span className={`text-white/70`}>{v?.flag}</span></td>
+                                        <td className="p-2 sm:p-4"><span className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_find ? "bg-green-500/20 text-white/40 hover:text-white/60" : "bg-red-500/20 text-white/40 hover:text-white/60"}`}>{v.is_find ? "True" : "False"}</span></td>
+                                        <td className="p-2 sm:p-4"><span className={`px-3 py-1 transition duration-500 cursor-pointer ${v.flag_found_date ? "bg-green-500/20 text-white/40 hover:text-white/60" : "bg-red-500/20 text-white/40 hover:text-white/60"}`}>{v.flag_found_date ? new Date(v.flag_found_date).toLocaleString() : "Not find"}</span></td>
+                                        <td className="p-4 flex items-center justify-center gap-3">
+                                            <button onClick={() => setModalRewards({ challengeId: v.challenge_id, flagId: v.id, flags: [], isFind: v.is_find || null, challengeType: displayChallenge.type }) } className={`px-3 py-1 transition duration-500 cursor-pointer ${v.is_find ? "bg-red-500/20 text-white/40 hover:text-white/60" : "bg-green-500/20 text-white/40 hover:text-white/60"}`}>{v.is_find ? "Remove Flag" : "Mark as found"}</button>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+            {modalRewards.challengeId !== -1 && modalRewards.flags.length === 0 && <ModalBool title="With reward ?" label={`Update the user with the rewards ?`} subtitle="" onSelect={(value) => handleEditFlag(modalRewards.challengeId, modalRewards.flagId, modalRewards.isFind || false, modalRewards.challengeType, value)} />}
+            {modalRewards.challengeId !== -1 && modalRewards.flags.length !== 0 && <ModalBool title="With reward ?" label={`Update the user by removing rewards ?`} subtitle="" onSelect={(value) => { console.log("AHAH"); updateChallengeProgress(modalRewards.challengeId, modalRewards.flags, modalRewards.challengeType, modalRewards.isFind || false, value) }} />}
         </div >
     )
 }

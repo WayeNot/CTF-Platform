@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST() {
     try {
         const res = NextResponse.json({ success: true }, { status: 200 })
+        res.cookies.delete("session_id");
         res.cookies.set("isGuest", "true")
         return res
     } catch (err) {

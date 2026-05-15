@@ -70,8 +70,8 @@ export default function Home() {
                             </div>
                         ))}
                         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-                            <div className="w-fit max-w-fit bg-[#1e1e2f] rounded-2xl shadow-2xl p-6 animate-fadeIn">
-                                <Link href="/accounts/login" className="inset-0 flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" /> Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
+                            <div className="w-fit max-w-fit bg-[#1e1e2f] shadow-2xl p-6 animate-fadeIn">
+                                <Link href="/accounts/login" className="inset-0 flex items-center justify-center gap-3 text-white/40 p-4 w-full border text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500">Log in to access the tools !</Link>
                             </div>
                         </div>
                     </div>

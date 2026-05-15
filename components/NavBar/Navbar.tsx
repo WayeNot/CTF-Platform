@@ -13,7 +13,7 @@ import { useApi } from "@/hooks/useApi"
 import { FaFire } from "react-icons/fa"
 import { SiOpslevel } from "react-icons/si"
 import { RiCoinsFill } from "react-icons/ri";
-import { IoSettingsSharp, IoWarning } from "react-icons/io5";
+import { IoWarning } from "react-icons/io5";
 import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
 import { FaUserGear } from "react-icons/fa6";
@@ -23,7 +23,7 @@ import { GiTeamIdea } from "react-icons/gi";
 export default function Navbar() {
     const { showNotif } = useNotif()
     const { call } = useApi()
-    const { updateIsGuest, isGuest, user_id, username, public_username, status, role, pp_url, coins, points, inMaintenance, warn, updateWarn, permissions } = useNavData()
+    const { updateIsGuest, updateBio, updateCoins, updateMail, updatePermissions, updatePoints, updatePp_url, updatePublicUsername, updateRole, updateSocialMedia, updateStatus, updateUserId, updateUsername, isGuest, user_id, username, public_username, status, role, pp_url, coins, points, inMaintenance, warn, updateWarn, permissions } = useNavData()
 
     const router = useRouter()
 
@@ -33,8 +33,21 @@ export default function Navbar() {
     const [showWarn, setShowWarn] = useState(false)
 
     const handleLogout = async () => {
-        await call("/api/auth/logout", { method: "POST" })
         updateIsGuest(false)
+        updateBio("")
+        updateCoins(0)
+        updateMail("")
+        updatePermissions([])
+        updatePoints(0)
+        updatePp_url("")
+        updatePublicUsername("")
+        updateRole([])
+        updateStatus("offline")
+        updateUserId(-1)
+        updateUsername("")
+
+        await call("/api/auth/logout", { method: "POST" })
+
         router.refresh()
         router.push("/accounts/login")
     }
@@ -50,7 +63,7 @@ export default function Navbar() {
         <div>
             {isGuest && (
                 <div>
-                    <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" />Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
+                    <Link href="/accounts/login" className="inset-0 flex items-center justify-center gap-3 text-white/40 p-4 w-full border text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500">Log in to save your progress !</Link>
                     <nav className="flex items-center justify-between p-4 sm:mx-5">
                         <div className="flex items-center">
                             <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono mr-12">FlagCore</Link>

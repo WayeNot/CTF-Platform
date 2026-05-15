@@ -173,7 +173,7 @@ export default function Page() {
                         </div>
                     ))}
                     {showModalBool && selectedFlag && (
-                        <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="" onSelect={(value) => { if (value === "Payer") handleHint(selectedFlag.id); setShowModalBool(false) }} />
+                        <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} subtitle="" onSelect={(value) => { if (value === true) handleHint(selectedFlag.id); setShowModalBool(false) }} />
                     )}
                     {showModalText && selectedFlag && (
                         <ModalText title={`Indice | ${selectedFlag.title}`} label={selectedFlag.hint} btn="Fermer l'indice" onSelect={() => { setShowModalText(false); setSelectedFlag(null) }} />

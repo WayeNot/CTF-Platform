@@ -4,8 +4,8 @@ export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
 export const default_user: User = {
     user_id: -1,
-    username: "",
-    bio: "",
+    username: "Guest",
+    bio: "Bio of a guest guy !",
     password: "",
     mail: "",
     role: [],

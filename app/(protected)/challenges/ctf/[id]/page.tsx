@@ -180,10 +180,10 @@ export default function Page() {
                             </div>
                         ))}
                         {showModalBool && selectedFlag && isGuest && (
-                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="Vous devez être connecté pour acheter les indices !" onSelect={(value) => { value === "Payer" ? showNotif("You must be logged in to purchase the clues !") : setShowModalBool(false) }} />
+                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} subtitle="Vous devez être connecté pour acheter les indices !" onSelect={(value) => { value ? showNotif("You must be logged in to purchase the clues !") : setShowModalBool(false) }} />
                         )}
                         {showModalBool && selectedFlag && !isGuest && (
-                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="" onSelect={(value) => { if (value === "Payer") handleHint(selectedFlag.id); setShowModalBool(false) }} />
+                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} subtitle="" onSelect={(value) => { if (value) handleHint(selectedFlag.id); setShowModalBool(false) }} />
                         )}
                         {showModalText && selectedFlag && !isGuest && (
                             <ModalText title={`Indice | ${selectedFlag.title}`} label={selectedFlag.hint} btn="Fermer l'indice" onSelect={() => { setShowModalText(false); setSelectedFlag(null) }} />

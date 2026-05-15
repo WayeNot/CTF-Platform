@@ -2,7 +2,7 @@
 
 import "./globals.css"
 import { useEffect, useState } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 import Navbar from "@/components/NavBar/Navbar"
 import NavbarNotConnected from "@/components/NavBar/NavbarNotConnected"
@@ -15,6 +15,7 @@ import ResetPassword from "@/components/ResetPassword"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
+    const router = useRouter()
 
     const { updateIsGuest, isGuest, user_id, updateMail, updateUserId, updateBio, updateUsername, updatePublicUsername, role, updateRole, updatePp_url, updateStatus, updateCoins, updatePoints, inMaintenance, updateInMaintenance, updateResetPassword, reset_password, warn, updateWarn, updatePermissions, permissions, setSocialMedia } = useNavData()
 
@@ -30,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         getSettings()
     }, [])
 
-    const loadUserData = async (id: number) => {        
+    const loadUserData = async (id: number) => {
         const [roles, permissions, warn] = await Promise.all([
             await fetch(`/api/user/${id}/role`).then(r => r.json()),
             await fetch(`/api/user/${id}/permissions`).then(r => r.json()),
@@ -43,36 +44,35 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
 
     useEffect(() => {
-        if (public_routes.some(v => v === pathname)) return;        
+        if (public_routes.some(v => v === pathname)) return;
         const getSession = async () => {
             const res = await fetch("/api/auth/session")
             if (!res.ok) return;
 
-            const data = await res.json()
+            const data = await res.json()            
 
-            const result = data.data
-            
-            updateUserId(result.user_id)            
-
-            if (result.isGuest) {
+            if (data.isGuest) {
                 updateIsGuest(true)
                 setUser(default_user)
                 return
             }
+
+            updateUserId(data.data.user_id)
+
             updateIsGuest(false)
-            setUser(result)
-            updateResetPassword(result.reset_password)
+            setUser(data.data)
+            updateResetPassword(data.data.reset_password)
         }
         getSession();
     }, [pathname])
 
     useEffect(() => {
-        if (!user_id || user_id < 0 || isGuest) return        
+        if (!user_id || user_id < 0 || isGuest) return
         loadUserData(user_id)
     }, [user_id, isGuest])
 
-    useEffect(() => {
-        if (public_routes.includes(pathname) || isGuest || !user) return               
+    useEffect(() => {        
+        if (public_routes.includes(pathname) || !user) return;
 
         updateIsGuest(isGuest)
         updateUsername(user.username ?? "")
@@ -85,9 +85,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updatePoints(user.points ?? 0)
         updateResetPassword(user.reset_password ?? false)
         setSocialMedia(user.social_media)
-    }, [user, isGuest])
+    }, [user, isGuest, pathname])
 
-    const handleChangePassword = async (p1: any, p2: any ) => {
+    const handleChangePassword = async (p1: any, p2: any) => {
         const data = await fetch(`/api/user/${user_id}/Account/resetPassword`, { method: "PATCH", body: JSON.stringify({ password: { newPassword1: p1, newPassword2: p2 } }) })
         if (!data.ok) return;
         updateResetPassword(false);

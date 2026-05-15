@@ -6,7 +6,7 @@ import { FaGithubSquare } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { RxLinkedinLogo } from "react-icons/rx";
 
-export type SocialMediaKey  = "discord" | "linkedin" | "github" | "x" | "website"
+export type SocialMediaKey = "discord" | "linkedin" | "github" | "x" | "website"
 
 export type SocialMediaConfig = {
     key: SocialMediaKey;
@@ -124,14 +124,30 @@ export type UserRoles = {
     role_id: number;
 }
 
+export type Flags = {
+    id: number;
+    flag: string;
+    is_find: boolean;
+    flag_found_date: string;
+    challenge_id: number;
+}
+
 export type UserProgression = {
     id: number;
     title: string;
+    description: string;
     difficulty: string;
     category: string[];
+    flag_format: string;
+    files: string[];
+    status: string;
+    creator_id: number;
+    created_at: string;
+    coins: number;
+    points: number;
     type: string;
-    total_flags: number;
-    total_flags_found: number;
+    images: string;
+    flags: Flags[];
 }
 
 export type Roles = {
