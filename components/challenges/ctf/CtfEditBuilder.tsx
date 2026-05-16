@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import DropDown from "@/components/ui/DropDown";
 import { categoryBtn, difficultyBtn, NewCtfFlag, category, CtfBuilderState, ctf, User } from "@/lib/types";
 import { IoMdClose } from "react-icons/io";
-import { MdOutlineDescription } from "react-icons/md";
 import { useNotif } from "@/components/NotifProvider";
 import CreateFlag from "../CreateFlag";
 import InsertFile from "../InsertFile";
@@ -14,78 +13,19 @@ import InsertMember from "../InsertMember";
 import { useApi } from "@/hooks/useApi";
 import { TiUserDeleteOutline } from "react-icons/ti";
 
-export default function CtfBuilder({ onClose }: any) {
+export default function CtfEditBuilder({ onClose, data }: any) {
     const { showNotif } = useNotif()
     const { call } = useApi();
 
-    const [builder, setBuilder] = useState<CtfBuilderState>({ title: "", description: "", difficulty: null, category: [], flag_format: "", coins: undefined, points: undefined, files: [] });
-    const [flags, setFlags] = useState<NewCtfFlag[]>([])
-    const [files, setFiles] = useState<File[]>([]);
-    const [creator, setCreator] = useState<User[]>([]);
-    const [allUser, setAllUser] = useState<User[]>([]);
-
-    const [settings, setSettings] = useState({ difficulty: false, category: false });
-
-    const [displayFiles, setDisplayFiles] = useState(false)
-    const [displayFlags, setDisplayFlags] = useState(false)
-    const [displayCreator, setDisplayCreator] = useState(false)
-
-    useEffect(() => {
-        if (!displayCreator) return;
-
-        const getAllUser = async () => {
-            const data = await call(`/api/users`, { method: "GET" });
-            setAllUser(data.data)
-        }
-
-        getAllUser()
-    }, [displayCreator === true])
-
-    const resetBuilder = () => {
-        setBuilder({ title: "", description: "", difficulty: null, category: [], flag_format: "", coins: undefined, points: undefined, files: [] })
-        setFlags([])
-        setFiles([])
-        setSettings({ difficulty: false, category: false })
-        setDisplayFiles(false)
-        setDisplayFlags(false)
-        onClose();
-    }
-
-    const removeCreator = (index: number) => {
-        setCreator(creator.filter((_, i) => i !== index))
-    }
-
-    const removeFile = (index: number) => {
-        setFiles(files.filter((_, i) => i !== index));
-    };
-
-    const removeFlag = (index: number) => {
-        setFlags(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const canCreate = builder.title && builder.description && builder.difficulty && builder.category?.length && builder.flag_format;
-
-    const handleCreate = async () => {
-        if (!canCreate) { showNotif("Missing field(s) !"); return; }
-        const formData = new FormData();
-        files.forEach(f => formData.append("files[]", f));
-
-        const res = await fetch("/api/challenges/uploadFiles", {
-            method: "POST",
-            body: formData
-        })
-
-        if (!res.ok) {
-            const err = await res.json()
-            showNotif(err.error, "error")
-            return
-        }
-
-        const data = await res.json();
-
-        const sendChallenge = await call("/api/challenges?type=ctf", { method: "POST", body: JSON.stringify({ challenge: { ...builder, difficulty: builder.difficulty?.value, category: builder.category.map(cat => cat.value), creators: creator.map(cat => cat.user_id) }, flags, files: data.files })}, [`The challenge ${builder.title} has been successfully created !`])
-        resetBuilder();
-    };
+    // const resetBuilder = () => {
+    //     setBuilder({ title: "", description: "", difficulty: null, category: [], flag_format: "", coins: undefined, points: undefined, files: [] })
+    //     setFlags([])
+    //     setFiles([])
+    //     setSettings({ difficulty: false, category: false })
+    //     setDisplayFiles(false)
+    //     setDisplayFlags(false)
+    //     onClose();
+    // }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">

@@ -16,6 +16,7 @@ import { useNavData } from "@/stores/store"
 import ChallengeGroups from "@/components/challenges/home/ChallengeGroups";
 import Link from "next/link";
 import { Permissions } from "@/lib/config";
+import CtfEditBuilder from "@/components/challenges/ctf/CtfEditBuilder";
 
 export default function Home() {
     const { call } = useApi();
@@ -42,9 +43,9 @@ export default function Home() {
     const groupedCtf = useMemo(() => {
         const f = (l: string) => ctf.filter(e => e.difficulty === l);
         return {
-            Facile: f("Facile"),
-            Intermédiaire: f("Intermédiaire"),
-            Avancé: f("Avancé"),
+            Facile: f("Easy"),
+            Intermédiaire: f("Intermediate"),
+            Avancé: f("Advance"),
             Expert: f("Expert"),
         };
     }, [ctf]);
@@ -52,9 +53,9 @@ export default function Home() {
     const groupedGeoint = useMemo(() => {
         const f = (l: string) => geoint.filter(e => e.difficulty === l);
         return {
-            Facile: f("Facile"),
-            Intermédiaire: f("Intermédiaire"),
-            Avancé: f("Avancé"),
+            Facile: f("Easy"),
+            Intermédiaire: f("Intermediate"),
+            Avancé: f("Advance"),
             Expert: f("Expert"),
         };
     }, [geoint]);

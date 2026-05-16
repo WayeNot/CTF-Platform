@@ -63,7 +63,7 @@ export default function Navbar() {
         <div>
             {isGuest && (
                 <div>
-                    <Link href="/accounts/login" className="inset-0 flex items-center justify-center gap-3 text-white/40 p-4 w-full border text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500">Log in to save your progress !</Link>
+                    <Link href="/accounts/login" className="inset-0 select-none flex items-center justify-center gap-3 text-white/40 p-4 w-full border text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500">Log in to save your progress !</Link>
                     <nav className="flex items-center justify-between p-4 sm:mx-5">
                         <div className="flex items-center">
                             <Link href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono mr-12">FlagCore</Link>

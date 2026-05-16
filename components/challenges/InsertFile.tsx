@@ -56,7 +56,7 @@ export default function InsertFile({ onClose, onSubmit, multiple = true }: Inser
                     ))}
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-65">Cancel</button>
+                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-65">Back</button>
                     <button disabled={!canSubmit} onClick={handleSubmit} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono w-65">Send</button>
                 </div>
             </div>

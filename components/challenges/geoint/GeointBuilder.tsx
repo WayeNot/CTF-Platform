@@ -114,7 +114,7 @@ export default function GeointBuilder({ onClose }: any) {
                     </div>
                     <div className="p-4 border-t border-white/10 flex items-center justify-center gap-4 mt-auto">
                         <button onClick={() => setDisplayFlags(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono w-40">Flag creation</button>
-                        <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-60">Cancel</button>
+                        <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-60">Back</button>
                         <button onClick={handleBuild} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono w-60">Add</button>
                     </div>
                 </div>

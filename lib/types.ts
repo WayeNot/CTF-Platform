@@ -186,7 +186,7 @@ export type ctf = {
     flag_format: string;
     files: string[];
     status: string;
-    creator_id: number;
+    creators: [];
     created_at: string;
     coins?: number;
     points?: number;

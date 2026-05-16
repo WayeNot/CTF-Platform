@@ -454,7 +454,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             </div>
                                         </div>
                                         <div className="flex w-full gap-3 mt-3">
-                                            <button onClick={() => setRoleCreation(-1)} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Cancel</button>
+                                            <button onClick={() => setRoleCreation(-1)} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Back</button>
                                             <button onClick={handleCreateRole} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Create</button>
                                         </div>
                                     </div>
@@ -519,7 +519,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             </div>
                                         </div>
                                         <div className="flex w-full gap-3 mt-3">
-                                            <button onClick={() => setRoleCreation(-1)} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Cancel</button>
+                                            <button onClick={() => setRoleCreation(-1)} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Back</button>
                                             <button onClick={handleDeleteRole} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-red-500/30 hover:text-white transition duration-500 cursor-pointer active:scale-95">Delete</button>
                                             <button onClick={handleEditRole} className="flex-1 py-2.5 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Save Changes</button>
                                         </div>
