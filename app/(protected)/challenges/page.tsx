@@ -16,7 +16,6 @@ import { useNavData } from "@/stores/store"
 import ChallengeGroups from "@/components/challenges/home/ChallengeGroups";
 import Link from "next/link";
 import { Permissions } from "@/lib/config";
-import CtfEditBuilder from "@/components/challenges/ctf/CtfEditBuilder";
 
 export default function Home() {
     const { call } = useApi();
