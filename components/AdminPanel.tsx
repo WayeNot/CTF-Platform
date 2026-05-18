@@ -11,13 +11,11 @@ import Link from "next/link"
 import { useApi } from "@/hooks/useApi"
 import { useNavData } from "@/stores/store"
 import { LiaCriticalRole } from "react-icons/lia"
-import { RiMailSendLine } from "react-icons/ri";
 import { CiDatabase } from "react-icons/ci";
 import DisplayBan from "./ui/sanction/DisplayBan";
 import DisplayWarn from "./ui/sanction/DisplayWarn";
 import DropDown from "./ui/DropDown";
 import ModalBool from "./ui/ModalBool";
-import { strong } from "framer-motion/client";
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
@@ -580,7 +578,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
                                 <Link href={`/user/@${el.username}`} className="flex items-center gap-3 text-[25px] hover:text-white/70 transition font-mono duration-500"><img src={el.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-20 bg-center bg-cover bg-no-repeat ${`${statusColor[el.status] || ""}`}`} /><span className="mx-2">-</span>{el.username} ( Session : {el.is_online ? <span className="text-green-700">Active</span> : <span className="text-red-700">Inactive</span>} )</Link>
                             </div>
-                            <p className="flex items-center gap-3 text-[20px] w-fit">{el.mail}<Link href={`mailto:${el.mail}`}><RiMailSendLine className="cursor-pointer transition duration-500 hover:text-white/70 text-white/40" /></Link></p>
                             <p className="flex items-center gap-3 text-[20px] w-fit">Inscrit depuis le : {new Date(el.created_at).toLocaleString()}</p>
                         </div>
                     ))}
