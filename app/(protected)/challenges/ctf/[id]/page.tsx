@@ -57,10 +57,6 @@ export default function Page() {
         getCtf()
     }, [params.id])
 
-    useEffect(() => {
-        console.log(ctf?.creators);
-    }, [ctf])
-
     const handleHint = async (id: number) => {
         id = Number(id)
         const flagObj = ctfFlags.find(el => el.id === id);

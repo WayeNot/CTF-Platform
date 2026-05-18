@@ -21,11 +21,6 @@ export default function Home() {
     useEffect(() => {
         getUserData()
     }, [params])
-
-    useEffect(() => {
-        console.log(userData?.bio);
-    }, [userData])
-
     return (
         <div className="m-auto w-1/2 mt-2">
             <div>

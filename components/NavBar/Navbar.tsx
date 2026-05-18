@@ -12,12 +12,13 @@ import { default_pp, Permissions, statusColor, } from "@/lib/config"
 import { useApi } from "@/hooks/useApi"
 import { FaFire } from "react-icons/fa"
 import { SiOpslevel } from "react-icons/si"
-import { RiCoinsFill } from "react-icons/ri";
+import { RiCoinsFill, RiGitRepositoryPrivateFill } from "react-icons/ri";
 import { IoWarning } from "react-icons/io5";
 import { useNotif } from "../NotifProvider";
 import ModalWarn from "../ui/sanction/ModalWarn";
 import { FaUserGear } from "react-icons/fa6";
 import { GiTeamIdea } from "react-icons/gi";
+import ModalText from "../ui/ModalText";
 
 
 export default function Navbar() {
@@ -29,6 +30,9 @@ export default function Navbar() {
 
     const [menuOpen, setMenuOpen] = useState(false)
     const [showAdminPanel, setShowAdminPanel] = useState(false)
+
+    const [ displayCoinInfo, SetDisplayCoinInfo] = useState(false)
+    const [ displayXpInfo, SetDisplayXpInfo] = useState(false)
 
     const [showWarn, setShowWarn] = useState(false)
 
@@ -99,17 +103,18 @@ export default function Navbar() {
                         </div>
                         <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
                         {Array.isArray(permissions) && permissions.includes(Permissions.advanced.administrator) && (
-                            <div>
+                            <div className="flex items-center gap-3">
                                 <Link href="/team"><GiTeamIdea className="hover:text-white/60 text-white/40 cursor-pointer text-2xl transition duration-500" /></Link>
+                                <Link href="/room"><RiGitRepositoryPrivateFill className="hover:text-white/60 text-white/40 cursor-pointer text-2xl transition duration-500"/></Link>
                             </div>
                         )}
                         <div className="hidden sm:flex items-center text-white/40">
                             <div className="flex items-center gap-5 font-bold text-white/40 mr-6">
                                 <Link href={`/user/@${username}`} className="flex items-center gap-3 text-[18px] hover:text-white/70 transition font-mono duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
                             </div>
-                            <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 ml-5"><RiCoinsFill />{coins}</p>
+                            <p onClick={() => SetDisplayCoinInfo(true)} className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 cursor-pointer hover:text-white/40 ml-5"><RiCoinsFill />{coins}</p>
                             <p className="text-white/70 text-[20px] mx-5"> | </p>
-                            <p className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 mr-15"><SiOpslevel />{points}</p>
+                            <p onClick={() => SetDisplayXpInfo(true)} className="flex items-center gap-3 text-white/70 text-[20px] transition duration-500 cursor-pointer hover:text-white/40 mr-15"><SiOpslevel />{points}</p>
                             <div className="flex items-center gap-4">
                                 <Link href={`/settings`}><FaUserGear className="hover:text-white/60 cursor-pointer text-2xl transition duration-500" /></Link>
                                 <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
@@ -135,6 +140,8 @@ export default function Navbar() {
             )}
             {showWarn && warn && warn?.reason && <ModalWarn id={warn.id} staff_id={warn?.staff_id} reason={warn?.reason} onSelect={handleWarn} />}
             {showAdminPanel && <AdminPanel closePanel={() => setShowAdminPanel(false)} />}
+            {displayCoinInfo && <ModalText title="Explanation of coins" label="Coins are a form of 'currency' currently only used to buy clues. You will be able to acquire them by solving challenges!" btn="I got it." onSelect={() => SetDisplayCoinInfo(false)} />}
+            {displayXpInfo && <ModalText title="Explanation of xp" label="XP is a system for the future of FlagCore; it will be used to unlock features later." btn="I got it." onSelect={() => SetDisplayXpInfo(false)} />}
         </div >
     )
 }

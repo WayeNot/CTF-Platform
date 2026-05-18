@@ -67,12 +67,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         getSpecificRole()
     }, [roleCreation])
 
-    useEffect(() => {
-        userProgression.map((v, k) => {
-            console.log(v);
-        })
-    }, [userProgression])
-
     const getSpecificRole = async () => {
         const data = await call(`/api/role/${roleCreation}`)
         setEditRole({ id: data.data.id, label: data.data.label, color: data.data.color, description: data.data.description });
@@ -86,6 +80,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         { label: "Creation permissions", canBeSelected: false },
         { label: "CTF creation", description: "Can create CTFs freely", alias: Permissions.contributor.canCreate.ctf, canBeSelected: true },
         { label: "Geoint creation", description: "Can create Geoint freely", alias: Permissions.contributor.canCreate.geoint, canBeSelected: true },
+        { label: "Room creation", description: "Can create room freely", alias: Permissions.contributor.canCreate.rooom, canBeSelected: true },
 
         { label: "Admin panel permissions", canBeSelected: false, onlyIf: Permissions.panelAdmin.canOpen },
 
@@ -104,6 +99,10 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         { label: "User roles management", description: "Members with this role can view user roles and assign/remove them.", alias: Permissions.panelAdmin.user.role, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
         { label: "Progression management", description: "Members with this role can control user progression.", alias: Permissions.panelAdmin.user.progression, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
         { label: "Monitoring / debug", description: "Members with this role can debug / assist the user.", alias: Permissions.panelAdmin.user.monitoring, canBeSelected: true, onlyIf: Permissions.panelAdmin.manageUser },
+
+        { label: "Room management permissions", canBeSelected: false, onlyIf: Permissions.room.canCreateChallenge },
+        { label: "Can create room challenge", description: "Can create challenge freely", alias: Permissions.room.canCreateChallenge, canBeSelected: true },
+        { label: "Create invite code", description: "Can create invide code for the room freely", alias: Permissions.room.canCreateChallenge, canBeSelected: true },
 
         { label: "Advanced permissions", canBeSelected: false },
         { label: "Administrator", description: "Members with this permission have all permissions and can bypass restrictions.", alias: "advanced.administrator", canBeSelected: true },
@@ -154,10 +153,6 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const getUserProgression = async () => {
         const data = await call(`/api/admin/${editUser}/progression`)
-        // data.data.map((v, k) => {
-        //     console.log("Len flags : ", v.flags.length);
-        // })
-
         setUserProgression(data.data)
     }
 
@@ -778,7 +773,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 </div>
             )}
             {modalRewards.challengeId !== -1 && modalRewards.flags.length === 0 && <ModalBool title="With reward ?" label={`Update the user with the rewards ?`} subtitle="" onSelect={(value) => handleEditFlag(modalRewards.challengeId, modalRewards.flagId, modalRewards.isFind || false, modalRewards.challengeType, value)} />}
-            {modalRewards.challengeId !== -1 && modalRewards.flags.length !== 0 && <ModalBool title="With reward ?" label={`Update the user by removing rewards ?`} subtitle="" onSelect={(value) => { console.log("AHAH"); updateChallengeProgress(modalRewards.challengeId, modalRewards.flags, modalRewards.challengeType, modalRewards.isFind || false, value) }} />}
+            {modalRewards.challengeId !== -1 && modalRewards.flags.length !== 0 && <ModalBool title="With reward ?" label={`Update the user by removing rewards ?`} subtitle="" onSelect={(value) => updateChallengeProgress(modalRewards.challengeId, modalRewards.flags, modalRewards.challengeType, modalRewards.isFind || false, value) } />}
         </div >
     )
 }

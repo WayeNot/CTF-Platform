@@ -26,7 +26,6 @@ export default function InsertMember({ allMember, onClose, onSubmit }: InsertFil
     }
 
     const handleSubmit = () => {
-        console.log(member);
         onSubmit(member);
         setMember([]);
         onClose();

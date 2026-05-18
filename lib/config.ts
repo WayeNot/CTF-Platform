@@ -37,6 +37,7 @@ export const Permissions = {
         canCreate: {
             ctf: "contributor.canCreate.ctf",
             geoint: "contributor.canCreate.geoint",
+            rooom: "contributor.canCreate.room"
         },
     },
 
@@ -61,6 +62,10 @@ export const Permissions = {
             progression: "panelAdmin.user.progression",
             monitoring: "panelAdmin.user.monitoring",
         }
+    },
+
+    room: {
+        canCreateChallenge: "contributor.room.canCreate",
     },
 
     advanced: {

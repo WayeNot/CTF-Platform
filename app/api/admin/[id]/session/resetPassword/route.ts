@@ -28,8 +28,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         const cookieStore = await cookies()
         const staff_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
 
-        console.log(password.password1);
-
         // if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.session, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         // const hashedPassword = await bcrypt.hash(password, 6)
