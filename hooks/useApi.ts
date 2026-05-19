@@ -5,21 +5,20 @@ import { useNotif } from "@/components/NotifProvider"
 export const useApi = () => {
     const { showNotif } = useNotif()
 
-    const call = async (url: string, options?: RequestInit, successMsg?: string[]) => {
+    const call = async (url: string, options: RequestInit = {}, successMsg?: string[]) => {
         try {
-            const res = await fetch(url, {
-                headers: { "Content-Type": "application/json" },
-                ...options
-            })
+            const headers = new Headers(options.headers)
+
+            if (!(options.body instanceof FormData)) { headers.set("Content-Type", "application/json") }
+
+            const res = await fetch(url, { ...options, headers })
 
             const data = await res.json()
 
-            if (!res.ok && data.error) {
-                throw new Error(data.error)
-            }
+            if (!res.ok && data.error) throw new Error(data.error)
 
-            if (successMsg?.length !== 0) {
-                successMsg?.map((v, k) => {
+            if (successMsg?.length) {
+                successMsg.forEach(v => {
                     showNotif(v, "success")
                 })
             }

@@ -1,27 +1,45 @@
 "use client";
 
 import { FaFlag } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import DropDown from "@/components/ui/DropDown";
-import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category, CtfBuilderState, ctf } from "@/lib/types";
+import { categoryBtn, difficultyBtn, NewCtfFlag, category, CtfBuilderState, ctf, User } from "@/lib/types";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription } from "react-icons/md";
 import { useNotif } from "@/components/NotifProvider";
 import CreateFlag from "../CreateFlag";
 import InsertFile from "../InsertFile";
+import InsertMember from "../InsertMember";
+import { useApi } from "@/hooks/useApi";
+import { TiUserDeleteOutline } from "react-icons/ti";
 
 export default function CtfBuilder({ onClose }: any) {
     const { showNotif } = useNotif()
+    const { call } = useApi();
 
     const [builder, setBuilder] = useState<CtfBuilderState>({ title: "", description: "", difficulty: null, category: [], flag_format: "", coins: undefined, points: undefined, files: [] });
     const [flags, setFlags] = useState<NewCtfFlag[]>([])
     const [files, setFiles] = useState<File[]>([]);
+    const [creator, setCreator] = useState<User[]>([]);
+    const [allUser, setAllUser] = useState<User[]>([]);
 
     const [settings, setSettings] = useState({ difficulty: false, category: false });
 
     const [displayFiles, setDisplayFiles] = useState(false)
     const [displayFlags, setDisplayFlags] = useState(false)
+    const [displayCreator, setDisplayCreator] = useState(false)
+
+    useEffect(() => {
+        if (!displayCreator) return;
+
+        const getAllUser = async () => {
+            const data = await call(`/api/users`, { method: "GET" });
+            setAllUser(data.data)
+        }
+
+        getAllUser()
+    }, [displayCreator === true])
 
     const resetBuilder = () => {
         setBuilder({ title: "", description: "", difficulty: null, category: [], flag_format: "", coins: undefined, points: undefined, files: [] })
@@ -33,6 +51,10 @@ export default function CtfBuilder({ onClose }: any) {
         onClose();
     }
 
+    const removeCreator = (index: number) => {
+        setCreator(creator.filter((_, i) => i !== index))
+    }
+
     const removeFile = (index: number) => {
         setFiles(files.filter((_, i) => i !== index));
     };
@@ -41,7 +63,10 @@ export default function CtfBuilder({ onClose }: any) {
         setFlags(prev => prev.filter((_, i) => i !== index));
     };
 
+    const canCreate = builder.title && builder.description && builder.difficulty && builder.category?.length && builder.flag_format;
+
     const handleCreate = async () => {
+        if (!canCreate) { showNotif("Missing field(s) !"); return; }
         const formData = new FormData();
         files.forEach(f => formData.append("files[]", f));
 
@@ -58,15 +83,9 @@ export default function CtfBuilder({ onClose }: any) {
 
         const data = await res.json();
 
-        await fetch("/api/challenges?type=ctf", {
-            method: "POST",
-            body: JSON.stringify({ challenge: { ...builder, difficulty: builder.difficulty?.value, category: builder.category.map(cat => cat.value) }, flags, files: data.files })
-        })
-
+        const sendChallenge = await call("/api/challenges?type=ctf", { method: "POST", body: JSON.stringify({ challenge: { ...builder, difficulty: builder.difficulty?.value, category: builder.category.map(cat => cat.value), creators: creator.map(cat => cat.user_id) }, flags, files: data.files })}, [`The challenge ${builder.title} has been successfully created !`])
         resetBuilder();
     };
-
-    const canCreate = builder.title && builder.description && builder.difficulty && builder.category?.length && builder.flag_format;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
@@ -80,8 +99,8 @@ export default function CtfBuilder({ onClose }: any) {
                         <div className="bg-[#363a3f] border border-white/5 font-mono p-3 space-y-2">
                             <div className="text-[11px] text-white/40">General Information</div>
                             <div className="grid grid-cols-2 gap-2">
-                                <input className="p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-orange-500 transition" placeholder="Challenge title" value={builder.title} onChange={e => setBuilder({ ...builder, title: e.target.value })} />
-                                <input className="p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-orange-500 transition" placeholder="Flag format" value={builder.flag_format} onChange={e => setBuilder({ ...builder, flag_format: e.target.value })} />
+                                <input className="p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-orange-500 transition" type="text" placeholder="Challenge title" value={builder.title} onChange={e => setBuilder({ ...builder, title: e.target.value })} />
+                                <input className="p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-orange-500 transition" type="text" placeholder="Flag format" value={builder.flag_format} onChange={e => setBuilder({ ...builder, flag_format: e.target.value })} />
                             </div>
                         </div>
                         <div className="bg-[#363a3f] border border-white/5 p-3 space-y-2 w-full font-mono">
@@ -102,16 +121,21 @@ export default function CtfBuilder({ onClose }: any) {
                         <div className="bg-[#363a3f] border border-white/5 p-3 space-y-2">
                             <div className="text-[11px] text-white/40 font-mono">Challenge reward ( Coins / Points )</div>
                             <div className="grid grid-cols-2 gap-2 font-mono">
-                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Overall points reward" type="number" value={builder.coins} onChange={e => {if(Number(e.target.value) > 9999) return; setBuilder({ ...builder, coins: Number(e.target.value)})}}/>
-                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Coin reward" type="number" value={builder.points} onChange={e  => {if(Number(e.target.value) > 9999) return; setBuilder({ ...builder, points: Number(e.target.value)})}} />
+                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Overall points reward" type="number" value={builder.coins || ""} onChange={e => { if (Number(e.target.value) > 9999) return; setBuilder({ ...builder, coins: Number(e.target.value) }) }} />
+                                <input className="w-full p-2 bg-[#212529] text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Coin reward" type="number" value={builder.points || ""} onChange={e => { if (Number(e.target.value) > 9999) return; setBuilder({ ...builder, points: Number(e.target.value) }) }} />
+                            </div>
+                        </div>
+                        <div className="bg-[#363a3f] border border-white/5 p-3 space-y-2">
+                            <div className="flex items-center gap-2 font-mono">
+                                <button onClick={() => setDisplayCreator(true)} className="w-full p-2 bg-[#212529] hover:bg-[#212529]/60 text-xs outline-none border border-white/5 transition duration-500 cursor-pointer">Creators</button>
+                                <button onClick={() => setDisplayFiles(true)} className="w-full p-2 bg-[#212529] hover:bg-[#212529]/60 text-xs outline-none border border-white/5 transition duration-500 cursor-pointer">Files</button>
+                                <button onClick={() => setDisplayFlags(true)} className="w-full p-2 bg-[#212529] hover:bg-[#212529]/60 text-xs outline-none border border-white/5 transition duration-500 cursor-pointer">Flag creation</button>
                             </div>
                         </div>
                     </div>
                     <div className="p-3 border-t border-white/10 bg-[#212529] grid grid-cols-2 gap-2">
-                        <button onClick={() => setDisplayFiles(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono">Files</button>
-                        <button onClick={() => setDisplayFlags(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono">Flag creation</button>
-                        <button onClick={() => resetBuilder()} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono">Cancel</button>
-                        <button disabled={!canCreate} onClick={handleCreate} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono">Create</button>
+                        <button onClick={() => resetBuilder()} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono">Back</button>
+                        <button onClick={handleCreate} className={`bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono`}>Create</button>
                     </div>
                 </div>
                 <div className="w-1/2 bg-[#212529] border border-white/10 p-6 text-white space-y-5 shadow-2xl">
@@ -152,6 +176,20 @@ export default function CtfBuilder({ onClose }: any) {
                         </div>
                     </div >
                     <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-white/70 font-semibold"><span>Member</span></div>
+                        <div className="max-h-32 overflow-y-auto space-y-2 pr-1">
+                            <div className="flex items-center justify-between p-2 font-mono text-sm border-2 bg-[#363a3f] border-white/5 hover:border-white/20 transition duration-500">
+                                {!Array.isArray(creator) || creator.length === 0 ? <p className="text-white/30 text-sm">No creator for the moment</p> : (
+                                    <div className="flex items-center gap-2">
+                                        {creator.map((v, k) => (
+                                            <span key={k} className={`p-1.5 bg-green-500/10 flex items-center gap-2`}>{v.username}<TiUserDeleteOutline onClick={() => removeCreator(k)} className="text-red-400 text-[15px] hover:text-red-300 transition duration-500 cursor-pointer" /></span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
                         <div className="flex items-center gap-2 text-white/70 font-semibold"><span>Files</span></div>
                         <div className="max-h-32 overflow-y-auto space-y-2 pr-1">
                             {!Array.isArray(files) || files.length === 0 ? <p className="text-white/30 text-sm">No files</p> : (
@@ -183,8 +221,8 @@ export default function CtfBuilder({ onClose }: any) {
                     </div>
                 </div >
             </div >
-            {displayFiles && <InsertFile onClose={() => setDisplayFiles(false)} onSubmit={(files) => setFiles(prev => [...prev, ...files])} />
-            }
+            {displayCreator && <InsertMember onClose={() => setDisplayCreator(false)} allMember={allUser} onSubmit={(creator) => setCreator(prev => [...prev, ...creator])} />}
+            {displayFiles && <InsertFile onClose={() => setDisplayFiles(false)} onSubmit={(files) => setFiles(prev => [...prev, ...files])} />}
             {displayFlags && <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => setFlags(prev => [...prev, flag])} />}
         </div >
     );

@@ -7,11 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider"
 import { FaHatCowboy } from "react-icons/fa";
 import Typewriter from 'typewriter-effect';
-import { GiThink } from "react-icons/gi";
-import ModalInput from "@/components/ModalInput";
-import ModalText from "@/components/ui/ModalText";
 import { UserSanctions } from "@/lib/types";
-import ModalSanction from "@/components/ui/sanction/ModalBan";
 import ModalBan from "@/components/ui/sanction/ModalBan";
 
 
@@ -24,7 +20,8 @@ export default function Home() {
     const [ban, setBan] = useState<UserSanctions>()
     const [showBan, setShowBan] = useState(false)
 
-    const handleLogin = async () => {
+    const handleLogin = async (e: any) => {
+        e.preventDefault();
         const res = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -61,7 +58,7 @@ export default function Home() {
 
     const handleForgotPassword = (value: string) => {
         setDisplayForgotPassword(false)
-        showNotif("Une demande de réinitialisation de mot de passe a été effectué !", "success")
+        showNotif("A password reset request has been made !", "success")
     }
 
     return (
@@ -79,25 +76,25 @@ export default function Home() {
                             <Typewriter onInit={(tw) => tw.typeString('Login').stop().start()} />
                         </div>
                         <hr className="text-white/70 w-4/5 my-5 m-auto" />
-                        <div className="flex flex-col items-center w-4/5 m-auto gap-4">
+                        <form method="post" className="flex flex-col items-center w-4/5 m-auto gap-4">
                             <div className="flex flex-col items-center justify-center gap-1 w-full">
-                                <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
+                                <input required value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
                                 <div className="w-full flex flex-col gap-2">
-                                    <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5 mt-1" placeholder="Password" type="password" maxLength={50} />
+                                    <input required value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="w-full border-2 font-mono text-[20px] border-white/40 text-white/80 p-1.5 mt-1" placeholder="Password" type="password" maxLength={50} />
                                     {/* <button onClick={() => setDisplayForgotPassword(true)} className="w-fit flex items-center gap-3 hover:underline hover:text-white text-white/30 font-mono text-[17px] cursor-pointer transition duration-500"><GiThink />Forgotten password ?</button> */}
                                 </div>
                             </div>
-                            <button onClick={handleLogin} className="w-full cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
+                            <button type="submit" onClick={(e) => handleLogin(e)} className="w-full cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
                             <div className="w-full flex justify-between items-center gap-3 text-white/30 font-mono text-[17px] cursor-pointer">
                                 <p onClick={handleGuest} className="flex items-center gap-3 hover:underline hover:text-white transition duration-500"><FaHatCowboy />Guest mode</p>
                                 <p>|</p>
                                 <p onClick={handleRedirect} className="flex items-center gap-3 hover:underline hover:text-white transition duration-500"><MdAccountBox />Register</p>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            {ban && showBan && <ModalBan id={ban?.id} staff_id={ban?.staff_id} duration={ban?.duration} reason={ban?.reason} expires_at={ban?.expires_at} onSelect={() => setShowBan(false)}/>}
+            {ban && showBan && <ModalBan id={ban?.id} staff_id={ban?.staff_id} duration={ban?.duration} reason={ban?.reason} expires_at={ban?.expires_at} onSelect={() => setShowBan(false)} />}
             {/* {displayForgotPassword && <ModalInput title="Réinitialisation de mot de passe" input1={{ display: true, placeholder: "Quelle est votre adresse mail ?", type: "text" }} onClose={() => setDisplayForgotPassword(false)} onValidate={({ input1 }) => { handleForgotPassword(input1) }}/>} */}
         </div>
     );

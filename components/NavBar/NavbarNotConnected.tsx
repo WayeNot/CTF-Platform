@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useNavData } from "@/stores/store";
 
 export default function NavbarNotConnected() {
-    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coins, updateCoins, updatePoints, inMaintenance, updateInMaintenance } = useNavData();
+    const { inMaintenance } = useNavData();
 
     const { call } = useApi()
     const router = useRouter();

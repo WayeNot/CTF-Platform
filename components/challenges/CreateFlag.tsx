@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DropDown from "../ui/DropDown";
-import { difficulty, difficultyBtn, NewCtfFlag } from "@/lib/types";
+import { difficultyBtn, NewCtfFlag } from "@/lib/types";
 import { useNotif } from "../NotifProvider";
 
 type CreateFlagType = {
@@ -51,7 +51,7 @@ export default function CreateFlag({ onClose, onSubmit }: CreateFlagType) {
                     </div>
                 </div>
                 <div className="flex gap-2 pt-1">
-                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-60">Cancel</button>
+                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-60">Back</button>
                     <button onClick={() => { if (!canSubmit) { showNotif("Please fill in all fields !"); return; } onSubmit(newFlag); resetForms(); }} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono w-60">Add</button>
                 </div>
             </div>

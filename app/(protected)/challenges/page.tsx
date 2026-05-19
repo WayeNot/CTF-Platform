@@ -42,9 +42,9 @@ export default function Home() {
     const groupedCtf = useMemo(() => {
         const f = (l: string) => ctf.filter(e => e.difficulty === l);
         return {
-            Facile: f("Facile"),
-            Intermédiaire: f("Intermédiaire"),
-            Avancé: f("Avancé"),
+            Facile: f("Easy"),
+            Intermédiaire: f("Intermediate"),
+            Avancé: f("Advance"),
             Expert: f("Expert"),
         };
     }, [ctf]);
@@ -52,9 +52,9 @@ export default function Home() {
     const groupedGeoint = useMemo(() => {
         const f = (l: string) => geoint.filter(e => e.difficulty === l);
         return {
-            Facile: f("Facile"),
-            Intermédiaire: f("Intermédiaire"),
-            Avancé: f("Avancé"),
+            Facile: f("Easy"),
+            Intermédiaire: f("Intermediate"),
+            Avancé: f("Advance"),
             Expert: f("Expert"),
         };
     }, [geoint]);
@@ -82,18 +82,18 @@ export default function Home() {
 
                 {tab === 1 && (
                     <div className="px-6 space-y-10">
-                        {Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint)) && <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />}
+                        {permissions && Array.isArray(permissions) && (permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint)) && <CreateButtons type="geoint" role={role} onGeoOpen={() => setOpenGeo(true)} />}
                         {isGuest ? (
-                            <div className="relative">
+                            <div className="relative mt-10">
                                 <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">
                                     <ChallengeGroups data={groupedGeoint} open={open} type="geoint" />
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="bg-[#1e1e2f]/90 border border-white/10 rounded-2xl p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
+                                    <div className="bg-[#1e1e2f]/90 border border-white/10  p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
                                         <div className="text-4xl mb-3">🔒</div>
                                         <h2 className="text-white text-xl font-bold mb-2">GEOINT verrouillé</h2>
                                         <p className="text-white/60 text-sm mb-6">Connectez-vous pour accéder aux missions et suivre votre progression.</p>
-                                        <Link href="/accounts/login" className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</Link>
+                                        <Link href="/accounts/login" className="inline-flex items-center justify-center px-5 py-2 bg-orange-500 hover:bg-orange-600 transition duration-500 cursor-pointer text-white font-semibold">Se connecter</Link>
                                         <p className="text-white/30 text-xs mt-4"> Aperçu disponible — accès complet après connexion</p>
                                     </div>
                                 </div>
@@ -103,8 +103,8 @@ export default function Home() {
                         )}
                     </div>
                 )}
-                {openCtf && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf) ) && <CtfBuilder onClose={() => setOpenCtf(false)} />}
-                {openGeo && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint) ) && <GeointBuilder onClose={() => setOpenGeo(false)} />}
+                {openCtf && permissions && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.ctf) ) && <CtfBuilder onClose={() => setOpenCtf(false)} />}
+                {openGeo && permissions && Array.isArray(permissions) && ( permissions.includes(Permissions.advanced.administrator) || permissions.includes(Permissions.contributor.canCreate.geoint) ) && <GeointBuilder onClose={() => setOpenGeo(false)} />}
             </div>
         </div>
     );

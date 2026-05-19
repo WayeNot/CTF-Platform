@@ -4,7 +4,7 @@ import { BsLightningChargeFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription, MdSend } from "react-icons/md";
 import DropDown from "@/components/ui/DropDown";
-import { difficultyBtn, difficulty, GeointBuilderState, NewCtfFlag } from "@/lib/types";
+import { difficultyBtn, GeointBuilderState, NewCtfFlag } from "@/lib/types";
 import { useState } from "react";
 import { useNotif } from "@/components/NotifProvider";
 import { CiCircleRemove } from "react-icons/ci";
@@ -26,7 +26,7 @@ export default function GeointBuilder({ onClose }: any) {
     const [displayFlags, setDisplayFlags] = useState(false)
 
     const handleBuild = async () => {
-        if (!canCreate) { showNotif("Vous n'avez pas rempli tout les champs !"); return; }        
+        if (!canCreate) { showNotif("You have not filled in all the fields !"); return; }        
 
         await fetch("/api/challenges?type=geoint", {
             method: "POST",
@@ -39,13 +39,13 @@ export default function GeointBuilder({ onClose }: any) {
     const handleRemoveImage = (index: number) => {
         const updatedImages = builder.images.filter((_, i) => i !== index)
         setBuilder(prev => ({ ...prev, images: updatedImages }))
-        showNotif("Image bien supprimé !", "success")
+        showNotif("Image successfully deleted !", "success")
     }
 
     const handleRemoveFlag = (index: number) => {
         const updatedFlags = flags.filter((_, i) => i !== index)
         setFlags(updatedFlags)
-        showNotif("Flag bien supprimé !", "success")
+        showNotif("Flag successfully removed !", "success")
     }
 
     return (
@@ -114,7 +114,7 @@ export default function GeointBuilder({ onClose }: any) {
                     </div>
                     <div className="p-4 border-t border-white/10 flex items-center justify-center gap-4 mt-auto">
                         <button onClick={() => setDisplayFlags(true)} className="bg-[#363a3f] hover:brightness-200 text-xs py-2 transition duration-500 cursor-pointer font-mono w-40">Flag creation</button>
-                        <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-60">Cancel</button>
+                        <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-60">Back</button>
                         <button onClick={handleBuild} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono w-60">Add</button>
                     </div>
                 </div>

@@ -13,8 +13,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         if (!await hasPermission(Permissions.advanced.administrator, staff_id) && !await hasPermission(Permissions.panelAdmin.user.sanctions, staff_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
         const result = await sql`SELECT * FROM sanctions WHERE user_id = ${id} ORDER BY id DESC`
-        return Response.json({ success: true, data: result || null })
+        return NextResponse.json({ success: true, data: result || null }, { status: 200 })
     } catch (err: any) {
-        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
+        console.error(err)
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

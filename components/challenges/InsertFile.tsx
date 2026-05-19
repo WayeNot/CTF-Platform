@@ -1,20 +1,29 @@
 "use client"
 
 import { useState } from "react";
-import { difficulty, difficultyBtn, NewCtfFlag } from "@/lib/types";
 import { useNotif } from "../NotifProvider";
 
 type InsertFileType = {
     onClose: () => void;
     onSubmit: (files: File[]) => void;
+    multiple?: boolean;
 }
 
-export default function InsertFile({ onClose, onSubmit }: InsertFileType) {
+export default function InsertFile({ onClose, onSubmit, multiple = true }: InsertFileType) {
     const { showNotif } = useNotif()
 
     const [files, setFiles] = useState<File[]>([]);
 
-    const canSubmit = files && files.length !== 0
+    const canSubmit = files.length !== 0
+
+    const addFiles = (newFiles: File[]) => {
+        if (!multiple) {
+            setFiles([newFiles[0]]);
+            return;
+        }
+
+        setFiles(prev => [...prev, ...newFiles]);
+    }
 
     const handleSubmit = () => {
         onSubmit(files);
@@ -26,13 +35,13 @@ export default function InsertFile({ onClose, onSubmit }: InsertFileType) {
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
             <div className="bg-[#212529] w-140 p-5 text-white shadow-2xl border border-white/10 space-y-4">
                 <div className="text-center">
-                    <h2 className="text-lg font-bold font-mono">Challenge files</h2>
-                    <p className="text-white/40 text-xs font-mono">Drag and drop or select files</p>
+                    <h2 className="text-lg font-bold font-mono">Select files</h2>
+                    <p className="text-white/40 text-xs font-mono">{multiple ? "Drag and drop or select files" : "Drag and drop or select a file"}</p>
                 </div>
-                <div className="border border-dashed border-white/20 rounded-xl p-6 cursor-pointer hover:border-orange-500 transition duration-500 flex flex-col items-center justify-center gap-2" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const files = Array.from(e.dataTransfer.files || []); setFiles(prev => [...prev, ...files]); }} onClick={() => document.getElementById("fileInput")?.click()}>
-                    <input id="fileInput" type="file" multiple className="hidden" onChange={(e) => { const fileInput = e.target.files; if (!fileInput) return; setFiles(prev => [...prev, ...Array.from(fileInput)]); }} />
+                <div className="border border-dashed border-white/20 rounded-xl p-6 cursor-pointer hover:border-orange-500 transition duration-500 flex flex-col items-center justify-center gap-2" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const droppedFiles = Array.from(e.dataTransfer.files || []); addFiles(droppedFiles); }} onClick={() => document.getElementById("fileInput")?.click()}>
+                    <input id="fileInput" type="file" multiple={multiple} className="hidden" onChange={(e) => { const fileInput = e.target.files; if (!fileInput) return; addFiles(Array.from(fileInput)); }} />
                     <div className="text-3xl">📁</div>
-                    <div className="text-sm text-white/50 text-center">Click or drop your files here</div>
+                    <div className="text-sm text-white/50 text-center">{multiple ? "Click or drop your files here" : "Click or drop your file here"}</div>
                 </div>
                 <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
                     {files.length === 0 && <div className="text-center text-white/30 text-sm">No file</div>}
@@ -47,7 +56,7 @@ export default function InsertFile({ onClose, onSubmit }: InsertFileType) {
                     ))}
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-65">Cancel</button>
+                    <button onClick={onClose} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 transition duration-500 cursor-pointer font-mono w-65">Back</button>
                     <button disabled={!canSubmit} onClick={handleSubmit} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 transition duration-500 disabled:opacity-40 cursor-pointer font-mono w-65">Send</button>
                 </div>
             </div>

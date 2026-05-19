@@ -1,22 +1,59 @@
 export type Status = "online" | "donotdisturb" | "inactive" | "offline"
+import { IconType } from "react-icons";
+import { BsDiscord } from "react-icons/bs";
+import { CgWebsite } from "react-icons/cg";
+import { FaGithubSquare } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { RxLinkedinLogo } from "react-icons/rx";
 
-export type Role = "owner" | "admin" | "dev" | "contributor" | "user" | "guest"
+export type SocialMediaKey = "discord" | "linkedin" | "github" | "x" | "website"
+
+export type SocialMediaConfig = {
+    key: SocialMediaKey;
+    label: string;
+    icon: IconType;
+};
+
+export type SocialMediaValues = {
+    discord: string;
+    linkedin: string;
+    github: string;
+    x: string;
+    website: string;
+};
+
+export const socialMedias: SocialMediaConfig[] = [
+    { key: "discord", label: "Discord", icon: BsDiscord },
+    { key: "linkedin", label: "LinkedIn", icon: RxLinkedinLogo },
+    { key: "github", label: "GitHub", icon: FaGithubSquare },
+    { key: "x", label: "X", icon: FaXTwitter },
+    { key: "website", label: "Personal website", icon: CgWebsite },
+];
+
+export type RoleLabel = "owner" | "admin" | "dev" | "contributor" | "user" | "guest"
 
 export type transactions = "flag" | "geoint" | "daily" | "admin" | "penalty" | "shop"
 
-export type difficulty = "Facile" | "Intermédiaire" | "Avancé" | "Expert"
+export type Difficulty = "Easy" | "intermediate" | "Advance" | "Expert"
 export type category = "Web" | "Crypto" | "Pwn" | "Reverse" | "Forensic" | "OSINT" | "Misc"
 
-export interface Option {
+export interface Option<T = string> {
     label: string;
-    value: string | number;
+    value: T;
     color?: string;
 };
 
-export const difficultyBtn: Option[] = [
-    { label: "Facile", value: "Facile", color: "text-green-400" },
-    { label: "Intermédiaire", value: "Intermédiaire", color: "text-yellow-400" },
-    { label: "Avancé", value: "Avancé", color: "text-yellow-600" },
+export const statusBtn: Option<Status>[] = [
+    { label: "Online", value: "online" as Status, color: "text-green-400" },
+    { label: "Do Not Disturb", value: "donotdisturb" as Status, color: "text-red-400" },
+    { label: "Inactive", value: "inactive" as Status, color: "text-yellow-600" },
+    { label: "Offline", value: "offline" as Status, color: "text-gray-400" },
+];
+
+export const difficultyBtn: Option<Difficulty>[] = [
+    { label: "Facile", value: "Easy", color: "text-green-400" },
+    { label: "Intermédiaire", value: "intermediate", color: "text-yellow-400" },
+    { label: "Avancé", value: "Advance", color: "text-yellow-600" },
     { label: "Expert", value: "Expert", color: "text-red-400" },
 ];
 
@@ -34,9 +71,9 @@ export type User = {
     user_id: number;
     username: string;
     bio: string;
-    email: string;
     password: string;
-    role: Role[];
+    mail: string;
+    role: Roles[];
     created_at: string;
     coins: number;
     points: number;
@@ -46,6 +83,7 @@ export type User = {
     is_anonymous: boolean;
     reset_password: boolean;
     banner: string;
+    social_media: SocialMediaValues;
 }
 
 export type UserSessions = {
@@ -86,6 +124,32 @@ export type UserRoles = {
     role_id: number;
 }
 
+export type Flags = {
+    id: number;
+    flag: string;
+    is_find: boolean;
+    flag_found_date: string;
+    challenge_id: number;
+}
+
+export type UserProgression = {
+    id: number;
+    title: string;
+    description: string;
+    difficulty: string;
+    category: string[];
+    flag_format: string;
+    files: string[];
+    status: string;
+    creator_id: number;
+    created_at: string;
+    coins: number;
+    points: number;
+    type: string;
+    images: string;
+    flags: Flags[];
+}
+
 export type Roles = {
     id: number;
     label: string;
@@ -103,7 +167,7 @@ export type geoint = {
     id: number;
     title: string;
     description: string;
-    difficulty: difficulty | "";
+    difficulty: Difficulty | "";
     flag_format: string;
     images: string[];
     status: string;
@@ -117,12 +181,12 @@ export type ctf = {
     id: number;
     title: string;
     description: string;
-    difficulty: difficulty;
+    difficulty: Difficulty;
     category: category[];
     flag_format: string;
     files: string[];
     status: string;
-    creator_id: number;
+    creators: [];
     created_at: string;
     coins?: number;
     points?: number;

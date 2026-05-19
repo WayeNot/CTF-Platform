@@ -6,10 +6,10 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
     try {
-        const req = await sql`SELECT * FROM roles`
-        return NextResponse.json({ success: true, data: req })
+        const req = await sql`SELECT * FROM roles ORDER BY id ASC`
+        return NextResponse.json({ success: true, data: req }, { status: 200 })
     } catch (err) {
-        return new Response("DB Error", { status: 500 })
+        return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
     }
 }
 
@@ -18,20 +18,21 @@ export async function POST(req: Request) {
         const { role } = await req.json()
         const cookieStore = await cookies()
         const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
-        
+
         if (!await hasPermission(Permissions.advanced.administrator, user_id) && !await hasPermission(Permissions.panelAdmin.role, user_id)) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
-        if (!role || !role.label || !role.description || !role.color) return NextResponse.json({ success: false, error: "Champs manquants !" }, { status: 400 });
+        if (!role || !role.label || !role.description || !role.color) return NextResponse.json({ success: false, error: "Missing field(s) !" }, { status: 400 });        
 
         const id = await sql`INSERT INTO roles (label, description, color) VALUES (${role.label}, ${role.description}, ${role.color}) RETURNING id`;
         for (const perm of role.allPerms) {
             await sql`INSERT INTO roles_relation (id_role, alias) VALUES (${id[0].id}, ${perm})`;
         }
 
-        const allRoles = await sql`SELECT * FROM roles`
-        return NextResponse.json({ success: true, data: allRoles })
+        const newRole = await sql`SELECT * FROM roles WHERE id = ${id[0].id} LIMIT 1`
+        return NextResponse.json({ success: true, data: newRole[0] }, { status: 200 })
     } catch (err: any) {
-        if (err.code === '23505') return NextResponse.json({ error: "Label de rôle déjà utilisé !" }, { status: 400 });
+        console.error(err)
+        if (err.code === '23505') return NextResponse.json({ error: "Role label already used !" }, { status: 400 });
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

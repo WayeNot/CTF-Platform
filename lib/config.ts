@@ -1,12 +1,35 @@
-import { Status } from "./types";
+import { socialMedias, Status, User } from "./types";
 
 export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
-export const default_user = { username: "Invité", status: "online", user_id: Date.now(), role: ["guest"], pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 0, points: 0, created_at: "" }
+export const default_user: User = {
+    user_id: -1,
+    username: "Guest",
+    bio: "Bio of a guest guy !",
+    password: "",
+    mail: "",
+    role: [],
+    created_at: "",
+    coins: 0,
+    points: 0,
+    pp_url: "",
+    status: "offline",
+    is_online: false,
+    is_anonymous: false,
+    reset_password: false,
+    banner: "",
+    social_media: {
+        discord: "",
+        linkedin: "",
+        github: "",
+        website: "",
+        x: ""
+    },
+}
 
 export const owners = [
-    { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux/" },
-    { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune/" },
+    { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
+    { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
 ];
 
 export const Permissions = {
@@ -14,6 +37,7 @@ export const Permissions = {
         canCreate: {
             ctf: "contributor.canCreate.ctf",
             geoint: "contributor.canCreate.geoint",
+            rooom: "contributor.canCreate.room"
         },
     },
 
@@ -29,14 +53,19 @@ export const Permissions = {
         settings: "panelAdmin.settings",
         logs: "panelAdmin.logs",
         user: {
-            session: "panelAdmin.user.session",
+            informations: "panelAdmin.user.informations",
             dashboard: "panelAdmin.user.dashboard",
+            session: "panelAdmin.user.session",
             sanctions: "panelAdmin.user.sanctions",
             coins: "panelAdmin.user.coins",
             role: "panelAdmin.user.role",
             progression: "panelAdmin.user.progression",
             monitoring: "panelAdmin.user.monitoring",
         }
+    },
+
+    room: {
+        canCreateChallenge: "contributor.room.canCreate",
     },
 
     advanced: {
@@ -47,6 +76,21 @@ export const Permissions = {
         maintenance: "bypass.maintenance",
     },
 } as const
+
+export const colorClasses = {
+    red: "bg-red-500/40",
+    orange: "bg-orange-500/40",
+    amber: "bg-amber-500/40",
+    yellow: "bg-yellow-300/40",
+    lime: "bg-lime-500/40",
+    green: "bg-green-500/40",
+    emerald: "bg-emerald-500/40",
+    teal: "bg-teal-500/40"
+}
+
+export const colorRole: (keyof typeof colorClasses)[] = [
+    "red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal"
+]
 
 export const maintenance_route = "/dev/maintenance"
 
@@ -62,10 +106,10 @@ export const noGuestRoute = [
 ];
 
 export const statusColor: Record<Status, string> = {
-    online: "border-green-500 border-3",
-    donotdisturb: "border-red-500 border-3",
-    inactive: "border-yellow-500 border-3",
-    offline: "border-gray-500 border-3"
+    online: "border-green-500 border",
+    donotdisturb: "border-red-500 border",
+    inactive: "border-yellow-500 border",
+    offline: "border-gray-500 border"
 }
 
 export const statusColorHover: Record<Status, string> = {

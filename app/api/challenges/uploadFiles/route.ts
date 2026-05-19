@@ -7,7 +7,7 @@ import { Permissions } from "@/lib/config";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
-    try {
+    try {        
         const form = await req.formData();
         const files = form.getAll("files[]") as File[];
 
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         );
 
         const file_to_download = uploadedFiles.length > 0 ? uploadedFiles : null;
-
+        
         return NextResponse.json({ success: true, files: file_to_download });
     } catch (err) {
         console.error(err)
@@ -27,25 +27,28 @@ export async function POST(req: Request) {
 }
 
 export async function uploadFile(file: File) {
-    const cookieStore = await cookies()
-    const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
+    try {
+        const cookieStore = await cookies()
+        const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
 
-    if (!await hasPermission(Permissions.advanced.administrator, user_id) && (!await hasPermission(Permissions.contributor.canCreate.ctf, user_id) && !await hasPermission(Permissions.contributor.canCreate.geoint, user_id))) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+        if (!await hasPermission(Permissions.advanced.administrator, user_id) && (!await hasPermission(Permissions.contributor.canCreate.ctf, user_id) && !await hasPermission(Permissions.contributor.canCreate.geoint, user_id))) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+        const buffer = Buffer.from(await file.arrayBuffer());
 
-    const fileName = `${randomUUID()}-${file.name.replace(/\s/g, "_")}`;
-    console.log(process.env.R2_BUCKET, fileName, buffer, file.type)
+        const fileName = `${randomUUID()}-${file.name.replace(/\s/g, "_")}`;
 
-    await r2.send(
-        new PutObjectCommand({
-            Bucket: process.env.R2_BUCKET!,
-            Key: fileName,
-            Body: buffer,
-            ContentType: file.type,
-        })
-    );
+        await r2.send(
+            new PutObjectCommand({
+                Bucket: process.env.R2_BUCKET!,
+                Key: fileName,
+                Body: buffer,
+                ContentType: file.type,
+            })
+        );
 
-    console.log(process.env.R2_PUBLIC_URL)
-    return new URL(fileName, process.env.R2_PUBLIC_URL!).toString();
+        return new URL(fileName, process.env.R2_PUBLIC_URL!).toString();
+    } catch (err) {
+        console.error(err)
+        return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })
+    }
 }

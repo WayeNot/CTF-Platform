@@ -51,7 +51,7 @@ export default function Page() {
             if (!data.challenge) {
                 router.refresh()
                 router.push("/challenges")
-                showNotif("Ce challenge n'existe pas / plus !")
+                showNotif("This challenge does not exist / no longer exists !")
                 return
             }
             setGeoint(data.challenge)
@@ -80,7 +80,7 @@ export default function Page() {
         const input = currentFlags[id] || "";
 
         if (!input || input === "") {
-            showNotif("Veuillez saisir un flag !")
+            showNotif("Please enter a flag !")
             return
         }
 
@@ -104,11 +104,11 @@ export default function Page() {
             if (data.challengeEnd) {
                 updateCoins(Number(data?.currentCoins))
                 updatePoints(Number(data?.currentPoint))
-                showNotif("GG, vous venez de terminer le challenge !", "success")
+                showNotif("GG, you have just completed the challenge !", "success")
                 showNotif(`+${geoint?.coins} coins | +${geoint?.points} points !`, "success")
             }
         } else {
-            showNotif("Eh non, pas pour cette fois !")
+            showNotif("No, not this time !")
         }
     };
 
@@ -120,7 +120,7 @@ export default function Page() {
                 )}
                 <div className='w-fit'>
                     <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">Géoint - {geoint?.title} | Difficulté : {geoint?.difficulty}</h2>
-                    <p className='text-center my-2 text-white/40'>Créé par : {creatorName !== "Inconnu" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${creatorName}`}>{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {geoint?.created_at && new Date(geoint?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                    <p className='text-center my-2 text-white/40'>Créé par : {creatorName !== "Inconnu" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/@${creatorName}`}>@{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {geoint?.created_at && new Date(geoint?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                     <hr className="w-full text-white my-3" />
                 </div>
                 <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed">{geoint?.description}</p>
@@ -159,12 +159,12 @@ export default function Page() {
                                             )}
                                         </div>
                                     ) : (
-                                        <button onClick={() => showNotif("Aucun indice pour ce flag !")} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
+                                        <button onClick={() => showNotif("No clues for this flag !")} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
                                     )}
                                 </div>
                                 <div className="flex gap-2">
                                     {v.found ? (
-                                        <button onClick={() => showNotif("Vous avez déjà résolu ce flag !", "success")} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition duration-500 active:scale-95 cursor-pointer">Valider</button>
+                                        <button onClick={() => showNotif("You have already resolved this flag !", "success")} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition duration-500 active:scale-95 cursor-pointer">Valider</button>
                                     ) : (
                                         <button onClick={() => handleValidate(v.id)} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition duration-500 cursor-pointer active:scale-95">Valider</button>
                                     )}
@@ -173,7 +173,7 @@ export default function Page() {
                         </div>
                     ))}
                     {showModalBool && selectedFlag && (
-                        <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="" onSelect={(value) => { if (value === "Payer") handleHint(selectedFlag.id); setShowModalBool(false) }} />
+                        <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} subtitle="" onSelect={(value) => { if (value === true) handleHint(selectedFlag.id); setShowModalBool(false) }} />
                     )}
                     {showModalText && selectedFlag && (
                         <ModalText title={`Indice | ${selectedFlag.title}`} label={selectedFlag.hint} btn="Fermer l'indice" onSelect={() => { setShowModalText(false); setSelectedFlag(null) }} />

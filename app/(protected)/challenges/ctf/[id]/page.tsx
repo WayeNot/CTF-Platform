@@ -24,7 +24,6 @@ export default function Page() {
     const [ctf, setCtf] = useState<ctf>()
     const [ctfFlags, setCtfFlags] = useState<flags[]>([])
     const [currentFlags, setCurrentFlags] = useState<Record<number, string>>({})
-    const [creatorName, setCreatorName] = useState("")
 
     const [showModalBool, setShowModalBool] = useState(false)
     const [showModalText, setShowModalText] = useState(false)
@@ -49,12 +48,11 @@ export default function Page() {
             if (!data.challenge) {
                 router.refresh()
                 router.push("/challenges")
-                showNotif("Ce challenge n'existe pas / plus !")
+                showNotif("This challenge does not exist / no longer exists !")
                 return
             }
             setCtf(data.challenge)
             setCtfFlags(data.flags)
-            setCreatorName(data.creator)
         }
         getCtf()
     }, [params.id])
@@ -78,7 +76,7 @@ export default function Page() {
         const input = currentFlags[id] || "";
 
         if (!input || input === "") {
-            showNotif("Veuillez saisir un flag !")
+            showNotif("Please enter a flag !")
             return
         }
 
@@ -102,11 +100,11 @@ export default function Page() {
             if (data.challengeEnd) {
                 updateCoins(Number(data?.currentCoins))
                 updatePoints(Number(data?.currentPoint))
-                showNotif("GG, vous venez de terminer le challenge !", "success")
+                showNotif("GG, you have just completed the challenge !", "success")
                 showNotif(`+${ctf?.coins} coins | +${ctf?.points} points !`, "success")
             }
         } else {
-            showNotif("Eh non, pas pour cette fois !")
+            showNotif("No, not this time !")
         }
     };
 
@@ -120,14 +118,23 @@ export default function Page() {
 
             <div className="hidden lg:block"></div>
             <div className="flex flex-col bg-[#212529]">
-                
                 <div className="py-5 px-4 bg-[#212529] flex flex-col items-center justify-center gap-5">
                     {foundCount === flagsLen && (
                         <p className="w-fit px-4 py-2 bg-[#212529] border-2 border-white/30 text-white/70 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-3"><span className="text-green-600"><CiCircleCheck /></span>Vous avez terminé {ctf?.title} !</p>
                     )}
                     <div className='w-fit border-2 border-white/30 pl-50 pr-50 pt-10'>
                         <h2 className="text-white/60 font-mono text-[40px] text-center">CTF - {ctf?.title} | Difficulty : {ctf?.difficulty}</h2>
-                        <p className='text-center my-2 text-white/40 font-mono mb-5'>Created by : {creatorName !== "Inconnu" && creatorName !== "Anonyme" ? <Link className={"cursor-pointer hover:text-white/60 transition duration-500 italic"} href={`/user/${creatorName}`}>{creatorName}</Link> : <span className="cursor-pointer hover:text-white/60 transition duration-500 italic">Inconnu</span>} | {ctf?.created_at && new Date(ctf?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                        <div className="flex items-center justify-center gap-3 text-center my-2 text-white/40 font-mono">
+                            <p>Created by :</p>
+                            <div className="flex items-center gap-3 justify-center text-center">
+                                {ctf?.creators && ctf?.creators.map((v, k) => (
+                                    <Link key={k} className={"cursor-pointer text-white/60 hover:text-white/80 transition duration-500 italic"} href={`/user/@${v}`}>@{v}</Link>
+                                ))}
+                            </div>
+                        </div>
+                        <p className='text-center my-2 text-white/40 font-mono mb-5'>
+                            {ctf?.created_at && new Date(ctf?.created_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
                     </div>
                     <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed mt-10">{ctf?.description}</p>
                     <div className='text-center mt-10 border-2 border-white/30 pt-10 pl-110 pr-110'>
@@ -139,58 +146,58 @@ export default function Page() {
 
                     <div className="border-2 border-white/30 p-15 mb-20">
 
-                    <p className="text-white/60 font-mono text-[25px] mb-10 text-center">Your progress : <span className={`font-semibold ${foundCount === flagsLen ? "text-green-600" : foundCount >= flagsLen / 2 ? "text-orange-500" : "text-red-600"}`}>{foundCount}</span> / {flagsLen}</p>
+                        <p className="text-white/60 font-mono text-[25px] mb-10 text-center">Your progress : <span className={`font-semibold ${foundCount === flagsLen ? "text-green-600" : foundCount >= flagsLen / 2 ? "text-orange-500" : "text-red-600"}`}>{foundCount}</span> / {flagsLen}</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-                        {ctfFlags.map((v, k) => (
-                            <div key={k} className="w-full h-full min-h-65  bg-[#191c1f] border border-white/30 shadow-2xl p-6 flex flex-col justify-around">
-                                <div className='flex flex-col'>
-                                    <h2 className="text-xl font-semibold text-white/70 font-mono">{v.title}</h2>
-                                    <p className="text-xs text-white/40 mb-4 mt-2 font-mono">{v.description}</p>
-                                </div>
-                                <div className='flex flex-col'>
-                                    <div className="flex items-center gap-2 mb-4">
-                                        {v.found ? (
-                                            <div className="flex-1 relative">
-                                                <input value={""} disabled type="text" placeholder="You have already found this flag !" className="w-full h-11 px-4 pr-10 bg-[#212529] border-2 border-white/30 placeholder:text-green-800 focus:outline-none focus:ring-2 focus:ring-white/70 text-sm transition" />
-                                            </div>) : (
-                                            <div className="flex-1 relative">
-                                                <input value={currentFlags[v.id] || ""} onChange={(e) => setCurrentFlags(prev => ({ ...prev, [v.id]: e.target.value }))} type="text" placeholder={`${ctf?.flag_format}{${v.flag_format}}`} className="w-full h-11 px-4 pr-10 bg-[#212529] border-2 border-white/30 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/70 text-sm transition" />
-                                            </div>
-                                        )}
-                                        {v.hint ? (
-                                            <div>
-                                                {v.hint_show ? (
-                                                    <button onClick={() => { setSelectedFlag(v); setShowModalText(true); }} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-green-600 hover:text-green-700 hover:border-green-700 transition duration-500 cursor-pointer"><FaLightbulb /></button>
-                                                ) : (
-                                                    <button onClick={() => { setSelectedFlag(v); setShowModalBool(true); }} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-white/70 hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <button onClick={() => showNotif("Aucun indice pour ce flag !")} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
-                                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+                            {ctfFlags.map((v, k) => (
+                                <div key={k} className="w-full h-full min-h-65  bg-[#191c1f] border border-white/30 shadow-2xl p-6 flex flex-col justify-around">
+                                    <div className='flex flex-col'>
+                                        <h2 className="text-xl font-semibold text-white/70 font-mono">{v.title}</h2>
+                                        <p className="text-xs text-white/40 mb-4 mt-2 font-mono">{v.description}</p>
                                     </div>
-                                    <div className="flex gap-2">
-                                        {v.found ? (
-                                            <button onClick={() => showNotif("Vous avez déjà résolu ce flag !", "success")} className="flex-1 bg-[#212529] hover:bg-[#51565c] text-white/70 py-2.5 border-2 border-white/30 font-medium transition duration-500 cursor-pointer active:scale-95 font-mono">SEND</button>
-                                        ) : (
-                                            <button onClick={() => handleValidate(v.id)} className="flex-1 bg-[#212529] hover:bg-[#51565c] text-white/70 py-2.5 border-2 border-white/30 font-medium transition duration-500 cursor-pointer active:scale-95 font-mono">SEND</button>
-                                        )}
+                                    <div className='flex flex-col'>
+                                        <div className="flex items-center gap-2 mb-4">
+                                            {v.found ? (
+                                                <div className="flex-1 relative">
+                                                    <input value={""} disabled type="text" placeholder="You have already found this flag !" className="w-full h-11 px-4 pr-10 bg-[#212529] border-2 border-white/30 placeholder:text-green-800 focus:outline-none focus:ring-2 focus:ring-white/70 text-sm transition" />
+                                                </div>) : (
+                                                <div className="flex-1 relative">
+                                                    <input value={currentFlags[v.id] || ""} onChange={(e) => setCurrentFlags(prev => ({ ...prev, [v.id]: e.target.value }))} type="text" placeholder={`${ctf?.flag_format}{${v.flag_format}}`} className="w-full h-11 px-4 pr-10 bg-[#212529] border-2 border-white/30 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/70 text-sm transition" />
+                                                </div>
+                                            )}
+                                            {v.hint ? (
+                                                <div>
+                                                    {v.hint_show ? (
+                                                        <button onClick={() => { setSelectedFlag(v); setShowModalText(true); }} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-green-600 hover:text-green-700 hover:border-green-700 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                                    ) : (
+                                                        <button onClick={() => { setSelectedFlag(v); setShowModalBool(true); }} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-white/70 hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <button onClick={() => showNotif("No clues for this flag !")} className="h-11 w-11 flex items-center justify-center bg-[#212529] border-2 border-white/30 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            {v.found ? (
+                                                <button onClick={() => showNotif("You've already solved this flag !", "success")} className="flex-1 bg-[#212529] hover:bg-[#51565c] text-white/70 py-2.5 border-2 border-white/30 font-medium transition duration-500 cursor-pointer active:scale-95 font-mono">SEND</button>
+                                            ) : (
+                                                <button onClick={() => handleValidate(v.id)} className="flex-1 bg-[#212529] hover:bg-[#51565c] text-white/70 py-2.5 border-2 border-white/30 font-medium transition duration-500 cursor-pointer active:scale-95 font-mono">SEND</button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        {showModalBool && selectedFlag && isGuest && (
-                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="Vous devez être connecté pour acheter les indices !" onSelect={(value) => { value === "Payer" ? showNotif("Vous devez être connecté pour acheter les indices !") : setShowModalBool(false) }} />
-                        )}
-                        {showModalBool && selectedFlag && !isGuest && (
-                            <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Payer" btn2="Refuser" subtitle="" onSelect={(value) => { if (value === "Payer") handleHint(selectedFlag.id); setShowModalBool(false) }} />
-                        )}
-                        {showModalText && selectedFlag && !isGuest && (
-                            <ModalText title={`Indice | ${selectedFlag.title}`} label={selectedFlag.hint} btn="Fermer l'indice" onSelect={() => { setShowModalText(false); setSelectedFlag(null) }} />
-                        )}
+                            ))}
+                            {showModalBool && selectedFlag && isGuest && (
+                                <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} subtitle="Vous devez être connecté pour acheter les indices !" onSelect={(value) => { value ? showNotif("You must be logged in to purchase the clues !") : setShowModalBool(false) }} />
+                            )}
+                            {showModalBool && selectedFlag && !isGuest && (
+                                <ModalBool title="Payer un indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} subtitle="" onSelect={(value) => { if (value) handleHint(selectedFlag.id); setShowModalBool(false) }} />
+                            )}
+                            {showModalText && selectedFlag && !isGuest && (
+                                <ModalText title={`Indice | ${selectedFlag.title}`} label={selectedFlag.hint} btn="Fermer l'indice" onSelect={() => { setShowModalText(false); setSelectedFlag(null) }} />
+                            )}
+                        </div>
                     </div>
-                </div>
 
                 </div>
 

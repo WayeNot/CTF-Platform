@@ -16,12 +16,14 @@ export default function Home() {
     const [credentials, setCredentials] = useState({ username: "", mail: "", password: "", pp_url: default_pp, is_anonymous: false })
     const router = useRouter();
 
-    const validateEmail = () => {
+    const validatemail = () => {
         return String(credentials.mail).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
     }
 
-    const handleRegister = async () => {
-        if (!validateEmail()) { showNotif("Mauvais format d'adresse mail !", "error"); return; }
+    const handleRegister = async (e: any) => {
+        e.preventDefault();
+
+        if (!validatemail()) { showNotif("Incorrect mail address format !", "error"); return; }
 
         const res = await fetch("/api/auth/register", {
             method: "POST",
@@ -54,24 +56,22 @@ export default function Home() {
             <div className="hidden lg:block">
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
                     <div className="w-full max-w-md bg-black/ border border-white/70 shadow-2xl p-6 animate-fadeIn">
-                        <div>
-                            <div className="text-[35px] font-bold text-white/70 text-center font-mono w-full mb-4">
-                                <Typewriter onInit={(tw) => tw.typeString('Register').stop().start()} />
-                            </div>
-                            <hr className="text-white w-4/5 my-5 m-auto" />
-                            <div className="flex flex-col items-center w-full gap-4">
-                                <div className="flex flex-col items-center justify-center gap-1 w-full">
-                                    <div className="flex items-center gap-3 w-4/5 h-fit">
-                                        <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-full text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
-                                        {/*{credentials.is_anonymous ? <SiRedhat size={40} className="text-red-500/80 cursor-pointer w-1/5 p-1.5" onClick={() => setCredentials(prev => ({ ...prev, is_anonymous: false }))}/> : <SiRedhat size={40} className="text-green-500/80 cursor-pointer w-1/5 p-1.5" onClick={() => setCredentials(prev => ({ ...prev, is_anonymous: true }))} />}*/}
-                                    </div>
-                                    <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Email address" type="email" maxLength={50} />
-                                    <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5  mt-1" placeholder="Password" type="password" maxLength={50} />
-                                </div>
-                                <button onClick={handleRegister} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
-                                <p onClick={handleRedirect} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white pt-5"><MdAccountBox />Login</p>
-                            </div>
+                        <div className="text-[35px] font-bold text-white/70 text-center font-mono w-full mb-4">
+                            <Typewriter onInit={(tw) => tw.typeString('Register').stop().start()} />
                         </div>
+                        <hr className="text-white w-4/5 my-5 m-auto" />
+                        <form method="post" className="flex flex-col items-center w-full gap-4">
+                            <div className="flex flex-col items-center justify-center gap-1 w-full">
+                                <div className="flex items-center gap-3 w-4/5 h-fit">
+                                    <input value={credentials.username} onChange={e => { const value = e.target.value.replace(/\s/g, ""); setCredentials({ ...credentials, username: value }) }} className="border-2 font-mono text-[20px] border-white/40 w-full text-white/80 p-1.5" placeholder="Username" type="text" maxLength={25} />
+                                    {/*{credentials.is_anonymous ? <SiRedhat size={40} className="text-red-500/80 cursor-pointer w-1/5 p-1.5" onClick={() => setCredentials(prev => ({ ...prev, is_anonymous: false }))}/> : <SiRedhat size={40} className="text-green-500/80 cursor-pointer w-1/5 p-1.5" onClick={() => setCredentials(prev => ({ ...prev, is_anonymous: true }))} />}*/}
+                                </div>
+                                <input value={credentials.mail} onChange={e => { const value = e.target.value.replace(/\s/g, ""); setCredentials({ ...credentials, mail: value }) }} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Mail address" type="email" maxLength={50} />
+                                <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5  mt-1" placeholder="Password" type="password" maxLength={50} />
+                            </div>
+                            <button onClick={(e) => handleRegister(e)} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
+                            <p onClick={handleRedirect} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white pt-5"><MdAccountBox />Login</p>
+                        </form>
                     </div>
                 </div>
             </div>
